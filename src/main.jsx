@@ -3,7 +3,7 @@ import { createRoot } from "react-dom/client";
 import {
   Search, Bell, Star, TrendingUp, TrendingDown, SlidersHorizontal, X,
   ArrowUpDown, ChevronRight, RefreshCw, Plus, Trash2, Save, Filter,
-  Check, ChevronDown, ExternalLink
+  Check, ChevronDown, ExternalLink, Moon, Sun, UserRound, GripVertical, RotateCcw
 } from "lucide-react";
 import {
   ResponsiveContainer, LineChart, Line, Tooltip, CartesianGrid, XAxis, YAxis
@@ -33,7 +33,10 @@ function enrich(row, mapping, hourly = {}) {
     ...row, ...m, buy, sell, tax, margin,
     roi: buy ? margin / buy * 100 : 0,
     volume,
-    potentialProfit: margin * (m.limit || 0)
+    potentialProfit: margin * (m.limit || 0),
+    buyUpdated: row.highTime ? row.highTime * 1000 : null,
+    sellUpdated: row.lowTime ? row.lowTime * 1000 : null,
+    lastUpdated: Math.max(row.highTime || 0, row.lowTime || 0) * 1000 || null
   };
 }
 
@@ -68,6 +71,13 @@ function App() {
   const [profileName, setProfileName] = useState("");
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [toast, setToast] = useState(null);
+  const [now, setNow] = useState(Date.now());
+  const [dark, setDark] = useState(() => localStorage.getItem("osrsflipit-theme") === "dark");
+  const [accountOpen, setAccountOpen] = useState(false);
+  const [columns, setColumns] = useState(() => JSON.parse(localStorage.getItem("osrsflipit-columns") || 'null') || ["buy","sell","margin","roi","volume","limit","potentialProfit","updated"]);
+  const [columnMenuOpen, setColumnMenuOpen] = useState(false);
+  const [dragColumn, setDragColumn] = useState(null);
+  const [clockZone, setClockZone] = useState(() => localStorage.getItem("osrsflipit-clock-zone") || "local");
   const [moverMinPrice, setMoverMinPrice] = useState("");
   const [moverMaxPrice, setMoverMaxPrice] = useState("");
   const [moverMinVolume, setMoverMinVolume] = useState("");
@@ -79,6 +89,10 @@ function App() {
     clearTimeout(toastTimer.current);
     toastTimer.current = setTimeout(() => setToast(null), 15000);
   };
+
+  useEffect(() => { const t = setInterval(() => setNow(Date.now()), 1000); return () => clearInterval(t); }, []);
+  useEffect(() => { document.documentElement.dataset.theme = dark ? "dark" : "light"; localStorage.setItem("osrsflipit-theme", dark ? "dark" : "light"); }, [dark]);
+  useEffect(() => localStorage.setItem("osrsflipit-columns", JSON.stringify(columns)), [columns]);
 
   async function load() {
     setLoading(true);
@@ -260,6 +274,18 @@ function App() {
     if (item) selectItem(item, "48h");
   }
 
+  const columnOptions = [
+    ["buy", "Insta buy"], ["sell", "Insta sell"], ["margin", "Margin"], ["roi", "ROI"],
+    ["volume", "1h volume"], ["limit", "GE limit"], ["potentialProfit", "Profit / limit"], ["updated", "Last update"]
+  ];
+  function toggleColumn(key) { setColumns(cs => cs.includes(key) ? cs.filter(x => x !== key) : [...cs, key]); }
+  function moveColumn(from, to) {
+    setColumns(cs => { const next=[...cs]; const i=next.indexOf(from), j=next.indexOf(to); if(i<0||j<0||i===j)return cs; next.splice(i,1); next.splice(j,0,from); return next; });
+  }
+  const formatClock = ts => new Intl.DateTimeFormat(undefined, { hour:"2-digit", minute:"2-digit", second:"2-digit", timeZone: clockZone === "local" ? undefined : "UTC" }).format(ts);
+  const formatStamp = ts => ts ? new Intl.DateTimeFormat(undefined, { day:"2-digit", month:"short", hour:"2-digit", minute:"2-digit" }).format(ts) : "—";
+  const age = ts => { if(!ts) return "—"; const sec=Math.max(0, Math.round((now-ts)/1000)); return sec<60 ? `${sec}s ago` : sec<3600 ? `${Math.floor(sec/60)}m ago` : `${Math.floor(sec/3600)}h ago`; };
+
   return <div className="app">
     <header className="nav">
       <button className="brand" onClick={goMarket} title="Go to Market"><span>OSRS</span>FlipIt</button>
@@ -287,6 +313,11 @@ function App() {
       <button className="iconbtn bellbtn" onClick={() => setNotificationsOpen(v => !v)} title="Notifications">
         <Bell size={17}/>{activeAlerts.length > 0 && <i/>}
       </button>
+      <div className="topClock" title={`Timezone: ${clockZone === "local" ? (Intl.DateTimeFormat().resolvedOptions().timeZone || "Local") : "UTC"}`}>
+        <span>{formatClock(now)}</span><small>{clockZone === "local" ? "LOCAL" : "UTC"}</small>
+      </div>
+      <button className="iconbtn" onClick={() => setDark(v=>!v)} title={dark ? "Use light mode" : "Use dark mode"}>{dark ? <Sun size={17}/> : <Moon size={17}/>}</button>
+      <button className="iconbtn" onClick={() => setAccountOpen(true)} title="Account"><UserRound size={17}/></button>
       <button className="iconbtn" onClick={load} title="Refresh"><RefreshCw size={17}/></button>
       {notificationsOpen && <NotificationPopover alerts={alerts} clear={() => { setAlerts([]); localStorage.setItem("osrsflipit-alerts", "[]"); }} openItem={openAlertItem} close={() => setNotificationsOpen(false)} />}
     </header>
@@ -315,12 +346,18 @@ function App() {
           <button className={`filterButton ${conditions.length ? "hasFilters" : ""}`} onClick={() => setFilterOpen(v => !v)}>
             <SlidersHorizontal size={16}/> Match all filters {conditions.length ? `(${conditions.length})` : ""}<ChevronDown size={14}/>
           </button>
+          <div className="filterActions">
+            <div className="columnControls">
+              <button className="secondary" onClick={() => setColumnMenuOpen(v=>!v)}><SlidersHorizontal size={15}/> Columns <ChevronDown size={13}/></button>
+              {columnMenuOpen && <div className="columnMenu"><div className="columnMenuHead"><strong>Market columns</strong><button onClick={()=>setColumns(columnOptions.map(x=>x[0]))}><RotateCcw size={13}/> Reset</button></div>{columnOptions.map(([key,label])=><label key={key}><input type="checkbox" checked={columns.includes(key)} onChange={()=>toggleColumn(key)}/><span>{label}</span><GripVertical size={13}/></label>)}<small>Drag the table headers to reorder.</small></div>}
+            </div>
           <div className="profileControls">
             <button className="secondary" onClick={() => setProfileOpen(v => !v)}><Save size={15}/> Profiles</button>
             {profileOpen && <div className="profileMenu">
               <div className="profileSave"><input value={profileName} onChange={e => setProfileName(e.target.value)} placeholder="Profile name…"/><button onClick={saveProfile}><Save size={14}/></button></div>
               {profiles.length ? profiles.map(p => <div className="profileRow" key={p.name}><button onClick={() => loadProfile(p.name)}>{p.name}<small>{p.conditions.length} filters</small></button><button onClick={() => { const n=profiles.filter(x=>x.name!==p.name); setProfiles(n); localStorage.setItem("osrsflipit-profiles", JSON.stringify(n)); }}><Trash2 size={14}/></button></div>) : <div className="profileEmpty">No saved profiles yet.</div>}
             </div>}
+          </div>
           </div>
         </div>
 
@@ -336,16 +373,11 @@ function App() {
         <div className="tablewrap">
           <table><thead><tr>
             <th>Item</th>
-            <Th t="buy" label="Buy price" sort={sort} on={sortBy}/>
-            <Th t="sell" label="Sell price" sort={sort} on={sortBy}/>
-            <Th t="margin" label="Margin" sort={sort} on={sortBy}/>
-            <Th t="roi" label="ROI" sort={sort} on={sortBy}/>
-            <Th t="volume" label="1h volume" sort={sort} on={sortBy}/>
-            <Th t="limit" label="GE limit" sort={sort} on={sortBy}/>
+            {columns.map(key => { const opt=columnOptions.find(x=>x[0]===key); return <th key={key} draggable onDragStart={()=>setDragColumn(key)} onDragOver={e=>e.preventDefault()} onDrop={()=>{moveColumn(dragColumn,key);setDragColumn(null)}}><button className="thbtn" onClick={() => key!=="updated" && sortBy(key)}>{opt?.[1]}{key!=="updated" && <ArrowUpDown size={13}/>} {key!=="updated" && sort.key===key && <span>{sort.dir==="desc"?"↓":"↑"}</span>}</button></th>; })}
             <th></th>
           </tr></thead>
           <tbody>
-            {loading && !items.length ? <tr><td colSpan="8" className="empty">Loading the Grand Exchange…</td></tr> :
+            {loading && !items.length ? <tr><td colSpan={columns.length+2} className="empty">Loading the Grand Exchange…</td></tr> :
               filtered.slice(0, marketVisible).map(x =>
                 <tr key={x.id} onClick={() => selectItem(x)}>
                   <td><div className="item">
@@ -353,14 +385,20 @@ function App() {
                     <img className="itemIcon" src={iconUrl(x.icon)} onError={e => e.currentTarget.style.display = "none"} />
                     <div><strong>{x.name}</strong><small>{x.members ? "Members" : "Free-to-play"}</small></div>
                   </div></td>
-                  <td>{money(x.buy)}</td><td>{money(x.sell)}</td>
-                  <td><strong className={x.margin > 0 ? "green" : "redtxt"}>{money(x.margin)}</strong><small className="sub">tax {money(x.tax)}</small></td>
-                  <td><strong>{pct(x.roi)}</strong></td>
-                  <td>{num(x.volume)}</td><td>{num(x.limit)}</td>
+                  {columns.map(key => {
+                    if(key==="buy") return <td key={key}><span>{money(x.buy)}</span><small className="instantLabel">Instant buy</small></td>;
+                    if(key==="sell") return <td key={key}><span>{money(x.sell)}</span><small className="instantLabel">Instant sell</small></td>;
+                    if(key==="margin") return <td key={key}><strong className={x.margin>0?"green":"redtxt"}>{money(x.margin)}</strong><small className="sub">tax {money(x.tax)}</small></td>;
+                    if(key==="roi") return <td key={key}><strong>{pct(x.roi)}</strong></td>;
+                    if(key==="volume") return <td key={key}>{num(x.volume)}</td>;
+                    if(key==="limit") return <td key={key}>{num(x.limit)}</td>;
+                    if(key==="potentialProfit") return <td key={key}><strong>{money(x.potentialProfit)}</strong></td>;
+                    return <td key={key}><small className="lastUpdate">{age(x.lastUpdated)}<br/>{formatStamp(x.lastUpdated)}</small></td>;
+                  })}
                   <td><ChevronRight size={16} className="chev"/></td>
                 </tr>
               )}
-            {!loading && !filtered.length && <tr><td colSpan="8" className="empty">No items match those filters.</td></tr>}
+            {!loading && !filtered.length && <tr><td colSpan={columns.length+2} className="empty">No items match those filters.</td></tr>}
           </tbody></table>
         </div>
         {marketVisible < filtered.length && <button className="loadMore" onClick={() => setMarketVisible(v => v + 30)}>Load More <span>{filtered.length - marketVisible} more</span></button>}
@@ -382,6 +420,7 @@ function App() {
       const next = [...alertRules, { ...rule, lastTriggered: 0 }];
       setAlertRules(next); localStorage.setItem("osrsflipit-rules", JSON.stringify(next)); setRuleModal(false);
     }}/>}
+    {accountOpen && <AccountModal onClose={() => setAccountOpen(false)} dark={dark}/>}
   </div>
 }
 
@@ -482,33 +521,70 @@ function ChartTooltip({active,payload,label}) {
 
 function ItemPanel({item,history,watch,toggleWatch,close,selectRange}) {
   const [range,setRange] = useState(item.chartRange || "24h");
-  useEffect(()=>{ if (!history[range]) selectRange(range); }, [range, history]);
-  const data=history[range] || [];
+  const [zoom,setZoom] = useState(null);
+  const pointers = useRef(new Map());
+  const pinchStart = useRef(null);
+  useEffect(()=>{ if (!history[range]) selectRange(range); setZoom(null); }, [range, history]);
+  const fullData=history[range] || [];
+  const window = zoom || [0, Math.max(0, fullData.length-1)];
+  const data=fullData.slice(window[0], window[1]+1);
   const vals=data.flatMap(p=>[p.buy,p.sell]).filter(v=>v != null);
   const min=vals.length ? Math.min(...vals) : 0, max=vals.length ? Math.max(...vals) : 1;
   const pad=Math.max((max-min)*0.08, Math.max(max*0.005, 10));
   const domain=[Math.max(0,min-pad),max+pad];
   const labels={ "24h":"24 hours","48h":"48 hours","7d":"1 week","30d":"1 month","6m":"6 months" };
+  const zoomBy = (factor, centerRatio=.5) => {
+    if(fullData.length<8) return;
+    const current=zoom || [0,fullData.length-1]; const size=current[1]-current[0]+1;
+    const nextSize=Math.max(8, Math.min(fullData.length, Math.round(size*factor)));
+    const center=current[0]+Math.round(size*centerRatio);
+    let a=Math.max(0,center-Math.round(nextSize*centerRatio)), b=Math.min(fullData.length-1,a+nextSize-1);
+    if(b-a+1<nextSize)a=Math.max(0,b-nextSize+1);
+    setZoom(nextSize>=fullData.length-1?null:[a,b]);
+  };
+  const resetZoom=()=>setZoom(null);
+  const pointerDown=e=>{ e.currentTarget.setPointerCapture?.(e.pointerId); pointers.current.set(e.pointerId,{x:e.clientX,y:e.clientY}); if(pointers.current.size===2){ const pts=[...pointers.current.values()]; pinchStart.current={dist:Math.hypot(pts[0].x-pts[1].x,pts[0].y-pts[1].y),size:(zoom||[0,fullData.length-1])[1]-(zoom||[0,fullData.length-1])[0]+1}; }};
+  const pointerMove=e=>{ if(!pointers.current.has(e.pointerId))return; pointers.current.set(e.pointerId,{x:e.clientX,y:e.clientY}); if(pointers.current.size===2 && pinchStart.current){ const pts=[...pointers.current.values()]; const dist=Math.hypot(pts[0].x-pts[1].x,pts[0].y-pts[1].y); const ratio=pinchStart.current.dist/dist; const factor=Math.max(.55,Math.min(1.8,ratio)); const desired=Math.max(8,Math.min(fullData.length,Math.round(pinchStart.current.size*factor))); const center=Math.round(((zoom||[0,fullData.length-1])[0]+(zoom||[0,fullData.length-1])[1])/2); let a=Math.max(0,center-Math.floor(desired/2)),b=Math.min(fullData.length-1,a+desired-1); if(b-a+1<desired)a=Math.max(0,b-desired+1); setZoom(desired>=fullData.length-1?null:[a,b]); e.preventDefault?.(); }};
+  const pointerUp=e=>{ pointers.current.delete(e.pointerId); if(pointers.current.size<2)pinchStart.current=null; };
   return <div className="drawerback" onClick={close}><aside className="drawer" onClick={e=>e.stopPropagation()}>
     <button className="close" onClick={close}><X/></button><div className="eyebrow">ITEM ANALYTICS</div>
     <div className="itemtitle"><div className="itemHeading"><img className="titleIcon" src={iconUrl(item.icon)} onError={e=>e.currentTarget.style.display="none"}/><div><h2>{item.name}</h2><p>Grand Exchange · {item.members?"Members":"Free-to-play"}</p></div></div>
       <button className={`star big ${watch.includes(item.id)?"on":""}`} onClick={()=>toggleWatch(item.id)}><Star fill={watch.includes(item.id)?"currentColor":"none"}/></button></div>
     <div className="panelstats"><Stat label="Buy" value={money(item.buy)}/><Stat label="Sell" value={money(item.sell)}/><Stat label="Margin" value={money(item.margin)}/><Stat label="ROI" value={pct(item.roi)}/></div>
     <div className="detailgrid topDetails"><div><span>Max buy limit</span><strong>{num(item.limit)} per 4 hours</strong></div><div><span>1h volume</span><strong>{num(item.volume)}</strong></div><div><span>GE tax</span><strong>{money(item.tax)}</strong></div><div><span>Profit per limit</span><strong>{money(item.potentialProfit)}</strong></div></div>
-    <div className="chartbox"><div className="charthead"><div><strong>Price history</strong><small>Buy = black · Sell = red</small></div><span>{labels[range]}</span></div>
-      <div className="rangeButtons">{Object.entries(labels).map(([k,v])=><button key={k} className={range===k?"active":""} onClick={()=>{setRange(k);selectRange(k)}}>{v}</button>)}</div>
-      {data.length ? <ResponsiveContainer width="100%" height={350}><LineChart data={data} margin={{top:10,right:8,left:0,bottom:5}}>
-        <CartesianGrid strokeDasharray="3 5" vertical={false} opacity={0.35}/>
-        <XAxis dataKey="timestamp" type="number" domain={["dataMin","dataMax"]} tickFormatter={t=>new Date(t).toLocaleDateString("en-GB",{day:"2-digit",month:"short"})} tick={{fontSize:10,fill:"#999"}}/>
-        <YAxis domain={domain} tickFormatter={v=>v>=1000000?`${(v/1000000).toFixed(1)}m`:v>=1000?`${Math.round(v/1000)}k`:v} tick={{fontSize:10,fill:"#999"}} width={48}/>
-        <Tooltip content={<ChartTooltip/>}/>
-        <Line type="monotone" dataKey="sell" name="Sell" stroke="#d43c3c" strokeWidth={2} dot={false} connectNulls/>
-        <Line type="monotone" dataKey="buy" name="Buy" stroke="#111" strokeWidth={2} dot={false} connectNulls/>
-      </LineChart></ResponsiveContainer> : <div className="chartloading">Loading history…</div>}
+    <div className="chartbox"><div className="charthead"><div><strong>Price history</strong><small>Buy = black · Sell = red · times use your local timezone</small></div><span>{labels[range]}</span></div>
+      <div className="rangeButtons">{Object.entries(labels).map(([k,v])=><button key={k} className={range===k?"active":""} onClick={()=>{setRange(k);selectRange(k)}}>{v}</button>)}<button onClick={resetZoom} className={zoom?"zoomReset active":"zoomReset"}><RotateCcw size={11}/> Reset zoom</button></div>
+      {data.length ? <div className="chartTouch" onWheel={e=>{e.preventDefault();zoomBy(e.deltaY<0?.7:1.4,.5)}} onPointerDown={pointerDown} onPointerMove={pointerMove} onPointerUp={pointerUp} onPointerCancel={pointerUp}>
+        <ResponsiveContainer width="100%" height={390}><LineChart data={data} margin={{top:18,right:12,left:2,bottom:10}}>
+          <CartesianGrid strokeDasharray="2 4" vertical={true} opacity={0.28}/>
+          <XAxis dataKey="timestamp" type="number" domain={['dataMin','dataMax']} tickFormatter={t=>new Intl.DateTimeFormat(undefined,{hour:"2-digit",minute:"2-digit"}).format(t)} tick={{fontSize:10}} minTickGap={38}/>
+          <YAxis domain={domain} tickFormatter={v=>v>=1000000?`${(v/1000000).toFixed(1)}m`:v>=1000?`${Math.round(v/1000)}k`:Math.round(v)} tick={{fontSize:10}} width={52} tickCount={8}/>
+          <Tooltip content={<ChartTooltip/>} />
+          <Line type="monotone" dataKey="sell" name="Sell" stroke="#d43c3c" strokeWidth={2.4} dot={false} connectNulls activeDot={{r:4}}/>
+          <Line type="monotone" dataKey="buy" name="Buy" stroke={document.documentElement.dataset.theme==="dark"?"#fff":"#111"} strokeWidth={2.4} dot={false} connectNulls activeDot={{r:4}}/>
+        </LineChart></ResponsiveContainer>
+      </div> : <div className="chartloading">Loading history…</div>}
     </div>
-    <div className="chartNote"><TrendingUp size={15}/><span>The chart scales to this item's own recent price range, so a large move is visually obvious instead of being flattened by unrelated high-priced items.</span></div>
+    <div className="chartNote"><TrendingUp size={15}/><span>Scroll to zoom. On phones, pinch with two fingers. The graph uses dense grid lines, relative scaling and exact hover times to make smaller price moves easier to read.</span></div>
     <a className="wikiLink" href={`https://prices.runescape.wiki/osrs/item/${item.id}`} target="_blank" rel="noreferrer">Open OSRS Wiki price page <ExternalLink size={14}/></a>
   </aside></div>
+}
+
+function AccountModal({onClose}) {
+  const [mode,setMode]=useState("email");
+  return <div className="modalback"><div className="modal accountModal"><button className="close" onClick={onClose}><X/></button><div className="eyebrow">OSRSFLIPIT ACCOUNT</div><h2>Keep your setup everywhere.</h2><p className="accountLead">Accounts need a small hosted authentication/database service. This UI is prepared for a Supabase connection, but real sign-in and cross-device saving still need that connection configured.</p>
+    <div className="accountButtons"><button className="accountProvider">Continue with Google</button><button className="accountProvider">Continue with Discord</button></div>
+    <div className="accountDivider"><span>or</span></div>
+    <div className="accountTabs"><button className={mode==="email"?"active":""} onClick={()=>setMode("email")}>Email</button><button className={mode==="phone"?"active":""} onClick={()=>setMode("phone")}>Mobile</button></div>
+    <input placeholder={mode==="email"?"you@example.com":"+44 7…"}/><button className="primary wide" onClick={()=>alert("Connect Supabase, enable the selected provider, and then this button can send the magic link or OTP.")}>Send {mode==="email"?"magic link":"OTP"}</button>
+    <div className="accountSaved"><strong>What will sync?</strong><span>Market filter profiles</span><span>Watchlist</span><span>Notifications & alert rules</span></div>
+  </div></div>
+}
+
+function ChartTooltip({active,payload,label}) {
+  if (!active || !payload?.length) return null;
+  const time=new Intl.DateTimeFormat(undefined,{weekday:"short",day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit",second:"2-digit"}).format(label);
+  return <div className="chartTooltip"><strong>{time}</strong>{payload.map(p=><div key={p.dataKey}><span className={`legendDot ${p.dataKey}`}/>{p.dataKey==="buy"?"Buy":"Sell"}: <b>{money(p.value)}</b></div>)}</div>;
 }
 
 createRoot(document.getElementById("root")).render(<App/>);

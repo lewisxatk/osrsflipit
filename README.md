@@ -28,6 +28,12 @@ OSRS Grand Exchange flipping dashboard built with React + Vite and designed for 
 - GE tax-aware margin, ROI and profit-per-limit calculations
 - Local watchlist and alert rules
 - Refreshes live market data every 60 seconds
+- Custom market columns: show/hide Insta buy, Insta sell, Margin, ROI, volume, GE limit, Profit / limit and Last update
+- Drag market headers to reorder columns
+- Tiny per-row price update timestamps plus a live local clock
+- Dark mode using a Blue Nights-inspired palette; the Buy chart line becomes white while Sell stays red
+- More detailed chart grid, local-time hover timestamps, mouse-wheel zoom and mobile pinch zoom
+- Account UI prepared for Google, Discord, email magic-link and phone OTP authentication
 
 ## Data / API key
 
@@ -66,3 +72,15 @@ Push the project to GitHub and Cloudflare Pages will build/deploy it on each pus
 ## Notes
 
 The Wiki API provides up to 365 time-series points. OSRSFlipIt chooses the most appropriate timestep for each chart range so the 24-hour chart can stay detailed while longer ranges cover more history.
+
+## Accounts / cloud sync
+
+The free Cloudflare Pages frontend can host the site, but real user accounts and cross-device sync require a small authentication/database service. This update includes the account interface, but **does not pretend to provide real authentication without a backend**.
+
+The recommended setup is Supabase: enable Google, Discord, Email (magic link) and Phone (OTP) under Supabase Authentication, then add a Supabase client to the frontend and store profiles, watchlists and alert rules in tables keyed by the authenticated user's ID. Cloudflare Pages can keep serving the frontend for free; Supabase handles identity and persistence.
+
+The current project still works without an account: filters, profiles, watchlist and alerts remain stored locally in the browser.
+
+## Dark mode
+
+The dark theme uses a Blue Nights-inspired base (`#373E4B`, a commonly cited digital approximation for PANTONE 19-4023 TPX). Exact Pantone appearance can vary by screen and colour standard.
