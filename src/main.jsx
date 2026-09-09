@@ -514,11 +514,6 @@ function RuleModal({items,onClose,onSave}) {
   </div></div>
 }
 
-function ChartTooltip({active,payload,label}) {
-  if (!active || !payload?.length) return null;
-  return <div className="chartTooltip"><strong>{label}</strong>{payload.map(p=><div key={p.dataKey}><span className={`legendDot ${p.dataKey}`}/>{p.dataKey==="buy"?"Buy":"Sell"}: <b>{money(p.value)}</b></div>)}</div>;
-}
-
 function ItemPanel({item,history,watch,toggleWatch,close,selectRange}) {
   const [range,setRange] = useState(item.chartRange || "24h");
   const [zoom,setZoom] = useState(null);
