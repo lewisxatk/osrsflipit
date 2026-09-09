@@ -84,20 +84,3 @@ The current project still works without an account: filters, profiles, watchlist
 ## Dark mode
 
 The dark theme uses a Blue Nights-inspired base (`#373E4B`, a commonly cited digital approximation for PANTONE 19-4023 TPX). Exact Pantone appearance can vary by screen and colour standard.
-
-
-## OSRSFlipIt v3 upgrades
-
-- Fixed the Profiles crash/blank-page issue with defensive localStorage parsing and profile validation.
-- Added `k`, `m` and `b` price input parsing (`250k`, `10m`, `1.2b`) across filters, alerts and price fields.
-- Added a compact live watchlist ticker at the top; hovering pauses it and clicking opens the item chart.
-- Added Screener, Analysis, Recipes and Money Makers pages.
-- Screener reuses the Market column configuration and watchlist.
-- Analysis includes gainers, losers and highest tax-aware margins.
-- Recipes use live GE prices for tax-aware per-action and estimated GP/hour calculations and can be favourited.
-- Money Makers refreshes the OSRS Wiki money-making guide when opened, with filters and an explicit estimates-not-guarantees notice; a fallback list is used if the Wiki is unavailable.
-- 24-hour charts use 5-minute data, with wheel zoom, drag-to-pan, touch pinch zoom and a reset view.
-- Chart lines now use a neon cyan/pink glow for Buy/Sell and the hover tooltip shows exact local date/time.
-- Escape closes drawers and modal/popover UI.
-- Top navigation has animated hover effects.
-- Market column reset is available from the Columns menu.
