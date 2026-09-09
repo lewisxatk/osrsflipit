@@ -1,86 +1,42 @@
-# OSRSFlipIt
+# OSRSFlipIt v3
 
-OSRS Grand Exchange flipping dashboard built with React + Vite and designed for free Cloudflare Pages hosting.
+React/Vite OSRS Grand Exchange analytics dashboard designed for Cloudflare Pages.
 
-## Upgraded features
+## v3 additions
+- Fixed filter Profiles crash/blank-page behavior and safely migrates malformed old profile data.
+- Market + full-screen Screener share the same filters, profiles, column order and watchlist.
+- Column menu supports tick/untick and drag reorder, with Reset to restore the basic column set.
+- `k`, `m`, and `b` price/filter input parsing: `250k`, `10m`, `2.5b`, and comma-separated numbers work.
+- Price columns include Insta buy, Insta sell and small last-update timestamps.
+- Live local-time clock in the header.
+- Graphs use 5-minute data for 24h, with points visible, denser horizontal/vertical grid, local hover timestamps, relative scaling, wheel zoom, drag-to-pan and mobile pinch zoom.
+- Buy/sell chart colours are switched: Buy is red; Sell is black in light mode and white in dark mode.
+- Escape closes open item graphs/modals/popovers.
+- Watchlist ticker runs under the navigation, pauses on hover, and shows watched-item 24h movement.
+- Recipes page with favourites, category filters, live GE price calculations and GP/recipe + estimated GP/hour.
+- Money Makers page caches the OSRS Wiki hourly-profit tables for up to 24 hours to avoid repeated requests. It falls back to a local snapshot if the Wiki API is unavailable.
+- Analysis page with gainers, losers, volume, margins, ROI, gross/tax-free spread and profit-per-limit cards. Analysis item clicks open a centered graph.
+- Existing Market, Movers, Watchlist, Alerts, notifications and dark theme remain.
 
-- Market page defaults to 30 rows with **Load More**
-- Search box with **X clear button**
-- OSRSFlipIt logo returns to the Market/home page
-- Global item search in the top navigation with a scrollable result dropdown
-- Item icons throughout the market, movers, watchlist and item analytics
-- Item page shows the **GE maximum buy limit**
-- Price charts:
-  - 24 hours (5-minute detail)
-  - 48 hours (hourly)
-  - 1 week (hourly)
-  - 1 month (6-hour)
-  - 6 months (daily)
-- Item graph has separate **Buy (black)** and **Sell (red)** lines
-- Detailed hover tooltip with date/time and prices
-- Relative chart scaling so large item-specific moves are visually obvious
-- Match All custom filters with `>`, `>=`, `=`, `<=`, `<`
-- Saved, named filter profiles stored in the browser
-- Movers expanded to top 50 on each side with price/volume filters
-- Clickable alert history that opens the item's 48-hour chart
-- Notification bell with pop-out panel and Clear All
-- Alert popups appear at the bottom-right for 15 seconds
-- GE tax-aware margin, ROI and profit-per-limit calculations
-- Local watchlist and alert rules
-- Refreshes live market data every 60 seconds
-- Custom market columns: show/hide Insta buy, Insta sell, Margin, ROI, volume, GE limit, Profit / limit and Last update
-- Drag market headers to reorder columns
-- Tiny per-row price update timestamps plus a live local clock
-- Dark mode using a Blue Nights-inspired palette; the Buy chart line becomes white while Sell stays red
-- More detailed chart grid, local-time hover timestamps, mouse-wheel zoom and mobile pinch zoom
-- Account UI prepared for Google, Discord, email magic-link and phone OTP authentication
+## API
+The app uses the public RuneScape Wiki prices API:
+`https://prices.runescape.wiki/api/v1/osrs`
 
-## Data / API key
-
-OSRSFlipIt uses the public RuneScape Wiki real-time prices API at `prices.runescape.wiki`.
-
-**No API key is required.** The API is intended for community tools and exposes bulk latest prices, item mapping, 5-minute/1-hour data and item time-series data. The Wiki asks applications to use a descriptive User-Agent and to avoid excessive polling.
-
-The frontend therefore does not need a secret key or Cloudflare environment variable.
-
-## Run locally
-
-```bash
-npm install
-npm run dev
-```
-
-## Production build
-
-```bash
-npm run build
-```
-
-The generated production files are placed in `dist/`.
+No API key is required. The app fetches `/latest`, `/mapping`, `/1h`, and item `/timeseries` data.
 
 ## Cloudflare Pages
-
-For a GitHub-connected Cloudflare Pages project:
-
-- Framework preset: **Vite**
+If the repository contains this project in a nested `osrsflipit_v3` directory:
+- Root directory: `osrsflipit_v3`
 - Build command: `npm run build`
-- Build output directory: `dist`
-- No environment variables are required for the OSRS Wiki price API.
+- Output directory: `dist`
 
-Push the project to GitHub and Cloudflare Pages will build/deploy it on each push.
+If the contents of this folder are the repository root, leave Root directory blank.
 
-## Notes
+## Money Makers source
+The Money Makers page attempts one OSRS Wiki API fetch only when the locally cached snapshot is older than 24 hours. The source warns that hourly rates are estimates and actual profit varies with GE prices, supply, processing speed and efficiency.
 
-The Wiki API provides up to 365 time-series points. OSRSFlipIt chooses the most appropriate timestep for each chart range so the 24-hour chart can stay detailed while longer ranges cover more history.
+## Accounts
+The existing account UI is intentionally a front-end shell. Real Google/Discord/email/mobile authentication and cross-device sync require an auth/database provider such as Supabase plus provider configuration. It should not be implemented by storing passwords or credentials in Cloudflare Pages/localStorage.
 
-## Accounts / cloud sync
-
-The free Cloudflare Pages frontend can host the site, but real user accounts and cross-device sync require a small authentication/database service. This update includes the account interface, but **does not pretend to provide real authentication without a backend**.
-
-The recommended setup is Supabase: enable Google, Discord, Email (magic link) and Phone (OTP) under Supabase Authentication, then add a Supabase client to the frontend and store profiles, watchlists and alert rules in tables keyed by the authenticated user's ID. Cloudflare Pages can keep serving the frontend for free; Supabase handles identity and persistence.
-
-The current project still works without an account: filters, profiles, watchlist and alerts remain stored locally in the browser.
-
-## Dark mode
-
-The dark theme uses a Blue Nights-inspired base (`#373E4B`, a commonly cited digital approximation for PANTONE 19-4023 TPX). Exact Pantone appearance can vary by screen and colour standard.
+## Verification
+JSX syntax was checked with TypeScript's parser/checker. A full Vite production build was not completed in this environment because package installation/build tooling timed out.
