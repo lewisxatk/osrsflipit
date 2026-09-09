@@ -122,6 +122,25 @@ const moneyMakerSeed = [
   ["Tanning hides", 500000, "Processing", "Low", "None; varies by hide", true]
 ].map((x, i) => ({ id: `mm-${i}`, name: x[0], gpHour: x[1], category: x[2], intensity: x[3], requirements: x[4], members: x[5], description: "Estimated profit changes with Grand Exchange prices, speed, supply and player efficiency. You are not guaranteed to make this amount." }));
 
+class AppErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+  componentDidCatch(error, info) {
+    console.error("OSRSFlipIt render error:", error, info);
+  }
+  render() {
+    if (this.state.hasError) {
+      return <div className="appCrash"><div className="appCrashCard"><div className="eyebrow">OSRSFLIPIT</div><h1>Something went wrong.</h1><p>The app hit a browser-side error instead of silently showing a blank page.</p><details><summary>Technical details</summary><pre>{String(this.state.error?.stack || this.state.error || "Unknown error")}</pre></details><button className="primary" onClick={() => window.location.reload()}>Reload OSRSFlipIt</button></div></div>;
+    }
+    return this.props.children;
+  }
+}
+
 function App() {
   const [items, setItems] = useState([]);
   const [mapping, setMapping] = useState({});
@@ -371,4 +390,4 @@ function Analysis({items,onSelect}){
 
 function AccountModal({onClose}){const [mode,setMode]=useState("email");return <div className="modalback"><div className="modal accountModal"><button className="close" onClick={onClose}><X/></button><div className="eyebrow">OSRSFLIPIT ACCOUNT</div><h2>Keep your setup everywhere.</h2><p className="accountLead">The interface is prepared for Supabase authentication. To make real Google/Discord/email/mobile accounts work across devices, connect Supabase and enable the providers.</p><div className="accountButtons"><button className="accountProvider">Continue with Google</button><button className="accountProvider">Continue with Discord</button></div><div className="accountDivider"><span>or</span></div><div className="accountTabs"><button className={mode==="email"?"active":""} onClick={()=>setMode("email")}>Email</button><button className={mode==="phone"?"active":""} onClick={()=>setMode("phone")}>Mobile</button></div><input placeholder={mode==="email"?"you@example.com":"+44 7…"}/><button className="primary wide">Send {mode==="email"?"magic link":"OTP"}</button><div className="accountSaved"><strong>Would sync to the account</strong><span>Filter profiles</span><span>Market column order</span><span>Watchlist</span><span>Alerts and notifications</span></div></div></div>; }
 
-createRoot(document.getElementById("root")).render(<App/>);
+createRoot(document.getElementById("root")).render(<AppErrorBoundary><App/></AppErrorBoundary>);
