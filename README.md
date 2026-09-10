@@ -1,4 +1,4 @@
-# OSRSFlipIt V13
+# OSRSFlipIt V13.1
 
 OSRS Grand Exchange flipping dashboard built with React + Vite and designed for Cloudflare hosting.
 
