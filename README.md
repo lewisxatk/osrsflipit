@@ -1,47 +1,35 @@
-# OSRSFlipIt
+# OSRSFlipIt V13
 
-OSRS Grand Exchange flipping dashboard built with React + Vite and designed for free Cloudflare Pages hosting.
+OSRS Grand Exchange flipping dashboard built with React + Vite and designed for Cloudflare hosting.
 
-## Upgraded features
+## V13 upgrades
 
-- Market page defaults to 30 rows with **Load More**
-- Search box with **X clear button**
-- OSRSFlipIt logo returns to the Market/home page
-- Global item search in the top navigation with a scrollable result dropdown
-- Item icons throughout the market, movers, watchlist and item analytics
-- Item page shows the **GE maximum buy limit**
-- Price charts:
-  - 24 hours (5-minute detail)
-  - 48 hours (hourly)
-  - 1 week (hourly)
-  - 1 month (6-hour)
-  - 6 months (daily)
-- Item graph has separate **Buy (black)** and **Sell (red)** lines
-- Detailed hover tooltip with date/time and prices
-- Relative chart scaling so large item-specific moves are visually obvious
-- Match All custom filters with `>`, `>=`, `=`, `<=`, `<`
-- Saved, named filter profiles stored in the browser
-- Movers expanded to top 50 on each side with price/volume filters
-- Clickable alert history that opens the item's 48-hour chart
-- Notification bell with pop-out panel and Clear All
-- Alert popups appear at the bottom-right for 15 seconds
-- GE tax-aware margin, ROI and profit-per-limit calculations
-- Local watchlist and alert rules
-- Refreshes live market data every 60 seconds
-- Custom market columns: show/hide Insta buy, Insta sell, Margin, ROI, volume, GE limit, Profit / limit and Last update
-- Drag market headers to reorder columns
-- Tiny per-row price update timestamps plus a live local clock
-- Dark mode using a Blue Nights-inspired palette; the Buy chart line becomes white while Sell stays red
-- More detailed chart grid, local-time hover timestamps, mouse-wheel zoom and mobile pinch zoom
-- Account UI prepared for Google, Discord, email magic-link and phone OTP authentication
+- **Mobile-first market experience:** desktop tables become compact flip cards on phones, with Buy, Sell, Margin, ROI, 24h volume, Risk and Profit/slot visible without horizontal scrolling.
+- **Mobile bottom navigation:** Market, Screener, Analysis, Watch and a More menu are always within thumb reach.
+- **Full-screen mobile item analytics:** faster access to the chart, larger touch targets, compact metric tiles, drag/pinch-friendly chart area and an obvious Back to Screener action.
+- **Smart Flip Finder:** enter bankroll + GE slots and get the best current candidates based on Flip Score, safety, capital fit and expected profit.
+- **Stable Flip Score /100:** fixed thresholds rather than normalising against the current best item, so scores are much more consistent between refreshes.
+- **Risk Score:** Low / Medium / High risk indicator with a 0–100 safety score.
+- **Capital efficiency:** estimated profit per 1m GP invested.
+- **GE-slot efficiency:** estimated profit for a practical 1m-per-slot allocation constrained by the item's GE limit.
+- **Score explanation:** item analytics shows the component scores behind the Flip Score.
+- **24h volume:** uses the OSRS Wiki `/24h` data and labels the column explicitly.
+- **Correct GE direction:** Buy = lowest current sell offer (`low`); Sell = highest current buy offer (`high`); tax-aware margin uses the 2% GE tax capped at 5m.
+- **Client-side API cache:** bulk market data is cached for 45 seconds and item time-series for 5 minutes, with cached fallback when a request temporarily fails.
+- **Login clearly marked Coming soon:** the top-right login control opens an explanation instead of pretending authentication is live.
+- Existing Finance, Calculators, Recipes, Money Makers, Movers, Watchlist, Alerts, profiles, dark mode, sound alerts and item charts retained.
 
-## Data / API key
+## Important limitation
+
+V13 is still a client-side application. The login control is intentionally **not a real account system yet**. Discord automation, Stripe subscriptions, server-side alert scheduling, cross-device accounts and persistent server-side market caching belong in the next backend phase.
+
+The client-side cache improves repeat browsing and resilience, but it is not a replacement for a Cloudflare Worker/KV/D1 market-data cache.
+
+## Data / API
 
 OSRSFlipIt uses the public RuneScape Wiki real-time prices API at `prices.runescape.wiki`.
 
-**No API key is required.** The API is intended for community tools and exposes bulk latest prices, item mapping, 5-minute/1-hour data and item time-series data. The Wiki asks applications to use a descriptive User-Agent and to avoid excessive polling.
-
-The frontend therefore does not need a secret key or Cloudflare environment variable.
+No API key is required. The API exposes bulk latest prices, mapping, 24h market data and item time-series data. The app uses a descriptive User-Agent and avoids unnecessary polling.
 
 ## Run locally
 
@@ -65,22 +53,8 @@ For a GitHub-connected Cloudflare Pages project:
 - Framework preset: **Vite**
 - Build command: `npm run build`
 - Build output directory: `dist`
-- No environment variables are required for the OSRS Wiki price API.
+- No environment variables are required for the current public OSRS Wiki API integration.
 
-Push the project to GitHub and Cloudflare Pages will build/deploy it on each push.
+## Accounts / premium roadmap
 
-## Notes
-
-The Wiki API provides up to 365 time-series points. OSRSFlipIt chooses the most appropriate timestep for each chart range so the 24-hour chart can stay detailed while longer ranges cover more history.
-
-## Accounts / cloud sync
-
-The free Cloudflare Pages frontend can host the site, but real user accounts and cross-device sync require a small authentication/database service. This update includes the account interface, but **does not pretend to provide real authentication without a backend**.
-
-The recommended setup is Supabase: enable Google, Discord, Email (magic link) and Phone (OTP) under Supabase Authentication, then add a Supabase client to the frontend and store profiles, watchlists and alert rules in tables keyed by the authenticated user's ID. Cloudflare Pages can keep serving the frontend for free; Supabase handles identity and persistence.
-
-The current project still works without an account: filters, profiles, watchlist and alerts remain stored locally in the browser.
-
-## Dark mode
-
-The dark theme uses a Blue Nights-inspired base (`#373E4B`, a commonly cited digital approximation for PANTONE 19-4023 TPX). Exact Pantone appearance can vary by screen and colour standard.
+The UI intentionally says **Coming soon** until a real authentication/database backend is connected. The recommended next architecture is Cloudflare Worker + D1/KV for server state and caching, with Stripe for premium billing and a protected server-side Discord integration.
