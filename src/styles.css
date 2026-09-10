@@ -191,3 +191,52 @@ html,body,#root{min-height:100%;overflow-x:hidden}body{overflow-y:auto}.app{over
 
 /* V14 mobile: tighter market/screener density without making text hard to scan */
 @media(max-width:700px){.marketPage .mobileFlipCard{font-size:11px}.mobileItem strong{font-size:12px}.mobilePriceRow b{font-size:11px}.mobileMeta{gap:4px}.mobileMeta span{font-size:8px}.mobileMeta b{font-size:8px}.screenerMain .screenerTableShell{margin-left:-2px;margin-right:-2px}.screenerMain .mobileFlipCard{padding:8px 9px}.screenerMain .mobilePriceRow{margin-top:7px}.screenerMain .smartFinder{margin-left:-1px;margin-right:-1px}}
+
+/* V15 mobile usability pass */
+.searchWithSuggestions{position:relative;z-index:80}
+.itemSearchSuggestions{position:absolute;left:0;right:0;top:calc(100% + 7px);background:var(--surface,#fff);border:1px solid var(--line,#e1e4ea);border-radius:12px;box-shadow:0 18px 45px rgba(0,0,0,.14);overflow:hidden;z-index:1000;max-height:min(420px,60vh);overflow-y:auto}
+.itemSearchSuggestions button{width:100%;display:flex;align-items:center;gap:9px;border:0;border-bottom:1px solid rgba(127,135,148,.13);background:transparent;padding:9px 11px;text-align:left;cursor:pointer;color:inherit}
+.itemSearchSuggestions button:last-child{border-bottom:0}
+.itemSearchSuggestions button:hover,.itemSearchSuggestions button.bestMatch{background:rgba(139,92,246,.07)}
+.itemSearchSuggestions img{width:28px;height:28px;object-fit:contain;flex:none}
+.itemSearchSuggestions span{min-width:0;display:flex;flex:1;flex-direction:column;gap:2px}
+.itemSearchSuggestions strong{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.itemSearchSuggestions small{font-size:9px;color:#858c97}
+.itemSearchSuggestions .bestMatch strong:after{content:"  • BEST MATCH";font-size:8px;letter-spacing:.4px;color:#8b5cf6}
+html[data-theme="dark"] .itemSearchSuggestions{background:#171b22;border-color:#303846}
+html[data-theme="dark"] .itemSearchSuggestions button{border-color:#2b3340}
+
+@media(max-width:700px){
+  .searchWithSuggestions{z-index:100}
+  .itemSearchSuggestions{top:calc(100% + 5px);max-height:52dvh;border-radius:11px}
+  .itemSearchSuggestions button{min-height:48px;padding:8px 9px}
+  .itemSearchSuggestions img{width:25px;height:25px}
+  .itemSearchSuggestions strong{font-size:11px}
+  .itemSearchSuggestions small{font-size:8px}
+  .toolbar{position:relative;z-index:60}
+  .screenerTopbar{z-index:70}
+  .screenerSearch{position:relative}
+  .globalSearch{position:relative;z-index:1000}
+  .globalResults{max-width:min(92vw,430px);right:-8px;left:auto}
+  .nav{gap:6px}
+  .globalSearch input{min-width:0}
+  .chartTouch{touch-action:pan-y!important;overscroll-behavior-x:contain;cursor:grab}
+  .chartTouch:active{cursor:grabbing}
+  .fullDetail{overflow-y:auto!important;overflow-x:hidden!important;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain}
+  .fullDetail .chartbox{overflow:visible}
+  .fullDetail .chartTouch{touch-action:pan-y!important}
+  .fullDetail .chartNote{margin-bottom:10px}
+}
+
+@media(max-width:700px) and (orientation:landscape){
+  .nav{height:52px;padding:0 8px}
+  .brand{font-size:16px}
+  .globalSearch{height:36px;flex:1;max-width:none}
+  .globalSearch input{font-size:12px}
+  .globalResults{top:40px;max-height:70dvh}
+  main{padding:14px 10px 20px}
+  .fullDetail{padding:8px 10px 70px!important}
+  .fullDetail .itemtitle h2{font-size:19px}
+  .fullDetail .panelstats{grid-template-columns:repeat(5,minmax(0,1fr))}
+  .fullDetail .chartTouch{min-height:220px}
+}
