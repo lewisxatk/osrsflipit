@@ -91,3 +91,53 @@ html[data-theme="dark"] .screenerTopbar .profileMenu.dropdownPanel{background:#3
 html[data-theme="dark"] .financeCard input,html[data-theme="dark"] .calcTabs button,html[data-theme="dark"] .allocatorRow{background:#202631;color:#eef2f7;border-color:#3b4555}html[data-theme="dark"] .financeForm label:first-child>button{background:#202631;color:#eef2f7;border-color:#3b4555}.financeForm .primary{min-height:42px}
 @media(max-width:900px){.financeGrid{grid-template-columns:1fr}.financeCard.wide{grid-row:auto}.financeForm{grid-template-columns:repeat(2,minmax(0,1fr))}.financeStats{grid-template-columns:repeat(2,1fr)}.calcRow{grid-template-columns:1fr 1fr}.calcRow>strong{grid-column:1/-1}}
 @media(max-width:700px){.nav{position:sticky;top:0;z-index:500}.navlinks{overflow-x:auto;max-width:100%;padding-bottom:3px}.navlinks button{flex:0 0 auto}.globalSearch{display:none}.financeForm{grid-template-columns:1fr}.financeCard,.calcCard{padding:14px;border-radius:13px}.financeStats{grid-template-columns:repeat(2,1fr)}.financeTable{margin-left:-14px;margin-right:-14px;border-radius:0}.allocatorRow{grid-template-columns:20px 26px 1fr 48px}.allocatorRow em{display:none}.calcRow{grid-template-columns:1fr}.calcRow>strong{grid-column:auto}.calcCard .tablewrap{margin-left:-14px;margin-right:-14px;border-radius:0}.pageIntro{padding-top:0}.chartbox{overflow:hidden}.chartTouch{touch-action:none;min-height:250px}.recharts-wrapper{max-width:100%!important}.rangeButtons{overflow-x:auto;flex-wrap:nowrap}.rangeButtons button{flex:0 0 auto}.fullDetail .chartbox{padding:8px}.fullDetail .charthead{gap:8px;align-items:flex-start}.fullDetail .charthead small{font-size:10px}.fullDetail .panelstats{grid-template-columns:repeat(2,minmax(0,1fr))}.screenerTableShell,.tablewrap{overflow-x:auto;-webkit-overflow-scrolling:touch}.screenerTableShell table,.marketPage table{min-width:760px}.screenerTopbar{position:sticky;top:56px;z-index:40;background:var(--surface,#fff);padding:8px 0}.drawer .chartTouch{min-height:240px}}
+
+/* v12.1: compact item analytics tiles + mobile-first chart placement */
+.panelstats{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:8px;
+  border:0;
+  margin:14px 0;
+}
+.panelstats .stat{
+  min-width:0;
+  padding:11px 12px;
+  border:1px solid #e7e9ee!important;
+  border-radius:12px;
+  background:#fff;
+  box-shadow:0 3px 14px rgba(20,25,35,.045);
+}
+.panelstats .stat small{font-size:9px;letter-spacing:.35px;text-transform:uppercase;margin-bottom:4px;color:#8d94a0}
+.panelstats .stat strong{font-size:14px;letter-spacing:-.25px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+html[data-theme="dark"] .panelstats .stat{background:#343c4b!important;border-color:#566174!important;box-shadow:none}
+html[data-theme="dark"] .panelstats .stat small{color:#aeb7c4}
+
+.chartbox{scroll-margin-top:80px}
+.chartTouch{touch-action:none;min-height:260px}
+
+@media(max-width:700px){
+  .fullDetail{display:flex;flex-direction:column;overflow-y:auto;padding:12px!important}
+  .fullDetail .itemtitle{order:1;position:sticky;top:0;padding:6px 0 9px;margin:0;background:inherit}
+  .fullDetail .chartbox{order:2;margin:2px 0 8px;padding:10px;border-radius:13px}
+  .fullDetail .panelstats{order:3;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin:8px 0}
+  .fullDetail .chartNote{order:4;margin-top:2px}
+  .fullDetail .wikiLink{order:5;margin-bottom:8px}
+  .fullDetail .backDetail{order:0;align-self:flex-start;margin-bottom:2px}
+  .fullDetail .itemtitle h2{font-size:24px;letter-spacing:-1px}
+  .fullDetail .itemtitle p{font-size:10px;margin-top:3px}
+  .fullDetail .titleIcon{width:32px;height:32px}
+  .fullDetail .charthead{margin-bottom:7px}
+  .fullDetail .charthead strong{font-size:12px}
+  .fullDetail .charthead small{font-size:9px}
+  .fullDetail .chartHeadActions .secondary{height:32px;padding:0 8px;font-size:10px}
+  .fullDetail .rangeButtons{margin-bottom:4px;overflow-x:auto;flex-wrap:nowrap;padding-bottom:2px}
+  .fullDetail .rangeButtons button{flex:none;padding:6px 8px;font-size:9px}
+  .fullDetail .chartTouch{min-height:230px}
+  .fullDetail .recharts-wrapper{min-height:230px}
+  .fullDetail .panelstats .stat{padding:9px 10px}
+  .fullDetail .panelstats .stat strong{font-size:13px}
+  .fullDetail .panelstats .stat small{font-size:8px}
+  .fullDetail .chartNote{font-size:9px;padding:5px 0}
+  .fullDetail .wikiLink{font-size:10px}
+}
