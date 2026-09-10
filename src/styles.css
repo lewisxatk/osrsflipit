@@ -24,3 +24,41 @@ html[data-theme="dark"] .screenerCard,html[data-theme="dark"] .screenerTools sel
 .screenerMain{max-width:none;padding-left:2.2vw;padding-right:2.2vw}.screenerWide{width:100%;}.screenerTopbar{display:flex;gap:10px;align-items:center;margin-bottom:14px}.screenerSearch{max-width:none;flex:1}.screenerTableShell{width:100%;overflow:auto;border:1px solid #e7e7e7;border-radius:16px;background:#fff;box-shadow:0 12px 35px #00000006}.screenerTableShell .tablewrap{border:0;border-radius:0}.screenerTableShell table{min-width:980px}.profileLabel{padding:9px 11px 5px;font-size:9px;text-transform:uppercase;letter-spacing:.8px;color:#999;font-weight:750}.customLabel{border-top:1px solid #eee;margin-top:5px}.standardRow{background:linear-gradient(90deg,#faf8ff,#fff)}.standardRow small{color:#8b5cf6!important}.alertSettings{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:15px 0 22px;padding:16px;border:1px solid #e8e8ee;border-radius:16px;background:linear-gradient(120deg,rgba(139,92,246,.045),rgba(34,211,238,.035))}.soundControls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.soundControls select,.soundControls label,.discordRow input{height:40px;border:1px solid #ddd;border-radius:10px;background:#fff;padding:0 10px;font:inherit;font-size:12px}.soundControls label{display:flex;align-items:center;gap:8px}.soundControls input[type=range]{accent-color:#8b5cf6}.discordRow{display:flex;gap:8px;align-items:center}.discordRow input{flex:1}.discordRow span{font-size:10px;color:#999}.toast{min-width:300px;max-width:380px;display:flex;align-items:center;gap:10px}.toastIcon{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(135deg,#8b5cf6,#22d3ee);color:#fff;box-shadow:0 0 18px rgba(139,92,246,.28)}.toastIcon img{width:23px;height:23px;object-fit:contain;filter:drop-shadow(0 0 5px rgba(255,255,255,.35))}.filterPanel{z-index:35}.filterPanel button,.filterPanel select,.filterPanel input{touch-action:manipulation}.screenerWide .filterPanel{margin-bottom:14px}.screenerWide .filterPanel,.screenerWide .profileMenu{position:relative}.profileMenu{z-index:90}
 @media(max-width:900px){.alertSettings{grid-template-columns:1fr}.screenerTopbar{flex-wrap:wrap}.screenerSearch{min-width:100%}.screenerTopbar .filterButton,.screenerTopbar .profileControls,.screenerTopbar>.secondary{flex:1}.nav{padding:0 12px;gap:8px}.navlinks{overflow-x:auto;max-width:100%;order:3;width:100%;height:44px}.nav{height:116px;flex-wrap:wrap}.globalSearch{order:2;flex:1;min-width:130px}.navlinks button{font-size:11px;padding:8px 9px}main{padding-top:35px}.hero{margin-bottom:30px}.hero h1{letter-spacing:-2px;font-size:clamp(36px,11vw,58px)}}
 @media(max-width:600px){.screenerMain{padding-left:10px;padding-right:10px}.screenerTableShell{margin-left:-2px;width:calc(100% + 4px)}.alertSettings{padding:12px}.soundControls,.discordRow{align-items:stretch}.soundControls>*{flex:1}.soundControls label{min-width:100%}.discordRow{flex-direction:column}.discordRow input{width:100%}.toast{left:10px;right:10px;top:82px;min-width:0}.hero{align-items:flex-start;gap:15px;flex-direction:column}.navlinks{scrollbar-width:none}.navlinks::-webkit-scrollbar{display:none}}
+
+/* v8 fixes: dark screener, robust dropdowns, item-focus overlay, global top button, movers paging */
+html[data-theme="dark"] .screenerTableShell,
+html[data-theme="dark"] .screenerWide .screenerTableShell .tablewrap,
+html[data-theme="dark"] .screenerWide .screenerTableShell table,
+html[data-theme="dark"] .screenerWide .screenerTableShell thead,
+html[data-theme="dark"] .screenerWide .screenerTableShell tbody,
+html[data-theme="dark"] .screenerWide .screenerTableShell tr,
+html[data-theme="dark"] .screenerWide .screenerTableShell td,
+html[data-theme="dark"] .screenerWide .screenerTableShell th{background:#171b22;color:#eef2f7;border-color:#303846}
+html[data-theme="dark"] .screenerWide .screenerTableShell tbody tr:hover{background:#202632}
+html[data-theme="dark"] .screenerWide .screenerTableShell .instantLabel,
+html[data-theme="dark"] .screenerWide .screenerTableShell .lastUpdate{color:#9da7b5}
+.screenerTableShell{background:var(--surface,#fff);min-height:260px}
+.dropdownDock{position:relative;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.dropdownPanel{position:absolute;top:calc(100% + 8px);right:0;min-width:300px;max-width:min(420px,calc(100vw - 24px));z-index:300;background:var(--surface,#fff);border:1px solid #dfe3ea;border-radius:14px;box-shadow:0 20px 55px rgba(0,0,0,.18);padding:8px}
+html[data-theme="dark"] .dropdownPanel{background:#202631;border-color:#3b4555;color:#f4f6f8}
+.dropdownPanel .profileRow button,.dropdownPanel .profileSave input,.dropdownPanel .filterHeader button,.dropdownPanel select,.dropdownPanel input{position:relative;z-index:301}
+.screenerTopbar .profileControls{position:relative}
+.screenerTopbar .profileMenu{z-index:300}
+.filterPanel{position:relative;z-index:250}
+.filterPanel .condition{position:relative;z-index:251}
+.filterPanel select,.filterPanel input,.filterPanel button{position:relative;z-index:252}
+.drawerback{background:rgba(5,8,14,.84)!important;backdrop-filter:blur(10px)}
+.drawer{background:#1b2029!important;color:#eef2f7;border-color:#374151!important;box-shadow:0 0 80px rgba(139,92,246,.15),0 30px 90px rgba(0,0,0,.5)!important}
+html:not([data-theme="dark"]) .drawer{background:#262b34!important;color:#f4f6f8}
+.drawer .chartbox,.drawer .detailgrid>div{background:#151a21!important;border-color:#343d4b!important;color:#eef2f7}
+.drawer .charthead small,.drawer .chartNote,.drawer .itemtitle p,.drawer .detailgrid span{color:#9da7b5}
+.drawer .rangeButtons button{background:#222936!important;color:#e9edf3;border-color:#3b4555!important}
+.drawer .rangeButtons button.active{background:#8b5cf6!important;color:white}
+.mouseGlow{position:fixed;left:0;top:0;width:180px;height:180px;border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(139,92,246,.11),rgba(34,211,238,.055) 35%,transparent 70%);filter:blur(8px);mix-blend-mode:screen;opacity:.7}
+.toast{animation:toastIn .22s ease-out,toastGlow 2.8s ease-in-out infinite alternate!important}
+@keyframes toastIn{from{opacity:0;transform:translateY(-8px) translateX(8px)}to{opacity:1;transform:none}}
+@keyframes toastGlow{from{box-shadow:0 0 16px rgba(139,92,246,.16),0 18px 45px #0003!important}to{box-shadow:0 0 28px rgba(34,211,238,.24),0 18px 45px #0003!important}}
+@media(max-width:700px){.dropdownPanel{position:fixed;top:116px;left:10px;right:10px;max-width:none;width:auto}.screenerTopbar .profileControls{position:static}.screenerTopbar{gap:7px}.screenerTopbar button{min-height:40px}.drawer{width:100%!important;height:100vh!important;border-radius:0!important;padding:18px!important}.mouseGlow{display:none}}
+.chartHeadActions{display:flex;align-items:center;gap:10px}.chartHeadActions .small{white-space:nowrap}.filterPanel{background:var(--surface,#fff);border:1px solid #dfe3ea;border-radius:14px;box-shadow:0 18px 45px rgba(0,0,0,.14);padding:10px}.filterHeader{position:relative;z-index:2}.screenerFilterDropdown .filterPanel{border:0;box-shadow:none;padding:0;margin:0;background:transparent}
+html[data-theme="dark"] .screenerFilterDropdown .filterPanel{background:transparent}
+html[data-theme="dark"] .screenerFilterDropdown .condition select,html[data-theme="dark"] .screenerFilterDropdown .condition input{background:#171b22;color:#eef2f7;border-color:#3b4555}

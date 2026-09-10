@@ -7,4 +7,4 @@ OSRSFlipIt v6 update
 - Alert sound selector + volume controls.
 - Top-right notification toast with immediate sound.
 - Added lightweight OSRS flipping UI touches.
-- Discord integration prepared as a webhook configuration UI; no webhook is sent automatically.
+- Discord integration intentionally deferred until the backend update.
