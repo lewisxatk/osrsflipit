@@ -1,5 +1,0 @@
-OSRSFlipIt V12 CLEAN DEPLOY BUILD
-Source SHA256: 25c31aea69a5c0861dc12a991f8ebc3a85f3779b8274df441f14e37606652ed9
-Critical fix: src/main.jsx line 57 uses nullish coalescing without mixing || at the same precedence.
-
-Deploy from this ZIP/project root. Cloudflare build: npm run build. Output: dist.
