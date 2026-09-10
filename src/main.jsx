@@ -54,7 +54,7 @@ function enrich(row, mapping, daily = {}) {
   const m = mapping[row.id] || {};
   const buy = Number(row.high ?? 0), sell = Number(row.low ?? 0), tax = taxFor(sell), margin = sell - buy - tax;
   const d = daily[row.id] || daily[String(row.id)] || {};
-  const volume = Number(d.volume ?? ((d.highPriceVolume || 0) + (d.lowPriceVolume || 0)) || 0);
+  const volume = Number(d.volume ?? ((d.highPriceVolume || 0) + (d.lowPriceVolume || 0)));
   const limit = Number(m.limit || 0), potentialProfit = margin * limit, alch = Number(m.highalch ?? m.highAlch ?? 0) || 0;
   return {...row,...m,buy,sell,tax,margin,roi:buy?margin/buy*100:0,volume,limit,potentialProfit,limitProfit:potentialProfit,alch,buyUpdated:row.highTime?row.highTime*1000:null,sellUpdated:row.lowTime?row.lowTime*1000:null,lastUpdated:Math.max(row.highTime||0,row.lowTime||0)*1000||null};
 }
