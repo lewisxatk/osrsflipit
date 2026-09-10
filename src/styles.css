@@ -75,3 +75,12 @@ html:not([data-theme="dark"]) .drawerback{background:rgba(25,30,40,.24)!importan
 @media(max-width:700px){.pageIntro{align-items:flex-start;flex-direction:column;margin-bottom:18px;gap:8px}.pageIntro h1{font-size:30px}.pageIntro .status{display:none}.screenerMain{padding-top:16px}.screenerMain .sectionhead h2{font-size:23px}.drawerback{padding:0}.fullDetail{height:100vh;margin:0}.drawer{max-height:100vh}.drawer .chartbox{margin-top:8px}.fullDetail .chartTouch{min-height:250px}.fullDetail .recharts-wrapper{min-height:250px}}
 /* v9 final polish */
 .marketPage .tablewrap{scroll-margin-top:90px}.toolbar .chips{flex-wrap:wrap}.filterActions{display:flex;gap:8px;align-items:center}.filterbar{z-index:20}.screenerTopbar .dropdownDock{z-index:40}.screenerTableShell table{table-layout:auto}.screenerTableShell th,.screenerTableShell td{white-space:nowrap}.drawer .itemtitle{position:sticky;top:0;z-index:3;padding:4px 0 10px;background:inherit}.drawer .charthead{position:sticky;top:0;z-index:2;background:inherit}
+/* v11 refinement: screener profiles behave exactly like the Market dropdown */
+.screenerTopbar .profileControls{position:relative!important}
+.screenerTopbar .profileMenu.dropdownPanel{position:absolute!important;top:46px!important;right:0!important;left:auto!important;width:310px!important;max-width:calc(100vw - 24px)!important;margin:0!important;padding:10px!important;overflow:visible!important;background:#fff!important;border:1px solid #e7e7e7!important;border-radius:13px!important;box-shadow:0 20px 50px #0002!important}
+.screenerTopbar .profileMenu .profileRow{margin-top:5px}
+.screenerTopbar .profileMenu .profileSave{display:flex!important}
+html[data-theme="dark"] .screenerTopbar .profileMenu.dropdownPanel{background:#343c4b!important;border-color:#566174!important;box-shadow:0 20px 50px #0006!important}
+.watchcard.alertFlash,.tickerTrack button.alertFlash,.toast.alertFlash{animation:alertPulse 1s ease-in-out infinite!important}
+.tickerTrack button.alertFlash{border-color:#8b5cf6!important}
+@media(max-width:700px){.screenerTopbar .profileMenu.dropdownPanel{position:fixed!important;top:124px!important;left:10px!important;right:10px!important;width:auto!important;max-width:none!important}}
