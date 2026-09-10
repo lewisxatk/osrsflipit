@@ -165,3 +165,29 @@ html[data-theme="dark"] .panelstats .stat small{color:#aeb7c4}
 @media(min-width:701px){.mobileFlipList{display:none!important}}
 .scoreExplain{border:1px solid #e6e8ed;border-radius:13px;padding:13px;margin-top:10px;background:#fafbfc}.scoreExplain>div:first-child{display:flex;justify-content:space-between;gap:12px;align-items:baseline}.scoreExplain strong{font-size:12px}.scoreExplain small{color:#8a8f98;font-size:10px}.scoreBars{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;margin-top:11px}.scoreBars>div{display:grid;grid-template-columns:auto 1fr auto;gap:5px;align-items:center;font-size:9px;color:#777}.scoreBars i{height:5px;background:#e5e7eb;border-radius:99px;overflow:hidden}.scoreBars b{display:block;height:100%;background:#8b5cf6;border-radius:99px}.scoreBars em{font-style:normal;font-weight:800;color:#444}html[data-theme="dark"] .scoreExplain{background:#202631;border-color:#3b4555}html[data-theme="dark"] .scoreBars i{background:#374151}html[data-theme="dark"] .scoreBars em{color:#e5e7eb}
 @media(max-width:700px){.scoreExplain{padding:10px;margin-top:7px}.scoreExplain>div:first-child{display:block}.scoreExplain small{display:block;margin-top:3px;line-height:1.35}.scoreBars{grid-template-columns:1fr;gap:5px}.scoreBars>div{grid-template-columns:42px 1fr 24px}.scoreBars i{height:4px}}
+
+/* V14 UX: resizable market/screener columns */
+.tablewrap table,.screenerTableShell table{table-layout:fixed}.tablewrap th,.screenerTableShell th{position:relative}.colResizer{position:absolute;top:7px;right:0;width:7px;height:calc(100% - 14px);border-right:1px solid rgba(120,126,136,.28);cursor:col-resize;touch-action:none}.colResizer:hover{border-right-color:rgba(90,90,90,.7);background:rgba(120,126,136,.08)}
+
+/* V14 UX: clearer full-page scrolling */
+html,body,#root{min-height:100%;overflow-x:hidden}body{overflow-y:auto}.app{overflow:visible}main{overflow:visible}.tablewrap,.screenerTableShell{overflow-x:auto;overflow-y:visible}
+
+/* V14 UX: compact tables/cards */
+@media(min-width:701px){.tablewrap td,.tablewrap th,.screenerTableShell td,.screenerTableShell th{padding-left:12px;padding-right:12px}.screenerTableShell table{min-width:900px}}
+@media(max-width:700px){
+  main{padding-left:10px;padding-right:10px;padding-top:18px}.marketPage .tablewrap,.screenerTableShell{border-radius:12px}.mobileFlipList{gap:6px}.mobileFlipCard{padding:9px 10px;border-radius:11px;box-shadow:0 2px 10px rgba(0,0,0,.035)}.mobilePriceRow{margin:8px 0 6px;padding-top:7px}.mobileMeta span{padding:5px 4px;border-left:1px solid #e8e9ec;border-radius:5px}.mobileCardHint{padding-top:4px;border-top:1px solid #f0f1f3}.smartFinder{padding:10px}.smartList>button{padding:7px}.stats{gap:5px}.stat{padding:8px}.stat strong{font-size:13px}
+  .nav{height:58px;position:sticky;top:0}.globalSearch{display:flex!important;order:2;flex:1;min-width:100px;max-width:none;height:36px;margin-left:auto;padding:0 8px;border-radius:10px}.globalSearch input{font-size:11px}.globalResults{top:41px;left:-35px;right:-5px;max-height:55vh;overflow:auto}.globalResults button{padding:9px}.globalResults strong{font-size:11px}.globalResults small{font-size:9px}.nav .bellbtn{margin-left:0}.loginButton{height:34px;min-width:34px;padding:0 7px}.loginButton svg{display:none}.loginButton span{font-size:10px}.loginButton em{display:none}
+  .fullDetail .chartbox{order:1}.fullDetail .itemtitle{order:0}.fullDetail .panelstats{order:2}.fullDetail .chartbox{position:relative}.fullDetail .chartTouch{min-height:230px}.chartTimeReadout{margin:5px 2px 0;padding:7px 8px;border-top:1px solid #e1e4e9;display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:9px}.chartTimeReadout span{color:#8b919b;text-transform:uppercase;letter-spacing:.6px}.chartTimeReadout strong{font-size:11px}.fullDetail .chartNote{order:4}
+}
+
+/* V14 UX: chart hover/zoom time indicator */
+.chartTimeReadout{display:flex;justify-content:flex-end;align-items:center;gap:9px;margin-top:4px;padding:6px 3px 0;border-top:1px solid #e5e7eb;color:#777;font-size:10px}.chartTimeReadout span{text-transform:uppercase;letter-spacing:.7px;font-weight:700;color:#9aa0a8}.chartTimeReadout strong{color:#333;font-size:11px}html[data-theme="dark"] .chartTimeReadout{border-color:#374151;color:#cbd5e1}html[data-theme="dark"] .chartTimeReadout strong{color:#f3f4f6}
+
+/* V14 analytics: chart is the first major content block on the full analytics page */
+.fullDetail{display:flex;flex-direction:column}.fullDetail .backDetail{order:-3}.fullDetail>.eyebrow{order:-2}.fullDetail .itemtitle{order:-1}.fullDetail .chartbox{order:0}.fullDetail .panelstats{order:1}.fullDetail .chartNote{order:2}.fullDetail .scoreExplain{order:3}.fullDetail .wikiLink{order:4}
+
+/* V14 table controls: subtle column guides + grab cursor */
+.tablewrap th,.screenerTableShell th{border-right:1px solid rgba(120,126,136,.10)}.tablewrap th:last-child,.screenerTableShell th:last-child{border-right:0}.colResizer{z-index:4}
+
+/* V14 mobile: tighter market/screener density without making text hard to scan */
+@media(max-width:700px){.marketPage .mobileFlipCard{font-size:11px}.mobileItem strong{font-size:12px}.mobilePriceRow b{font-size:11px}.mobileMeta{gap:4px}.mobileMeta span{font-size:8px}.mobileMeta b{font-size:8px}.screenerMain .screenerTableShell{margin-left:-2px;margin-right:-2px}.screenerMain .mobileFlipCard{padding:8px 9px}.screenerMain .mobilePriceRow{margin-top:7px}.screenerMain .smartFinder{margin-left:-1px;margin-right:-1px}}
