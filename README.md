@@ -58,3 +58,16 @@ For a GitHub-connected Cloudflare Pages project:
 ## Accounts / premium roadmap
 
 The UI intentionally says **Coming soon** until a real authentication/database backend is connected. The recommended next architecture is Cloudflare Worker + D1/KV for server state and caching, with Stripe for premium billing and a protected server-side Discord integration.
+
+## V16 mobile polish
+- Reworked mobile Market/Screener controls with compact Profiles, Columns and Reset actions.
+- Added mobile column enable/disable plus up/down ordering controls.
+- Added Potential Profit to mobile Market/Screener cards with green positive / red negative styling.
+- Added five-second alert toast notifications on mobile/desktop.
+- Finance item selection now clears the item search after selection so it cannot cover Buy price.
+- Numeric GP inputs no longer turn blank/invalid edits into `NaN`; they stay blank until a valid value is entered.
+- Item analytics can be restored after refresh using the item URL/session state, with the originating Market/Screener context retained.
+- Added two-finger pinch zoom support to analytics charts while preserving one-finger vertical page scrolling.
+- Improved mobile landscape spacing and search/analytics layout.
+- Added a persistent Back to Top control when the page is scrolled.
+- Kept the desktop layout and existing flipping/analytics logic intact.
