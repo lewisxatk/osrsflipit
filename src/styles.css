@@ -240,3 +240,82 @@ html[data-theme="dark"] .itemSearchSuggestions button{border-color:#2b3340}
   .fullDetail .panelstats{grid-template-columns:repeat(5,minmax(0,1fr))}
   .fullDetail .chartTouch{min-height:220px}
 }
+
+/* V16 mobile polish */
+.mobileQuickTools{display:none}
+.mobileColumnsPanel{display:none}
+.mobileColumnMove{display:none}
+.scrollTopBtn{position:fixed;right:16px;bottom:82px;width:40px;height:40px;border:1px solid #ddd;border-radius:12px;background:#fff;box-shadow:0 8px 24px #0002;z-index:850;font-size:18px;cursor:pointer}
+.financeItemField{position:relative}
+.financeItemField>button{z-index:20}
+@media(max-width:700px){
+  html,body,#root{width:100%;max-width:100%;overflow-x:hidden}
+  body{zoom:1!important}
+  .nav{min-width:0}
+  .brand{font-size:17px}
+  .globalSearch{flex:1 1 auto;min-width:0;width:auto;max-width:none}
+  .globalResults{left:0;right:0;max-width:none}
+  .mobileQuickTools{display:flex;gap:6px;flex:1}
+  .mobileToolBtn{height:36px;display:flex;align-items:center;justify-content:center;gap:6px;flex:1;border:1px solid #e2e4e8;background:#fff;border-radius:9px;color:#555;font-size:10px;font-weight:700}
+  .mobileToolBtn:active{transform:scale(.98)}
+  .filterbar{flex-wrap:wrap;gap:7px}
+  .filterbar>.filterButton{flex:none}
+  .filterbar>.filterActions{display:none}
+  .mobileQuickTools{order:2}
+  .mobileColumnsPanel{display:block;position:relative;margin:-7px 0 10px;padding:9px;border:1px solid #e1e4e9;border-radius:12px;background:var(--surface,#fff);box-shadow:0 10px 28px #0001;z-index:70}
+  .mobileColumnsPanel>div:first-child{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
+  .mobileColumnsPanel>div:first-child button{border:1px solid #ddd;background:#fff;border-radius:7px;padding:5px 8px;font-size:9px}
+  .mobileColumnRow{display:flex;align-items:center;justify-content:space-between;padding:6px 2px;border-top:1px solid #f0f1f3;font-size:10px}
+  .mobileColumnRow label{display:flex;align-items:center;gap:7px}
+  .mobileColumnRow>span{display:flex;gap:3px}
+  .mobileColumnRow button{width:27px;height:27px;border:1px solid #e0e2e6;background:#f8f9fa;border-radius:7px;display:grid;place-items:center}
+  .desktopGrip{display:none!important}.mobileColumnMove{display:flex;gap:2px}.mobileColumnMove button{border:1px solid #ddd;background:#f7f8fa;border-radius:5px;width:23px;height:23px;display:grid;place-items:center}
+  .mobileFlipCard .mobilePriceRow{grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}
+  .mobileFlipCard .mobilePriceRow span{padding-right:3px;border-right:1px solid #eceef1}
+  .mobileFlipCard .mobilePriceRow span:last-child{border-right:0}
+  .mobileFlipCard .mobilePriceRow b{font-size:10px}
+  .toast{max-width:calc(100vw - 24px)!important;right:12px!important;bottom:76px!important;padding:9px 10px!important;border-radius:10px!important}
+  .toast strong{font-size:10px!important}.toast small{font-size:8px!important}
+  .fullDetail{padding-top:8px!important}
+  .fullDetail .backDetail{position:sticky;top:0;z-index:25;background:var(--surface,#fff);box-shadow:0 3px 8px rgba(0,0,0,.04)}
+  .fullDetail .chartTouch{touch-action:pan-y!important;min-height:225px}
+  .fullDetailBack{align-items:flex-start!important}
+  .financeItemField>button{position:static!important;width:100%!important;margin-top:5px!important}
+  .financeItemField input:focus + button{display:block}
+  .screenerQuick{margin-bottom:8px}
+  .screenerWide .screenerTopbar{position:sticky;top:58px}
+  .screenerWide .screenerTopbar .dropdownDock{display:none}
+}
+@media(max-width:700px) and (orientation:landscape){
+  body{padding-bottom:58px}
+  .nav{height:54px;padding:0 7px;gap:5px}
+  .brand{font-size:16px}
+  .globalSearch{height:34px;min-width:0;order:2}
+  .nav .bellbtn,.loginButton{flex:none}
+  .loginButton{height:32px;min-width:32px;padding:0 6px}
+  .fullDetail{width:100vw;height:100dvh;min-height:100dvh;padding:5px 9px 65px!important;overflow-y:auto!important}
+  .fullDetail .backDetail{height:29px;font-size:10px}
+  .fullDetail .itemtitle{padding-bottom:5px}
+  .fullDetail .itemtitle h2{font-size:18px}
+  .fullDetail .chartbox{margin-top:4px}
+  .fullDetail .chartTouch{min-height:190px}
+  .fullDetail .panelstats{grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}
+  .fullDetail .panelstats .stat{padding:5px 6px}
+  .fullDetail .panelstats .stat strong{font-size:10px}
+  .mobileNav{height:54px}
+  .mobileNav>button{font-size:8px}
+}
+html[data-theme="dark"] .mobileToolBtn,html[data-theme="dark"] .mobileColumnsPanel,html[data-theme="dark"] .mobileColumnsPanel>div:first-child button,html[data-theme="dark"] .mobileColumnRow button,html[data-theme="dark"] .scrollTopBtn{background:#202631;color:#eef2f7;border-color:#3b4555}
+@media(max-width:700px){
+  .mobileProfilePanel{display:block;position:relative;z-index:75;margin:-7px 0 10px;padding:9px;border:1px solid #e1e4e9;border-radius:12px;background:var(--surface,#fff);box-shadow:0 10px 28px #0001;max-height:48dvh;overflow:auto}
+  .mobilePanelHead{display:flex;align-items:center;justify-content:space-between;padding-bottom:6px;margin-bottom:3px;border-bottom:1px solid #eceef1}
+  .mobilePanelHead button{width:28px;height:28px;border:1px solid #ddd;background:#fff;border-radius:7px;display:grid;place-items:center}
+  .mobileProfileChoice{display:flex;flex-direction:column;width:100%;border:0;border-bottom:1px solid #f0f1f3;background:transparent;text-align:left;padding:8px 3px;color:inherit}
+  .mobileProfileChoice small{font-size:8px;color:#969ba5;margin-top:2px}
+  .mobileProfileSave{display:flex;gap:5px;padding:7px 0;border-bottom:1px solid #eceef1}
+  .mobileProfileSave input{flex:1;min-width:0;height:32px;border:1px solid #ddd;border-radius:7px;padding:0 8px;font:inherit;font-size:10px;background:#fff}
+  .mobileProfileSave button{width:32px;border:0;border-radius:7px;background:#111;color:#fff}
+  .mobileColumnsPanel{margin-top:0}
+  .screenerWide .mobileColumnsPanel{margin-bottom:9px}
+}
+html[data-theme="dark"] .mobileProfilePanel,html[data-theme="dark"] .mobileProfileSave input,html[data-theme="dark"] .mobilePanelHead button{background:#202631;color:#eef2f7;border-color:#3b4555}
