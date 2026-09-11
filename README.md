@@ -129,3 +129,65 @@ The UI intentionally says **Coming soon** until a real authentication/database b
 - Mobile haptic feedback where supported.
 - User-selectable font size/contrast/reduced-motion options.
 - Cloud-synced preferences once accounts exist.
+
+
+## V22 — Minimal UI sound design
+- Added a very short, low-volume click sound for buttons and navigation controls when interface sounds are enabled.
+- Added a slightly brighter two-tone confirmation sound for successful UI feedback while keeping the existing alert sound system.
+- Text inputs, textareas and selects are excluded from click sounds so typing does not become noisy.
+- Uses one reusable Web Audio context instead of loading audio files, keeping the bundle lightweight and avoiding extra asset requests.
+- Existing sound preference, volume and alert sound settings remain stored locally.
+
+### Media capture
+The live deployment is available at https://osrsflipit.lxwisfm.workers.dev/. This environment can inspect the live page but cannot run a full interactive browser session against the Cloudflare deployment, so no fake screenshots or fake UI video are included. The media folder contains a live-capture gallery/link pack for the exact deployment and a shot list for the desktop fly-through.
+
+### Future Ideas / Backlog
+- Capture exact live desktop screenshots for every tab using an interactive browser session.
+- Record the real 30-second Apple-style fly-through from the deployed site, including subtle UI sounds.
+- Optional separate volume controls for UI clicks vs alerts.
+- Haptic feedback on supported mobile devices.
+- Reduced-motion / accessibility sound profile.
+
+## V23 — Mobile navigation, P&L tools, Mini GE & market opportunity scans
+
+### Updates
+- Fixed touch-device navigation duplication: phone and iPad/tablet layouts now hide the desktop page-link row so the bottom app navigation is the single navigation surface.
+- Screener touch layout now places **Profiles** and **Columns** directly underneath Smart Flip Finder instead of above it.
+- Flip Log now supports **Export CSV** for spreadsheet use and **Import CSV** to restore trades into the browser.
+- Flip Log item selection now keeps the chosen item name visible and fills live buy/sell prices instead of appearing to disappear after selection.
+- Alerts now support dismissing individual notification entries; dismissals persist in localStorage.
+- Desktop-only **Mini GE** added. It is a compact 8-slot tracker that can be opened/minimised from the bottom-right. Item Analytics has a **+ GE** action; duplicate items are prevented and the UI reports when all 8 slots are filled.
+- Mini GE slots persist in the browser and can be individually removed.
+- Movers now contains a separate **Market Opportunities** area with:
+  - **Overnight Flip Finder** — scans liquid £100k+ estimated opportunities and uses 7-day hourly price-pattern evidence, volume, risk and Flip Score.
+  - **Historical Low Watch** — scans liquid items against their observed 30-day low using 6-hour history, with a deliberately conservative volume threshold of 200.
+- Opportunity scans deliberately prefer returning fewer/no results rather than low-quality recommendations.
+- iPhone landscape Item Analytics graph gets extra spacing and a compact cursor-time readout.
+
+### Important data note
+The Overnight and Historical Low tools use historical OSRS Wiki time-series data as evidence. They are **not guarantees** of future fills or profit. The Overnight tool's £100k threshold is estimated opportunity profit based on current spread, GE limit and a conservative volume allocation, not a promise that £100k will be made overnight.
+
+### Notes
+- P&L CSV is spreadsheet-friendly and limited to the app's existing 500-trade local journal cap.
+- Mini GE is intentionally desktop-only so it does not interfere with the clean iPhone/iPad navigation.
+- Market Opportunity scans are on-demand to avoid hammering the OSRS Wiki API on every page refresh.
+- The existing sound system remains minimalist and is unchanged by these features.
+
+### Future Ideas / Backlog
+- Add a true background historical-pattern cache so Overnight/Historical Low results can refresh automatically without user scans.
+- Add configurable Overnight settings: minimum profit, minimum volume, maximum capital, preferred buy/sell hours and risk ceiling.
+- Add confidence labels based on the number of historical occurrences of a pattern.
+- Add a “buy zone → target sell → expected hold time” model backed by historical hourly behaviour.
+- Add Mini GE quantity tracking, buy/sell state, filled/unfilled status and a simulated 8-slot order board.
+- Add Mini GE “Send to Flip Log” after a tracked flip is completed.
+- Add P&L CSV import preview, duplicate detection and date-range export.
+- Add JSON backup/restore alongside CSV for lossless local backup.
+- Add portfolio analytics: daily/weekly/monthly P&L, best items, average hold time and ROI by flip.
+- Add historical-low watchlists and optional alerts when an item enters its chosen low band.
+- Add a dedicated “Investment” page for longer-term holds, separate from active flipping.
+- Add market regime detection: stable, trending, volatile and spread-compressed.
+- Add fill-likelihood estimates using volume and price movement instead of relying only on margin.
+- Add “why this is recommended” explanations to every opportunity result.
+- Add user-defined quality gates so users can permanently reject low-volume, low-score or high-risk items.
+- Add a first-run tour explaining Market → Screener → Analytics → Mini GE → Flip Log.
+- Add cloud accounts later for synced watchlists, profiles, alerts, P&L and Mini GE layouts.
