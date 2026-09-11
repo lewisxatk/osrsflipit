@@ -571,3 +571,89 @@ html[data-theme="dark"] .coolQuickNav{background:rgba(32,38,49,.94);border-color
 .coolCard{scroll-margin-top:72px}
 @media(max-width:700px){.coolQuickNav{top:4px;overflow-x:auto;flex-wrap:nowrap;padding:8px;white-space:nowrap}.coolQuickNav strong{position:sticky;left:0;background:var(--surface,#fff);padding-right:4px}.coolQuickNav button{flex:0 0 auto}.chartOptionsMenu{right:-4px;width:170px}}
 @media(min-width:701px) and (max-width:1100px){.coolQuickNav{top:6px}}
+
+/* V26: clearer Apple-style price chart — Sell is the filled ceiling, Buy is a light dashed guide. */
+.chartTouch .recharts-area-area{opacity:.9}
+.chartTouch .recharts-line-curve{vector-effect:non-scaling-stroke}
+html[data-theme="dark"] .chartTouch .recharts-cartesian-grid line{stroke:#667085!important;opacity:.32}
+html[data-theme="dark"] .chartTouch .recharts-text{fill:#b8c1ce!important}
+
+/* V26: Smart Flip Finder starts compact; + expands into the existing top-5 tool. */
+.smartFinder{transition:box-shadow .16s ease,background .16s ease}
+.smartFinder.isCollapsed{padding:12px 14px}
+.smartFinder.isCollapsed .smartHead{align-items:center}
+.smartToggle{display:flex;align-items:center;gap:10px;flex:1;min-width:0;border:0;background:transparent;color:inherit;text-align:left;padding:0;cursor:pointer}
+.smartToggleIcon{width:30px;height:30px;flex:0 0 30px;display:grid;place-items:center;border:1px solid #dfe3ea;border-radius:9px;background:#fff;color:#7c5cff}
+.smartToggle h3{margin:0;font-size:18px;letter-spacing:-.4px}
+.smartToggle p{margin:3px 0 0;color:#8a8f98;font-size:10px}
+html[data-theme="dark"] .smartToggleIcon{background:#202631;border-color:#4a5567;color:#9a8cff}
+html[data-theme="dark"] .smartToggle p{color:#b9c2d0}
+
+/* V26: alert page is deliberately simple — rules + history, no transient alert toast. */
+.alertsSub{max-width:620px!important;margin-top:6px!important}
+.alertsSectionHead,.alertHistoryHead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:18px 0 8px}
+.alertsSectionHead strong,.alertHistoryHead strong{display:block;font-size:13px}
+.alertsSectionHead small,.alertHistoryHead small{display:block;margin-top:3px;color:#8a8f98;font-size:10px}
+.ruleCopy{min-width:0;flex:1}
+.ruleStatus{font-size:9px;font-weight:800;border-radius:999px;padding:5px 8px;white-space:nowrap}
+.ruleStatus.armed{background:#edf8f1;color:#17824b;border:1px solid #cde8d8}
+.ruleStatus.triggered{background:#f2efff;color:#6f55d9;border:1px solid #ddd5ff}
+.ruleicon.armed{color:#17824b}
+.ruleicon.triggered{color:#7c5cff}
+html[data-theme="dark"] .ruleStatus.armed{background:#183a2a;color:#8be0ad;border-color:#35664a}
+html[data-theme="dark"] .ruleStatus.triggered{background:#302950;color:#b6a8ff;border-color:#50447d}
+html[data-theme="dark"] .alertsSub{color:#b9c2d0}
+html[data-theme="dark"] .alertsSectionHead small,html[data-theme="dark"] .alertHistoryHead small{color:#aeb7c4}
+
+/* V26: dark-mode parity on coarse landscape devices. These rules intentionally come late so
+   mobile landscape cannot reintroduce the light surfaces used by the desktop/mobile base styles. */
+@media (max-width:1366px) and (min-width:701px) and (pointer:coarse) and (orientation:landscape){
+  html[data-theme="dark"] body,
+  html[data-theme="dark"] main,
+  html[data-theme="dark"] .screenerMain,
+  html[data-theme="dark"] .fullpage,
+  html[data-theme="dark"] .marketPage,
+  html[data-theme="dark"] .recipesPage,
+  html[data-theme="dark"] .calculatorPage,
+  html[data-theme="dark"] .financePage{background:#171b22!important;color:#eef2f7!important}
+  html[data-theme="dark"] .sectionhead,
+  html[data-theme="dark"] .pageIntro,
+  html[data-theme="dark"] .hero{color:#eef2f7!important}
+  html[data-theme="dark"] .hero p,
+  html[data-theme="dark"] .sectionhead p,
+  html[data-theme="dark"] .pageIntro p{color:#b8c1ce!important}
+  html[data-theme="dark"] .tablewrap,
+  html[data-theme="dark"] .screenerTableShell,
+  html[data-theme="dark"] .screenerWide .screenerTableShell,
+  html[data-theme="dark"] .screenerWide .screenerTableShell .tablewrap,
+  html[data-theme="dark"] .screenerWide .screenerTableShell table{background:#171b22!important;color:#eef2f7!important;border-color:#303846!important}
+  html[data-theme="dark"] .screenerTopbar{background:#171b22!important;border-color:#303846!important}
+  html[data-theme="dark"] .screenerCard,
+  html[data-theme="dark"] .analysisCard,
+  html[data-theme="dark"] .recipeCard,
+  html[data-theme="dark"] .financeCard,
+  html[data-theme="dark"] .calcCard,
+  html[data-theme="dark"] .smartFinder,
+  html[data-theme="dark"] .smartList>button,
+  html[data-theme="dark"] .coolCard,
+  html[data-theme="dark"] .coolQuickNav,
+  html[data-theme="dark"] .alertintro,
+  html[data-theme="dark"] .rule,
+  html[data-theme="dark"] .emptybox{background:#202631!important;color:#eef2f7!important;border-color:#3b4555!important}
+  html[data-theme="dark"] .smartFinder.isCollapsed{background:#202631!important}
+  html[data-theme="dark"] .filterPanel,
+  html[data-theme="dark"] .dropdownPanel,
+  html[data-theme="dark"] .profileMenu{background:#202631!important;color:#eef2f7!important;border-color:#3b4555!important}
+  html[data-theme="dark"] td,html[data-theme="dark"] th{background:#171b22!important;color:#eef2f7!important;border-color:#303846!important}
+  html[data-theme="dark"] tbody tr:hover{background:#202631!important}
+}
+
+/* V26: small screens keep the compact Finder truly compact and the alert controls easy to tap. */
+@media(max-width:700px){
+  .smartFinder.isCollapsed{padding:10px 11px}
+  .smartToggle h3{font-size:15px}
+  .smartToggle p{font-size:9px}
+  .smartToggleIcon{width:28px;height:28px;flex-basis:28px}
+  .alertsSectionHead,.alertHistoryHead{align-items:flex-end}
+  .ruleStatus{padding:4px 6px;font-size:8px}
+}
