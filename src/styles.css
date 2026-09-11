@@ -478,3 +478,60 @@ html[data-theme="comfort"] .mobilePanelDone{background:#3b352b!important;color:#
   html[data-theme="dark"] .mobileColumnsPanel .mobilePanelHead{background:#202631}
   html[data-theme="comfort"] .mobileColumnsPanel .mobilePanelHead{background:#fbf7ec}
 }
+
+/* V23: mobile/tablet nav cleanup — never duplicate the desktop page links above the app nav. */
+@media(max-width:1100px){
+  .navlinks{display:none!important}
+}
+
+/* V23: Screener tools sit underneath Smart Flip Finder on touch layouts. */
+@media(max-width:1100px){
+  .screenerWide{display:flex!important;flex-direction:column!important}
+  .screenerWide>.sectionhead{order:0}
+  .screenerWide>.screenerTopbar{order:1}
+  .screenerWide>.smartFinder{order:2}
+  .screenerWide>.screenerQuick{order:3}
+  .screenerWide>.mobileProfilePanel{order:4}
+  .screenerWide>.mobileColumnsPanel{order:5}
+  .screenerWide>.screenerTableShell{order:6}
+}
+
+/* V23: Finance P&L import/export. */
+.pnlActions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:12px 0;border-top:1px solid var(--line,#e5e7eb);border-bottom:1px solid var(--line,#e5e7eb);padding:10px 0}
+.pnlActions span{font-size:11px;color:var(--muted,#7b818c);margin-left:auto}
+.financeSuggestion{display:flex!important;align-items:center;gap:8px;width:100%;text-align:left!important;padding:8px 10px!important;border:1px solid var(--line,#e5e7eb)!important;background:var(--surface,#fff)!important;border-radius:8px!important}
+.financeSuggestion .itemIcon{width:25px;height:25px}
+.financeSuggestion span{display:flex;flex-direction:column;min-width:0}.financeSuggestion small{color:var(--muted,#7b818c)}
+.selectedItemHint{display:block;margin-top:5px;color:#4f8a62}
+
+/* V23: Desktop-only floating mini GE. */
+.desktopOnlyGe{display:flex}
+.miniGeLauncher{position:fixed;right:18px;bottom:18px;z-index:1450;align-items:center;gap:7px;padding:10px 13px;border:1px solid var(--line,#e2e5ea);border-radius:12px;background:rgba(255,255,255,.96);box-shadow:0 10px 32px rgba(0,0,0,.14);font-weight:800;cursor:pointer}
+.miniGeLauncher span{font-size:10px;color:var(--muted,#7b818c);font-weight:700}
+.miniGe{position:fixed;right:18px;bottom:18px;width:min(460px,calc(100vw - 36px));z-index:1450;background:rgba(255,255,255,.98);border:1px solid var(--line,#e1e4e9);border-radius:16px;box-shadow:0 18px 55px rgba(0,0,0,.20);padding:12px;backdrop-filter:blur(18px)}
+.miniGeHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.miniGeHead strong{font-size:13px}.miniGeHead .eyebrow{font-size:9px;margin-bottom:2px}
+.miniGeGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+.miniGeSlot{position:relative;min-height:88px;border:1px dashed var(--line,#dfe3e8);border-radius:10px;background:var(--surface2,#f8f9fb);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 5px;text-align:center;overflow:hidden}
+.miniGeSlot.filled{border-style:solid;background:var(--surface,#fff)}
+.miniGeSlot img{width:28px;height:28px;object-fit:contain}.miniGeSlot strong{font-size:9px;line-height:1.15;margin-top:3px;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.miniGeSlot small{font-size:8px;color:var(--muted,#7b818c);margin-top:2px}.miniGeSlot b{font-size:8px;margin-top:2px}.miniGeSlot>span{display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--muted,#8a9099)}.miniGeSlot em{font-style:normal;font-size:8px}.miniGeRemove{position:absolute;right:3px;top:3px;width:20px;height:20px;border:0;border-radius:6px;background:rgba(0,0,0,.06);display:flex;align-items:center;justify-content:center;cursor:pointer}
+html[data-theme="dark"] .miniGeLauncher,html[data-theme="dark"] .miniGe{background:rgba(23,27,34,.98);border-color:#303846}html[data-theme="dark"] .miniGeSlot{background:#202631;border-color:#384150}html[data-theme="comfort"] .miniGeLauncher,html[data-theme="comfort"] .miniGe{background:rgba(250,246,235,.98);border-color:#ddd3bd}html[data-theme="comfort"] .miniGeSlot{background:#fbf7ec;border-color:#ddd3bd}
+
+/* V23: cleaner notification dismissal controls. */
+.notificationRow{display:flex;align-items:stretch;gap:4px}.notificationRow .notification{flex:1;min-width:0}.notificationDelete{width:34px;flex:0 0 34px;border:1px solid var(--line,#e5e7eb);background:transparent;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted,#7b818c)}.notificationDelete:hover{background:rgba(0,0,0,.04)}
+
+/* V23: horizontal iPhone graph gets a little more breathing room and a compact readout. */
+@media(max-width:700px) and (orientation:landscape){
+  .fullDetail .chartbox{margin-inline:-2px;padding:8px!important}
+  .fullDetail .chartTouch{min-height:205px!important;height:205px!important;overflow:hidden;border-radius:10px}
+  .fullDetail .chartTimeReadout{position:sticky;bottom:0;background:var(--surface,#fff);z-index:5;margin-top:-1px;border:1px solid var(--line,#e1e4e9);border-radius:7px}
+  .fullDetail .chartNote{font-size:9px;line-height:1.35}
+  html[data-theme="dark"] .fullDetail .chartTimeReadout{background:#202631}
+  html[data-theme="comfort"] .fullDetail .chartTimeReadout{background:#fbf7ec}
+}
+
+/* V23: opportunity lab. */
+.opportunityLab{margin:16px 0 20px;padding:16px;border:1px solid var(--line,#e2e5ea);border-radius:16px;background:var(--surface,#fff)}
+.opportunityHead{display:flex;justify-content:space-between;gap:18px;align-items:flex-start}.opportunityHead h2{margin:4px 0 5px}.opportunityHead p{margin:0;color:var(--muted,#7b818c);font-size:12px}.opportunityActions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end}.segmented{display:flex;padding:3px;background:var(--surface2,#f4f5f7);border-radius:9px}.segmented button{border:0;background:transparent;border-radius:7px;padding:7px 9px;font-size:11px;font-weight:800;cursor:pointer}.segmented button.active{background:var(--surface,#fff);box-shadow:0 1px 5px rgba(0,0,0,.08)}
+.opportunityTable{display:grid;gap:5px;margin-top:13px}.opportunityTable>button{display:grid;grid-template-columns:30px 30px minmax(180px,1fr) 105px 105px 85px 18px;gap:9px;align-items:center;text-align:left;border:1px solid transparent;background:transparent;border-radius:9px;padding:8px;cursor:pointer}.opportunityTable>button:hover{background:var(--surface2,#f6f7f9);border-color:var(--line,#e2e5ea)}.opportunityTable .itemIcon{width:27px;height:27px}.opportunityTable button>span{display:flex;flex-direction:column;min-width:0}.opportunityTable button span strong{font-size:11px}.opportunityTable button span small{font-size:9px;color:var(--muted,#7b818c);margin-bottom:2px}.opportunityEmpty{margin-top:12px;padding:18px;border:1px dashed var(--line,#dfe3e8);border-radius:10px;color:var(--muted,#7b818c);font-size:12px}.opportunityFoot{display:block;margin-top:9px;color:var(--muted,#7b818c);font-size:9px}.rank{font-variant-numeric:tabular-nums}
+@media(max-width:700px){.pnlActions span{width:100%;margin-left:0}.opportunityLab{padding:12px;border-radius:13px}.opportunityHead{display:block}.opportunityActions{justify-content:flex-start;margin-top:10px}.opportunityTable>button{grid-template-columns:24px 28px minmax(120px,1fr) 76px 76px 54px 14px;padding:7px 3px;gap:5px}.opportunityTable button span strong{font-size:9px}.opportunityTable button span small{font-size:8px}.opportunityTable .itemIcon{width:25px;height:25px}.desktopOnlyGe{display:none!important}}
+@media(min-width:701px) and (max-width:1100px){.desktopOnlyGe{display:none!important}}
