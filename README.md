@@ -191,3 +191,37 @@ The Overnight and Historical Low tools use historical OSRS Wiki time-series data
 - Add user-defined quality gates so users can permanently reject low-volume, low-score or high-risk items.
 - Add a first-run tour explaining Market → Screener → Analytics → Mini GE → Flip Log.
 - Add cloud accounts later for synced watchlists, profiles, alerts, P&L and Mini GE layouts.
+
+## V24 Notes — navigation, alerts, Cool Stuff and future intelligence
+- Desktop navigation is now simplified to **Home / Screener / Analysis / Extras**, with the existing search, notifications, sound, theme, account icon and refresh controls retained.
+- Market remains the internal route name for compatibility, but is presented as **Home** in navigation.
+- Touch landscape devices keep the clean bottom app navigation; extra pages are opened from **More** rather than being permanently shown.
+- Mini GE slots remain local and persist while moving around the site.
+- Alert notification deletion is now linked to the originating alert rule where possible, so deleting an alert cannot immediately recreate the same notification from the old rule.
+- Added **Cool Stuff** under Extras with Best Time to Flip, Historical Low Radar, Why am I seeing this?, If I Had…, Portfolio Mode and Flip Detective.
+- Cool Stuff portfolio is local-only for now and supports up to 8 tracked ideas.
+- Historical radar uses live OSRS Wiki timeseries evidence where available and keeps a 200+ volume quality gate.
+- Dark mode received dedicated readability treatment for Screener/Smart Flip Finder and Cool Stuff.
+
+### Graph redesign notes / options for next update
+The next graph pass should be a visual redesign rather than simply changing line colours. Candidate directions:
+1. **Clean spread graph** — Sell always rendered above Buy where the data permits, with a shaded spread area and a crisp hover card showing Sell first, Buy second, Margin and timestamp.
+2. **Trading terminal** — dark/light grid, compact price scale, crosshair, sticky hover values and optional volume bars underneath.
+3. **Minimal Apple-style** — softer grid, larger whitespace, thin lines, subtle gradient spread fill and a single floating tooltip.
+4. **OSRS market mode** — Buy/Sell labels, historical-low band, current price marker, 24h change badge and optional GE-tax-adjusted margin line.
+5. **User controls** — toggle Buy/Sell/Spread/Volume, line thickness, filled/unfilled spread, grid density, tooltip detail, and light/dark chart treatment.
+
+Recommended default: **Minimal Apple-style + optional Trading Terminal controls**. Sell should appear first in hover details, followed by Buy, Spread/Margin and time. This should be tested on desktop, iPhone portrait/landscape and iPad landscape before replacing the current graph.
+
+### Future market-risk intelligence
+A future **Market Risk / News Context** system could combine sharp price drops with official OSRS updates, OSRS Wiki news/history and reputable community/news sources to explain possible catalysts. It should never claim certainty: it should show evidence, source links, confidence and a warning such as **“Possible catalyst detected — investigate before buying.”** This is intentionally kept as a future item until reliable source ingestion is implemented.
+
+### V24 Backlog
+- [ ] Market Risk / News Context after sharp drops
+- [ ] Catalyst timeline beside the graph
+- [ ] Graph redesign and user-selectable visual modes
+- [ ] Better Best Time to Flip windows based on hourly history
+- [ ] Historical Low Radar with stronger recurrence/rebound statistics
+- [ ] Portfolio P&L tracking directly from Mini GE slots
+- [ ] Cloud sync/accounts
+- [ ] Export/import for full portfolio + alert rules
