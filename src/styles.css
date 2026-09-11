@@ -370,3 +370,46 @@ html[data-theme="dark"] .detailTileControls{background:#202631;border-color:#3b4
   .notificationPopover{top:56px!important;width:300px!important;max-height:300px!important}
   .toast{top:60px!important;max-width:280px!important}
 }
+
+/* V19 navigation + eye-comfort theme */
+html[data-theme="comfort"]{
+  --surface:#fbf7ec;--surface2:#f4edda;--text:#3b352b;--muted:#746b5c;--border:#ddd3bd;
+  background:#f5efdf;color:#3b352b;
+}
+html[data-theme="comfort"] body{background:#f5efdf;color:#3b352b}
+html[data-theme="comfort"] .nav,html[data-theme="comfort"] .mobileNav{background:rgba(250,246,235,.97);border-color:#ddd3bd;color:#3b352b}
+html[data-theme="comfort"] .pageIntro,html[data-theme="comfort"] .hero,html[data-theme="comfort"] .tablewrap,html[data-theme="comfort"] .screenerTableShell,html[data-theme="comfort"] .stat,html[data-theme="comfort"] .screenerCard,html[data-theme="comfort"] .chartbox,html[data-theme="comfort"] .filterPanel,html[data-theme="comfort"] .profileMenu,html[data-theme="comfort"] .dropdownPanel,html[data-theme="comfort"] .mobileProfilePanel,html[data-theme="comfort"] .mobileColumnsPanel,html[data-theme="comfort"] .modal{background:#fbf7ec;color:#3b352b;border-color:#ddd3bd}
+html[data-theme="comfort"] input,html[data-theme="comfort"] select,html[data-theme="comfort"] textarea,html[data-theme="comfort"] button{color:#3b352b}
+html[data-theme="comfort"] input,html[data-theme="comfort"] select,html[data-theme="comfort"] textarea{background:#fffaf0;border-color:#d8cdb5}
+html[data-theme="comfort"] .mobileNav>button.active{background:#ebe1c8;color:#3b352b}
+html[data-theme="comfort"] .toast{background:#fffaf0;color:#3b352b}
+
+@media(max-width:1100px){
+  /* Tablet and phone navigation behaves like an app: top utilities stay at the top, page nav stays at the bottom. */
+  .nav{position:sticky;top:0;z-index:1600;background:rgba(255,255,255,.97);backdrop-filter:blur(16px)}
+  html[data-theme="dark"] .nav{background:rgba(23,27,34,.97)}
+  html[data-theme="comfort"] .nav{background:rgba(250,246,235,.97)}
+}
+@media(min-width:701px) and (max-width:1100px){
+  body{padding-bottom:76px!important}
+  .mobileNav{position:fixed!important;display:grid!important;left:0;right:0;bottom:0;height:68px!important;padding:6px 14px calc(6px + env(safe-area-inset-bottom))!important;z-index:1700!important;background:rgba(255,255,255,.97)!important;border-top:1px solid #e6e7ea;backdrop-filter:blur(18px);box-shadow:0 -8px 28px rgba(0,0,0,.10)}
+  html[data-theme="dark"] .mobileNav{background:rgba(23,27,34,.97)!important;border-color:#303846}
+  html[data-theme="comfort"] .mobileNav{background:rgba(250,246,235,.97)!important;border-color:#ddd3bd}
+  .mobileNav>button{font-size:10px!important}
+  .mobileMore{bottom:76px!important}
+  main{padding-bottom:20px!important}
+}
+@media(max-width:700px){
+  .nav{position:sticky!important;top:0!important}
+}
+@media(max-width:1100px) and (orientation:landscape){
+  .nav{min-height:64px!important;height:auto!important;padding:6px 12px!important;align-content:center}
+  .navlinks{display:none!important}
+  .brand{font-size:18px!important}
+  .globalSearch{order:2!important;flex:1!important;min-width:180px!important;max-width:none!important}
+  .topClock{display:none!important}
+  .mobileNav{height:64px!important;padding-left:10px!important;padding-right:10px!important}
+  .mobileNav>button{font-size:9px!important}
+  body{padding-bottom:72px!important}
+  main{padding-top:10px!important}
+}
