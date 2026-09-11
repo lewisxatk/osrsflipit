@@ -71,3 +71,19 @@ The UI intentionally says **Coming soon** until a real authentication/database b
 - Improved mobile landscape spacing and search/analytics layout.
 - Added a persistent Back to Top control when the page is scrolled.
 - Kept the desktop layout and existing flipping/analytics logic intact.
+
+
+## V19 navigation and theme polish
+- Tablet/iPad and phone navigation now stays at the bottom in a fixed app-style navigation bar, including landscape orientation.
+- Top utility area remains reserved for brand, item search, notifications, theme and other utilities; desktop navigation is unchanged.
+- Added a third **Comfort** theme alongside Light and Dark, using warmer lower-contrast surfaces intended to be easier on the eyes.
+- Theme choice is stored locally and applies across every page.
+
+## Future ideas / backlog
+- Add a proper theme picker with previews instead of cycling themes.
+- Add configurable bottom-nav shortcuts so users can choose their five most-used pages.
+- Add an optional compact landscape header mode for iPad.
+- Add accessibility controls for font size, contrast and reduced motion.
+- Add cloud-synced preferences when accounts are introduced.
+- Add richer item search aliases and OSRS Wiki IDs for even faster exact matching.
+- Add a dedicated mobile chart toolbar with reset-zoom and timeframe shortcuts.
