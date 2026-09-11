@@ -413,3 +413,48 @@ html[data-theme="comfort"] .toast{background:#fffaf0;color:#3b352b}
   body{padding-bottom:72px!important}
   main{padding-top:10px!important}
 }
+
+/* V20 mobile/tablet navigation + collapsible Columns polish */
+@media(max-width:1100px){
+  .mobileNav{
+    display:flex!important;
+    align-items:stretch!important;
+    justify-content:space-between!important;
+    gap:4px!important;
+    box-sizing:border-box!important;
+    overflow:visible!important;
+  }
+  .mobileNav>button:not(.mobileMore button){
+    flex:1 1 0!important;
+    min-width:0!important;
+    width:auto!important;
+    max-width:none!important;
+  }
+  .mobileMore{
+    position:absolute!important;
+    right:10px!important;
+    bottom:calc(100% + 8px)!important;
+    z-index:2500!important;
+  }
+}
+@media(min-width:701px) and (max-width:1100px){
+  .mobileNav{height:72px!important;padding:7px 18px calc(7px + env(safe-area-inset-bottom))!important}
+  .mobileNav>button:not(.mobileMore button){font-size:11px!important;gap:4px!important}
+  .mobileNav>button svg{width:19px;height:19px}
+}
+@media(max-width:700px){
+  .mobileNav{height:68px!important;padding:6px 8px calc(6px + env(safe-area-inset-bottom))!important}
+  .mobileNav>button:not(.mobileMore button){font-size:9px!important;gap:3px!important}
+}
+.mobilePanelHeadActions{display:flex;align-items:center;gap:6px}
+.mobilePanelHeadActions button{height:28px!important;min-width:28px;display:inline-flex!important;align-items:center;justify-content:center;gap:4px;cursor:pointer}
+.mobilePanelDone{padding:0 9px!important;font-size:10px!important;font-weight:800!important;background:#111!important;color:#fff!important;border:1px solid #111!important;border-radius:7px!important}
+.mobilePanelReset{padding:0 7px!important}
+html[data-theme="dark"] .mobilePanelDone{background:#f3f4f6!important;color:#111!important;border-color:#f3f4f6!important}
+html[data-theme="comfort"] .mobilePanelDone{background:#3b352b!important;color:#fffaf0!important;border-color:#3b352b!important}
+@media(max-width:700px){
+  .mobileColumnsPanel{max-height:calc(100dvh - 150px)!important;overflow:auto!important}
+  .mobileColumnsPanel .mobilePanelHead{position:sticky;top:0;background:var(--surface,#fff);z-index:3;padding-top:2px}
+  html[data-theme="dark"] .mobileColumnsPanel .mobilePanelHead{background:#202631}
+  html[data-theme="comfort"] .mobileColumnsPanel .mobilePanelHead{background:#fbf7ec}
+}
