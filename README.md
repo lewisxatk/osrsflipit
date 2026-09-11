@@ -87,3 +87,19 @@ The UI intentionally says **Coming soon** until a real authentication/database b
 - Add cloud-synced preferences when accounts are introduced.
 - Add richer item search aliases and OSRS Wiki IDs for even faster exact matching.
 - Add a dedicated mobile chart toolbar with reset-zoom and timeframe shortcuts.
+
+
+## V20 — Mobile/tablet navigation polish
+- Mobile/tablet bottom navigation now uses a stable flex layout so iPad and Android/tablet widths do not bunch the five primary actions together.
+- Bottom navigation remains available in portrait and landscape below 1100px wide.
+- The More menu is positioned independently from the five navigation slots so it cannot become a sixth grid item.
+- The Columns panel now has an explicit **Done** button to collapse it after making changes, plus a separate reset control.
+- Columns remains scrollable on smaller screens without forcing the page to jump unexpectedly.
+- Existing V19 desktop navigation and theme behaviour is preserved.
+
+## Future ideas / backlog
+- Add a dedicated iPad/tablet navigation mode with optional larger labels.
+- Add an animated first-run walkthrough showing Market → Search → Analytics → Watchlist.
+- Add an in-app “Help / What’s new” panel for version changes.
+- Add optional haptic feedback for important mobile interactions where supported.
+- Create polished Apple-style promotional renders/video once the UI is fully locked.
