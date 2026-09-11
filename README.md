@@ -225,3 +225,29 @@ A future **Market Risk / News Context** system could combine sharp price drops w
 - [ ] Portfolio P&L tracking directly from Mini GE slots
 - [ ] Cloud sync/accounts
 - [ ] Export/import for full portfolio + alert rules
+
+## V25 Notes — alert rebuild, graph controls, navigation polish and Cool Stuff UX
+- Rebuilt alert triggering as a **one-shot per threshold crossing**. A rule fires once when its condition becomes true, is then disarmed, and only re-arms after the live value moves back outside the trigger condition. This removes the repeated-every-refresh/every-minute behaviour.
+- Triggered notifications now carry their originating `ruleId`, allowing alert-rule deletion to remove its related notification history as well as the rule itself.
+- Alert bell now flashes with the site's purple/blue accent while a fresh trigger is being surfaced.
+- Desktop navigation now keeps **Recipes** directly alongside Home / Screener / Analysis, with the rest under Extras.
+- Extras dropdown was moved to sit below the header and above the global search-result layer so it does not get trapped behind the Home search suggestions.
+- Smart Flip Finder received stronger dark-mode surface overrides so its cards, inputs and text remain readable in Dark theme.
+- Item Analytics keeps the existing tile layout and interactions, while the graph now has a simple **Chart options** menu. Default remains Buy + Sell + Grid + Cursor time. Users can toggle Buy line, Sell line, Grid and Cursor time independently.
+- Hover details put **Sell before Buy**, while preserving the full date/time readout and the existing cursor-time line beneath the graph.
+- Cool Stuff received a sticky **Jump to** control bar for Best Time, Low Radar, Why this?, If I Had…, Portfolio and Flip Detective so the page is much faster to navigate without adding those tools to Home/Screener.
+
+### V25 Future Ideas / Backlog
+- [ ] Add a proper spread-fill visual mode to the graph.
+- [ ] Add optional Volume bars and a current-price marker to the graph.
+- [ ] Add crosshair-style cursor tracking and a cleaner floating hover card while preserving the current readable timestamp.
+- [ ] Add graph presets: Apple Clean / Trading Terminal / OSRS Market.
+- [ ] Add per-user chart preferences with a Reset to default button.
+- [ ] Add Market Risk / News Context: investigate sharp drops using official OSRS updates, Wiki data and reputable external sources, with evidence + confidence instead of pretending to predict price direction.
+- [ ] Add catalyst markers directly on the graph.
+- [ ] Add configurable alert re-arm rules and an optional manual “Re-arm” action.
+- [ ] Add alert event history with acknowledged/dismissed states separate from the underlying rule.
+- [ ] Rework Cool Stuff into a compact dashboard with a saved favourites strip and scan history.
+- [ ] Add configurable quality gates for Cool Stuff scans (volume, risk, Flip Score and minimum expected profit).
+- [ ] Add Mini GE → Portfolio → P&L workflow so completed tracked flips can flow directly into the journal.
+- [ ] Add lossless JSON backup/restore for all local data alongside spreadsheet-friendly CSV.
