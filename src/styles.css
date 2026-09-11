@@ -345,3 +345,28 @@ html[data-theme="dark"] .mobileProfilePanel,html[data-theme="dark"] .mobileProfi
 }
 html[data-theme="dark"] .detailTileControls{background:#202631;border-color:#3b4555}html[data-theme="dark"] .detailTileControls button{background:#2a3240;color:#dce2ea;border-color:#465063}html[data-theme="dark"] .detailTileControls button.on{background:#f3f4f6;color:#111;border-color:#f3f4f6}
 @media(min-width:701px) and (max-width:1100px){.smartFinder{width:100%;max-width:none}.screenerWide .screenerTableShell{width:100%}.screenerWide .smartList{width:100%}}
+
+/* V18 mobile stability polish */
+@media(max-width:1100px){
+  .profileMenu{position:absolute!important;right:0;top:calc(100% + 7px);width:min(330px,calc(100vw - 24px));max-height:58vh;overflow:auto;border:1px solid #e3e5e9;border-radius:12px;background:#fff;box-shadow:0 16px 45px #0003;z-index:3000}
+  .profileControls{position:relative;z-index:120}
+}
+@media(max-width:700px){
+  /* Keep global search out of full-screen analytics so it cannot paint over the graph. */
+  .fullDetailBack .globalSearch{display:none!important}
+  .fullDetailBack~* .globalSearch{display:none!important}
+  .fullDetailBack{z-index:1800!important}
+  .fullDetail .chartbox,.fullDetail .chartTouch{position:relative;z-index:1}
+  .notificationPopover{position:fixed!important;top:58px!important;right:10px!important;left:auto!important;width:min(310px,calc(100vw - 20px))!important;max-height:360px!important;border-radius:12px!important;box-shadow:0 14px 35px #0003!important}
+  .popoverHead{padding:9px 11px}.popoverList button{padding:8px 10px}.popoverEmpty{padding:20px}
+  .toast{position:fixed!important;top:70px!important;right:10px!important;left:auto!important;bottom:auto!important;width:min(300px,calc(100vw - 20px))!important;min-width:0!important;max-width:300px!important;padding:8px 9px!important;border-radius:10px!important;z-index:5000!important}
+  .toastIcon{width:28px;height:28px;border-radius:8px;flex:0 0 28px}.toastIcon img{width:19px;height:19px}.toast strong{font-size:10px!important}.toast small{font-size:8px!important}
+  .mobileProfilePanel{position:absolute!important;left:0;right:0;margin:4px 0 0!important;max-height:52dvh!important;overflow:auto;box-shadow:0 14px 35px #0003!important;z-index:3000!important}
+  .mobileQuickTools{position:relative;z-index:200}
+  .searchWithSuggestions .itemSearchSuggestions,.globalSearch .globalResults{z-index:4000!important}
+}
+@media(max-width:700px) and (orientation:landscape){
+  .fullDetailBack .globalSearch{display:none!important}
+  .notificationPopover{top:56px!important;width:300px!important;max-height:300px!important}
+  .toast{top:60px!important;max-width:280px!important}
+}
