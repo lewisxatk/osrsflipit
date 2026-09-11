@@ -103,3 +103,29 @@ The UI intentionally says **Coming soon** until a real authentication/database b
 - Add an in-app “Help / What’s new” panel for version changes.
 - Add optional haptic feedback for important mobile interactions where supported.
 - Create polished Apple-style promotional renders/video once the UI is fully locked.
+
+
+## V21 — iPad/tablet app-style navigation + promo plan
+
+### Priority update
+- iPad and tablet landscape now use the same five-button bottom navigation pattern as iPhone when the device reports a coarse pointer.
+- Desktop/touch-laptop layouts are not forced into the mobile navigation.
+- Tablet landscape keeps the top area for OSRSFlipIt, search and utilities while Market/Screener/Analysis/Watch/More stay fixed at the bottom.
+- Navigation buttons divide the available width evenly so they do not bunch up or shrink into a tiny cluster.
+- Safe-area spacing is preserved for devices with a home indicator.
+
+### Product video / screenshots backlog
+- Build a **real 30-second desktop product fly-through from the actual deployed OSRSFlipIt UI**, not generated mockups.
+- Capture real desktop screenshots for Market, Screener, Item Analytics, Watchlist, Alerts, Finance, Calculators, Money Makers and Movers.
+- Animate the real screenshots/UI between pages with an Apple-style product-film rhythm: clean transitions, subtle zooms, cursor/tap focus, chart animation and feature callouts.
+- Add a final OSRSFlipIt logo/end card.
+- If a public deployment URL is supplied, use that exact rendered site as the visual source so the promo cannot accidentally show a different or fictional design.
+
+### Future ideas
+- Dedicated iPad landscape header with larger search and utility controls.
+- First-run interactive tour.
+- What's New/version history panel.
+- Customisable navigation shortcuts.
+- Mobile haptic feedback where supported.
+- User-selectable font size/contrast/reduced-motion options.
+- Cloud-synced preferences once accounts exist.
