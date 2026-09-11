@@ -251,3 +251,48 @@ A future **Market Risk / News Context** system could combine sharp price drops w
 - [ ] Add configurable quality gates for Cool Stuff scans (volume, risk, Flip Score and minimum expected profit).
 - [ ] Add Mini GE → Portfolio → P&L workflow so completed tracked flips can flow directly into the journal.
 - [ ] Add lossless JSON backup/restore for all local data alongside spreadsheet-friendly CSV.
+
+## V26 Notes — Alerts, chart readability, mobile dark mode, speed
+
+### What changed
+- **Alerts rebuilt around one-shot threshold crossing.** The alert checker now reads live refs instead of stale React closures, so a triggered rule is immediately disarmed and cannot fire every refresh. It only re-arms after the price leaves the trigger condition and later crosses it again.
+- **Bell-only alert feedback.** Removed the transient alert toast/pop-up. When a rule triggers, the top navigation bell gets the purple/blue pulse. Notifications remain available from the bell and in the Alerts page.
+- **Alert history is simpler.** The Alerts page now separates saved rules from notification history, shows `Armed` / `Triggered once`, and dismissing a notification no longer accidentally deletes its underlying rule. Deleting a rule is a separate action.
+- **Graph readability improved.** Sell is now a thin cyan line with a subtle filled area down to the chart floor. Buy is a thinner purple dashed guide. This keeps the spread visually obvious without making either line overly thick. Existing hover tooltip, cursor time, zoom/pan and chart options remain.
+- **Smart Flip Finder collapsed by default.** Same width, much smaller footprint. `+` expands the existing Top 5 Finder and exposes bankroll/slot controls.
+- **Recipes navigation made lighter.** Desktop navigation uses React's transition scheduling, and recipe price matching now uses a pre-built item-name index first instead of repeatedly scanning/fuzzy-searching the entire GE item list for every recipe ingredient.
+- **Mobile/tablet dark mode parity.** Added late-loading dark overrides for coarse landscape layouts so Home, Screener, tables, cards, filters, recipes, finance and related surfaces cannot fall back to white/light backgrounds when the device is rotated.
+- **General performance cleanup.** Removed an unused icon import, reduced unnecessary alert rendering, and kept the existing session cache for price/history API calls.
+
+### Important behaviour
+- Alerts are intentionally **not** repeated every minute anymore.
+- A rule triggers once, becomes `Triggered once`, and remains quiet until the live value crosses back out of the trigger condition.
+- Dismissing a notification only removes the notification; it does not delete the saved alert rule.
+- The bell is now the only transient visual alert. No alert toast is shown.
+
+## V26 Checks
+- JSX/TypeScript parser diagnostics: **0**
+- `index.html` size: **400 bytes** — preserved
+- Existing V25 source carried forward before changes: **yes**
+- Full `npm run build`: **attempted but the environment timed out while installing/building dependencies**, so no production-build success is claimed here.
+- ZIP integrity: checked after packaging.
+
+## Recommended next roadmap
+1. **Accounts / Discord login** — Cloudflare Worker OAuth2 callback + secure session cookie.
+2. **Cloudflare D1 account database** — saved columns, profiles, watchlist, alerts, Mini GE, P&L and preferences synced across phone/tablet/desktop.
+3. **Server-side alert engine** — scheduled price checks so alerts can work even when the user's browser is closed.
+4. **Discord notifications** — Worker-side Discord bot/webhook delivery; never expose a Discord bot token in the browser bundle.
+5. **Security hardening** — strict CSP, secure cookies, CSRF protection, input validation, rate limits, Cloudflare WAF/Turnstile for account/auth endpoints, and server-side authorization on every account API.
+6. **API proxy/cache** — route RuneScape Wiki price requests through the Worker with controlled caching/rate limiting instead of making every visitor call the upstream API independently.
+7. **P&L cloud sync** — make the existing local P&L system account-aware with import/export backup.
+8. **Ads only after the product is polished** — add privacy/consent pages and then consider AdSense without letting ads interfere with the Market/Screener UX.
+9. **Installable PWA** — offline shell, app icon and faster repeat opens while keeping live market data online.
+10. **Observability** — Cloudflare logs/analytics, error reporting and a small internal health page so breakages can be caught before users report them.
+
+### Future backlog
+- Chart: optional margin/ROI bands and a clean crosshair mode.
+- Alerts: per-rule cooldown, optional sound, browser push and Discord delivery.
+- Account dashboard: synced columns, profiles, watchlist, P&L and alert management.
+- Portfolio → P&L → Mini GE unified workflow.
+- Public share links for saved screens/profiles without exposing private account data.
+- Lightweight feature flags so new tools can be rolled out without making the main UI heavier.
