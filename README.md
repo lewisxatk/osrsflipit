@@ -138,9 +138,6 @@ The UI intentionally says **Coming soon** until a real authentication/database b
 - Uses one reusable Web Audio context instead of loading audio files, keeping the bundle lightweight and avoiding extra asset requests.
 - Existing sound preference, volume and alert sound settings remain stored locally.
 
-### Media capture
-The live deployment is available at https://osrsflipit.lxwisfm.workers.dev/. This environment can inspect the live page but cannot run a full interactive browser session against the Cloudflare deployment, so no fake screenshots or fake UI video are included. The media folder contains a live-capture gallery/link pack for the exact deployment and a shot list for the desktop fly-through.
-
 ### Future Ideas / Backlog
 - Capture exact live desktop screenshots for every tab using an interactive browser session.
 - Record the real 30-second Apple-style fly-through from the deployed site, including subtle UI sounds.
@@ -296,3 +293,10 @@ A future **Market Risk / News Context** system could combine sharp price drops w
 - Portfolio → P&L → Mini GE unified workflow.
 - Public share links for saved screens/profiles without exposing private account data.
 - Lightweight feature flags so new tools can be rolled out without making the main UI heavier.
+
+
+### V26.1 Build correction
+- Removed the duplicate `WatchTicker` declaration that caused Cloudflare/Vite error `The symbol "WatchTicker" has already been declared`.
+- Removed the old `MEDIA/` folder and all screenshot/video gallery files from the release ZIP.
+- Kept the actual site code and UI unchanged apart from the build correction.
+- Vite/Cloudflare production build should be run by the deployment environment with `npm run build`; local dependency installation timed out in this environment, so no false production-build success is claimed here.
