@@ -1,32 +1,6 @@
-# OSRS Hub V27
+# OSRSFlipIt V13.1
 
-OSRS Hub Grand Exchange flipping dashboard built with React + Vite and designed for Cloudflare hosting.
-
-## V27 — OSRS Hub rebrand, alert fix and navigation polish
-
-- **OSRS Hub branding:** refreshed the visible brand to **OSRS Hub** while leaving the existing tools, layouts and market logic intact.
-- **Purple/cyan brand treatment:** added a restrained gradient wordmark detail and matching footer accents without redesigning the dashboard.
-- **Notification bell fix:** restored the notification popover component so opening the bell no longer throws a render-time error and whites out the page.
-- **Notification popover:** recent alerts can be opened from the bell, cleared, and closed without affecting the underlying page.
-- **Graph → Home search cleanup:** global item search is cleared when returning from item analytics so stale graph/search state cannot appear on Home.
-- **Development footer:** added a lightweight “still in development” notice and live-build indicator.
-- **Storage compatibility:** existing localStorage keys remain unchanged so current watchlists, alerts, profiles and settings are not unnecessarily lost during the rebrand.
-
-## V27 optimisation / quality notes
-
-- Kept the existing visual system, effects, charts, tables and tools intact rather than introducing a broad redesign.
-- Reused existing notification data and item helpers instead of adding another state system.
-- Added defensive pointer-event/isolation rules around the notification popover to prevent outside-click handling from interfering with the bell.
-- The visible brand was changed independently from internal storage keys; this avoids breaking users' saved browser data.
-
-## Recommended next additions
-
-- **Report a Bug:** add once a destination is chosen (GitHub Issues, Discord webhook, email/form endpoint, or a small Cloudflare Worker).
-- **Real accounts:** Cloudflare Worker + D1/KV for synced watchlists, alerts and profiles.
-- **Server-side market cache:** reduce direct client polling and improve resilience/rate-limit behaviour.
-- **PWA/install support:** make OSRS Hub installable on phones and desktop.
-- **SEO/share metadata:** Open Graph/Twitter cards and a proper favicon/brand mark once the final domain is chosen.
-- **Custom domain:** connect the final OSRS Hub domain after the temporary `workers.dev` testing phase.
+OSRS Grand Exchange flipping dashboard built with React + Vite and designed for Cloudflare hosting.
 
 ## V13 upgrades
 
@@ -53,7 +27,7 @@ The client-side cache improves repeat browsing and resilience, but it is not a r
 
 ## Data / API
 
-OSRS Hub uses the public RuneScape Wiki real-time prices API at `prices.runescape.wiki`.
+OSRSFlipIt uses the public RuneScape Wiki real-time prices API at `prices.runescape.wiki`.
 
 No API key is required. The API exposes bulk latest prices, mapping, 24h market data and item time-series data. The app uses a descriptive User-Agent and avoids unnecessary polling.
 
@@ -136,15 +110,15 @@ The UI intentionally says **Coming soon** until a real authentication/database b
 ### Priority update
 - iPad and tablet landscape now use the same five-button bottom navigation pattern as iPhone when the device reports a coarse pointer.
 - Desktop/touch-laptop layouts are not forced into the mobile navigation.
-- Tablet landscape keeps the top area for OSRS Hub, search and utilities while Market/Screener/Analysis/Watch/More stay fixed at the bottom.
+- Tablet landscape keeps the top area for OSRSFlipIt, search and utilities while Market/Screener/Analysis/Watch/More stay fixed at the bottom.
 - Navigation buttons divide the available width evenly so they do not bunch up or shrink into a tiny cluster.
 - Safe-area spacing is preserved for devices with a home indicator.
 
 ### Product video / screenshots backlog
-- Build a **real 30-second desktop product fly-through from the actual deployed OSRS Hub UI**, not generated mockups.
+- Build a **real 30-second desktop product fly-through from the actual deployed OSRSFlipIt UI**, not generated mockups.
 - Capture real desktop screenshots for Market, Screener, Item Analytics, Watchlist, Alerts, Finance, Calculators, Money Makers and Movers.
 - Animate the real screenshots/UI between pages with an Apple-style product-film rhythm: clean transitions, subtle zooms, cursor/tap focus, chart animation and feature callouts.
-- Add a final OSRS Hub logo/end card.
+- Add a final OSRSFlipIt logo/end card.
 - If a public deployment URL is supplied, use that exact rendered site as the visual source so the promo cannot accidentally show a different or fictional design.
 
 ### Future ideas
@@ -326,3 +300,17 @@ A future **Market Risk / News Context** system could combine sharp price drops w
 - Removed the old `MEDIA/` folder and all screenshot/video gallery files from the release ZIP.
 - Kept the actual site code and UI unchanged apart from the build correction.
 - Vite/Cloudflare production build should be run by the deployment environment with `npm run build`; local dependency installation timed out in this environment, so no false production-build success is claimed here.
+
+## V27.1 mobile/screener update
+- Added Screener mobile filter controls with the same FilterBuilder logic as Home.
+- Improved Screener filter accessibility in portrait and landscape.
+- Added compact mobile-landscape graph layout for shorter screens.
+- Chart gestures are isolated in landscape so horizontal graph interaction does not scroll the page behind it.
+- Tightened item analytics spacing, controls and chart height for small landscape screens.
+- Added standalone `OSRS-Hub-Roadmap.html` and `ROADMAP-README.md` for tracking future builds, bugs and optimisations.
+
+### V27.1 follow-up ideas
+- Add a real bug-report destination once one is chosen.
+- Add automated CI production build checks.
+- Add a proper OSRS Hub favicon/logo system.
+- Add a public changelog.
