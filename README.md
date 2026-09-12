@@ -1,4 +1,4 @@
-# OSRSFlipIt V13.1
+# OSRS Hub V29.0
 
 OSRS Grand Exchange flipping dashboard built with React + Vite and designed for Cloudflare hosting.
 
@@ -27,7 +27,7 @@ The client-side cache improves repeat browsing and resilience, but it is not a r
 
 ## Data / API
 
-OSRSFlipIt uses the public RuneScape Wiki real-time prices API at `prices.runescape.wiki`.
+OSRS Hub uses the public RuneScape Wiki real-time prices API at `prices.runescape.wiki`.
 
 No API key is required. The API exposes bulk latest prices, mapping, 24h market data and item time-series data. The app uses a descriptive User-Agent and avoids unnecessary polling.
 
@@ -110,15 +110,15 @@ The UI intentionally says **Coming soon** until a real authentication/database b
 ### Priority update
 - iPad and tablet landscape now use the same five-button bottom navigation pattern as iPhone when the device reports a coarse pointer.
 - Desktop/touch-laptop layouts are not forced into the mobile navigation.
-- Tablet landscape keeps the top area for OSRSFlipIt, search and utilities while Market/Screener/Analysis/Watch/More stay fixed at the bottom.
+- Tablet landscape keeps the top area for OSRS Hub, search and utilities while Market/Screener/Analysis/Watch/More stay fixed at the bottom.
 - Navigation buttons divide the available width evenly so they do not bunch up or shrink into a tiny cluster.
 - Safe-area spacing is preserved for devices with a home indicator.
 
 ### Product video / screenshots backlog
-- Build a **real 30-second desktop product fly-through from the actual deployed OSRSFlipIt UI**, not generated mockups.
+- Build a **real 30-second desktop product fly-through from the actual deployed OSRS Hub UI**, not generated mockups.
 - Capture real desktop screenshots for Market, Screener, Item Analytics, Watchlist, Alerts, Finance, Calculators, Money Makers and Movers.
 - Animate the real screenshots/UI between pages with an Apple-style product-film rhythm: clean transitions, subtle zooms, cursor/tap focus, chart animation and feature callouts.
-- Add a final OSRSFlipIt logo/end card.
+- Add a final OSRS Hub logo/end card.
 - If a public deployment URL is supplied, use that exact rendered site as the visual source so the promo cannot accidentally show a different or fictional design.
 
 ### Future ideas
@@ -314,3 +314,61 @@ A future **Market Risk / News Context** system could combine sharp price drops w
 - Add automated CI production build checks.
 - Add a proper OSRS Hub favicon/logo system.
 - Add a public changelog.
+
+
+## OSRS Hub V27.2 / V28 handover
+
+### V27.2 stability
+- Added a recoverable React error boundary so a component exception no longer has to blank the whole app.
+- Restored the notification popover component used by the notification bell.
+- Kept existing alert/localStorage behaviour intact.
+- Tightened responsive state/interaction handling around the analytics drawer.
+- Preserved existing `osrsflipit-*` localStorage keys for backward compatibility.
+
+### V28 product polish
+- OSRS Hub branding in the header.
+- Purple/cyan Hub brand accent and subtle underline detail.
+- Inline SVG favicon; no external image dependency.
+- Updated browser title and meta description.
+- Added a compact development/build footer.
+- Added a small V28 release card in Cool Stuff.
+- No Report Bug destination was added because a real submission endpoint has not been chosen yet.
+
+### Mobile / landscape
+- Item title is no longer sticky in landscape, so it scrolls away with the analytics page instead of covering the chart.
+- Short landscape screens get tighter navigation, item header, stats and chart spacing.
+- Full-detail drawer keeps vertical page scrolling outside the chart and avoids sticky overlay behaviour.
+
+### Build verification
+- ZIP/source structure checked.
+- JSX-sensitive edits inspected.
+- Full `npm install` / production build should be run by Cloudflare/GitHub on deploy; local dependency installation was not relied on as a passing build check.
+
+### Future ideas
+- Proper OSRS Hub logo assets for social cards and app icons.
+- Report Bug endpoint (GitHub Issues, Discord webhook or hosted form).
+- Public changelog page.
+- Shareable item/screener URLs.
+- PWA install support.
+- Automated regression checks for mobile breakpoints.
+- Compare-items mode and advanced alert conditions.
+
+## V29.0 — Dashboard + Intelligence
+
+- Added local Personal Dashboard with Flip of the Day, Market Pulse, saved workspace summary, competition snapshot and quick P&L log.
+- Added one-click JSON export/import for recognised local OSRS Hub data: profiles, column order/widths, analytics tiles, filters, watchlist, alerts/rules, Mini GE, sound/theme/chart settings, recipes, P&L, bankroll and portfolio.
+- Profile saves now include column order, column widths and analytics tiles. While a custom profile is active, workspace changes are kept in that profile automatically.
+- Added Historical Margin Stability scan to Analysis using sampled 30-day 6-hour price history.
+- Added Competition Indicator to Cool Stuff. It is explicitly a market-crowding heuristic, not a player-count measurement.
+- Added defensive import validation with a strict key whitelist; imported JSON is treated as data only.
+- Discord login/notifications intentionally remain the next major build area.
+
+
+## V29.0 additions
+- Personal Dashboard with local P&L log, Flip of the Day, Market Pulse, saved workspace summary and competition snapshot.
+- Full JSON workspace backup/restore for recognised local settings and data.
+- Profiles now remember filters, column order, column widths and analytics tiles; active custom profiles update as the workspace changes.
+- Analysis: Historical Margin Stability scan using sampled 30-day 6-hour history.
+- Cool Stuff: Competition Indicator heuristic and easier intelligence jump navigation.
+- Security: strict import whitelist, 2 MB backup cap, bounded collections, JSON-only data handling, and no execution of imported content.
+- Next major build: Discord login and Discord notifications.
