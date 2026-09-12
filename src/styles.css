@@ -658,33 +658,62 @@ html[data-theme="dark"] .alertsSectionHead small,html[data-theme="dark"] .alertH
   .ruleStatus{padding:4px 6px;font-size:8px}
 }
 
-/* V27 OSRS Hub branding + development footer */
-.brand{display:inline-flex;align-items:center;gap:6px;position:relative;letter-spacing:-.8px}
-.brandMark{font-weight:800!important;letter-spacing:-.8px;background:linear-gradient(90deg,#8b5cf6,#22d3ee);-webkit-background-clip:text;background-clip:text;color:transparent}
-.brandName{font-weight:650!important;color:#17171b}
-.brand:after{content:"";position:absolute;left:0;bottom:0;width:100%;height:1px;background:linear-gradient(90deg,rgba(139,92,246,.8),rgba(34,211,238,.55));opacity:.35}
-.siteFooter{max-width:1440px;margin:10px auto 0;padding:26px 5vw 34px;border-top:1px solid #ededed;display:flex;align-items:center;gap:18px;color:#777;font-size:11px}
-.footerBrand{display:flex;align-items:center;gap:5px;white-space:nowrap;color:#222;font-size:14px;letter-spacing:-.3px}
-.footerLogo{font-weight:800;background:linear-gradient(90deg,#8b5cf6,#22d3ee);-webkit-background-clip:text;background-clip:text;color:transparent}
-.footerCopy{display:flex;flex-direction:column;gap:4px;flex:1;line-height:1.45}
-.footerCopy strong{color:#555;font-size:11px}
-.footerStatus{display:flex;align-items:center;gap:6px;white-space:nowrap;border:1px solid #e7e7e7;border-radius:999px;padding:7px 10px;background:#fff}
-.footerStatus i{width:6px;height:6px;border-radius:50%;background:#8b5cf6;box-shadow:0 0 0 3px rgba(139,92,246,.10)}
-.popoverHead>div:first-child{display:flex;flex-direction:column;gap:2px}
-.popoverHead small{font-size:9px;color:#999}
-.popoverHeadActions{display:flex;align-items:center;gap:4px}
-.popoverHeadActions button{border:0;background:transparent;color:#8b5cf6;font-size:10px;cursor:pointer;padding:5px}
-.popoverHeadActions .popoverClose{color:#999;display:grid;place-items:center}
-.popoverList button{min-height:58px}
-.popoverList button .notificationIcon{width:27px;height:27px;object-fit:contain;flex:none}
-html[data-theme="dark"] .brandName{color:#f2f4f7}
-html[data-theme="dark"] .siteFooter{border-color:#4d5665;color:#aeb6c3}
-html[data-theme="dark"] .footerBrand{color:#f2f4f7}
-html[data-theme="dark"] .footerStatus{background:#3f4858;border-color:#566174}
-html[data-theme="dark"] .footerCopy strong{color:#d8dde6}
-html[data-theme="dark"] .brand:after{opacity:.5}
-@media(max-width:760px){
-  .siteFooter{align-items:flex-start;flex-wrap:wrap;padding:22px 5vw 28px}
-  .footerCopy{flex-basis:calc(100% - 100px)}
-  .footerStatus{margin-left:0}
+/* V27.1: screener filter parity + compact mobile landscape polish */
+.mobileScreenerFilterPanel{display:none}
+.mobileToolBtn.hasFilters{border-color:#8b5cf6;color:#6d45d9;background:linear-gradient(135deg,rgba(139,92,246,.08),rgba(34,211,238,.05))}
+@media(max-width:700px){
+  .mobileScreenerFilterPanel{display:block;margin:-7px 0 10px;position:relative;z-index:76}
+  .mobileScreenerFilterPanel .filterPanel{margin:0;padding:11px;border-radius:12px;box-shadow:0 12px 30px #0002}
+  .mobileScreenerFilterPanel .filterHeader{gap:8px;align-items:flex-start}
+  .mobileScreenerFilterPanel .filterHeader>div:last-child{gap:5px;flex-wrap:wrap;justify-content:flex-end}
+  .mobileScreenerFilterPanel .condition{grid-template-columns:minmax(0,1fr) minmax(0,1fr);display:grid}
+  .mobileScreenerFilterPanel .condition input,.mobileScreenerFilterPanel .condition select{min-width:0}
+  .mobileScreenerFilterPanel .condition .dangerIcon{grid-column:1/-1}
+  .screenerQuick{width:100%;gap:5px}
+  .screenerQuick .mobileToolBtn{min-width:0;padding:0 5px;font-size:9px}
+}
+@media(max-width:700px) and (orientation:landscape){
+  /* In landscape the chart gets a deliberate interaction zone: horizontal gestures stay on the chart
+     instead of bubbling into the document, while page scrolling remains available outside it. */
+  .fullDetail{width:100vw!important;height:100dvh!important;min-height:100dvh!important;padding:4px 8px 58px!important;overflow-y:auto!important;overflow-x:hidden!important;scroll-padding-top:32px}
+  .fullDetail .backDetail{height:27px;margin-bottom:1px;font-size:9px;position:sticky;top:0;padding:5px 9px;z-index:30}
+  .fullDetail .eyebrow{font-size:8px;margin:1px 0 4px}
+  .fullDetail .itemtitle{padding:2px 42px 4px 0}
+  .fullDetail .itemtitle h2{font-size:17px}
+  .fullDetail .itemtitle p{font-size:8px;margin-top:1px}
+  .fullDetail .titleIcon{width:25px;height:25px}
+  .fullDetail .detailTileControls{padding:5px 7px;margin:3px 0 5px}
+  .fullDetail .detailTileControls>div{max-height:38px;overflow-x:auto;overflow-y:hidden;flex-wrap:nowrap;white-space:nowrap}
+  .fullDetail .detailTileControls button{padding:4px 6px;font-size:8px;flex:0 0 auto}
+  .fullDetail .panelstats{grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;margin:4px 0}
+  .fullDetail .panelstats .stat{padding:5px 6px}
+  .fullDetail .panelstats .stat strong{font-size:10px}
+  .fullDetail .panelstats .stat small{font-size:7px}
+  .fullDetail .chartbox{margin:0;padding:6px;border-radius:10px}
+  .fullDetail .charthead{margin-bottom:3px;gap:4px}
+  .fullDetail .charthead strong{font-size:10px}
+  .fullDetail .charthead small{font-size:7px;max-width:190px}
+  .fullDetail .chartHeadActions{gap:4px}
+  .fullDetail .chartHeadActions .secondary{height:25px;padding:0 6px;font-size:8px}
+  .fullDetail .chartOptionsBtn{max-width:88px;overflow:hidden}
+  .fullDetail .rangeButtons{gap:3px;margin-bottom:2px}
+  .fullDetail .rangeButtons button{padding:4px 6px;font-size:8px}
+  .fullDetail .chartTouch{height:160px;min-height:160px!important;touch-action:none!important;overscroll-behavior:none!important;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+  .fullDetail .chartTouch .recharts-wrapper,.fullDetail .chartTouch .recharts-surface{height:160px!important;min-height:160px!important}
+  .fullDetail .chartNote{font-size:7px;line-height:1.25;margin:3px 0 5px;opacity:.82}
+  .fullDetail .scoreExplain{margin-top:4px}
+  .fullDetail .wikiLink{font-size:8px;padding:4px 0}
+  .screenerWide .screenerTopbar{top:54px;padding:4px 0}
+  .screenerQuick{gap:4px}
+  .screenerQuick .mobileToolBtn{height:32px;font-size:8px}
+  .screenerTableShell table{min-width:820px}
+  .screenerWide{overflow-x:hidden}
+  main.screenerMain{padding:10px 7px 18px}
+}
+@media(min-width:701px) and (max-width:1100px) and (pointer:coarse) and (orientation:landscape){
+  .fullDetail{width:100vw!important;height:100dvh!important;min-height:100dvh!important;margin:0!important;padding:7px 12px 70px!important;border-radius:0!important;overflow-y:auto!important;overflow-x:hidden!important}
+  .fullDetail .chartTouch{min-height:220px!important;touch-action:none!important;overscroll-behavior:none!important}
+  .fullDetail .chartbox{margin-top:2px}
+  .fullDetail .detailTileControls>div{max-height:48px;overflow-x:auto;overflow-y:hidden;flex-wrap:nowrap}
+  .screenerWide{overflow-x:hidden}
 }
