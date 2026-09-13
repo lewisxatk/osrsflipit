@@ -1,19 +1,13 @@
-# OSRS Hub V33
-
+# OSRS Hub V34
 OSRS Grand Exchange flipping dashboard built with React + Vite for Cloudflare hosting.
 
-## Included
-- Live GE prices, tax-aware margins, ROI, volume and Flip Score
-- Screener with saved filters, columns and profiles
-- Full-screen Item Analytics with compact tile controls above live price stats
-- Isolated analytics window so the underlying market cannot show through while scrolling
-- Mobile/Safari search zoom protection and responsive analytics layout
-- Watchlist, alerts, Market Movers and historical tools
-- Dashboard Competition Snapshot with stable six-item crowding indicators
-- Cool Stuff bankroll allocator that responds to entered GP amounts
-- Overnight Flip Finder with liquid £50k+ opportunities
-- Local JSON backup/restore with a strict import whitelist
-- OSRS Hub / OH gradient branding and the small “Taylor is cute” easter egg
+## V34 updates
+- Hardened full-screen Item Analytics for Screener and mobile/landscape use.
+- Added mobile orientation/search stability fixes for Safari.
+- Added working Dashboard P&L item autocomplete and live price fill.
+- Reworked Dashboard Competition Snapshot scoring and ordering.
+- Expanded Money Makers fallback coverage and enabled live Wiki refresh with cache-busting.
+- Added the Taylor is cute footer easter egg.
 
 ## Run locally
 npm install
@@ -21,7 +15,6 @@ npm run dev
 
 ## Production build
 npm run build
-Cloudflare Workers Builds can use `npm run build` as the build command.
 
 ## Data
-OSRS Hub uses the public RuneScape Wiki real-time prices API for market data and historical price series.
+OSRS Hub uses the public RuneScape Wiki real-time prices API and the Old School RuneScape Wiki money-making guide.
