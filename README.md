@@ -1,4 +1,4 @@
-# OSRS Hub V30.1
+# OSRS Hub V32.0
 
 OSRS Grand Exchange flipping dashboard built with React + Vite and designed for Cloudflare hosting.
 
@@ -156,13 +156,13 @@ The UI intentionally says **Coming soon** until a real authentication/database b
 - Desktop-only **Mini GE** added. It is a compact 8-slot tracker that can be opened/minimised from the bottom-right. Item Analytics has a **+ GE** action; duplicate items are prevented and the UI reports when all 8 slots are filled.
 - Mini GE slots persist in the browser and can be individually removed.
 - Movers now contains a separate **Market Opportunities** area with:
-  - **Overnight Flip Finder** — scans liquid £100k+ estimated opportunities and uses 7-day hourly price-pattern evidence, volume, risk and Flip Score.
+  - **Overnight Flip Finder** — scans 15 liquid £50k+ estimated opportunities and uses 7-day hourly price-pattern evidence, volume, risk and Flip Score.
   - **Historical Low Watch** — scans liquid items against their observed 30-day low using 6-hour history, with a deliberately conservative volume threshold of 200.
 - Opportunity scans deliberately prefer returning fewer/no results rather than low-quality recommendations.
 - iPhone landscape Item Analytics graph gets extra spacing and a compact cursor-time readout.
 
 ### Important data note
-The Overnight and Historical Low tools use historical OSRS Wiki time-series data as evidence. They are **not guarantees** of future fills or profit. The Overnight tool's £100k threshold is estimated opportunity profit based on current spread, GE limit and a conservative volume allocation, not a promise that £100k will be made overnight.
+The Overnight and Historical Low tools use historical OSRS Wiki time-series data as evidence. They are **not guarantees** of future fills or profit. The Overnight tool's £50k threshold is estimated opportunity profit based on current spread, GE limit and a conservative volume allocation, not a promise that the target profit will be achieved.
 
 ### Notes
 - P&L CSV is spreadsheet-friendly and limited to the app's existing 500-trade local journal cap.
@@ -415,3 +415,28 @@ A future **Market Risk / News Context** system could combine sharp price drops w
 
 ### Screenshot note
 The build package includes a capture helper and marketing asset pack. Authentic live-data screenshots require the app to be built and opened against the deployed site so the Grand Exchange data can finish loading; this environment could not install the npm dependencies because external package registry access was unavailable. No fake screenshots are included.
+
+
+## V32.0 — Mobile analytics + overnight finder polish
+
+- Item Analytics is now a true fixed page on phone and tablet-sized/coarse-pointer viewports. The underlying Home/Screener page is locked while analytics is open, so vertical scrolling always reveals the graph and horizontal scrolling cannot expose the previous page underneath.
+- Global search, Home, Screener and other underlying controls cannot visually sit above the analytics page because the analytics layer uses a dedicated high stacking context.
+- Clicking the already-active navigation item now smoothly returns that page to the top without refreshing. Navigation to another page also starts at the top.
+- Movers default to a **25 item/day minimum volume**, while keeping editable minimum/maximum volume controls.
+- Overnight Flip Finder now returns **15 choices**, looks for **£50k+ estimated day profit**, uses at least 25 daily volume, and describes the tool simply as **Looking for overnight flipping opportunities**.
+- Cool Stuff V28 release card removed. Footer V29/dashboard-intelligence build tile removed. The **Still in development** status remains.
+- Footer branding mark is now **OH** with the purple → cyan gradient. Media branding is restricted to the OH logo set.
+- App export metadata bumped to 32.0.
+
+### Build/security checks
+- Source was checked for dangerous browser-code patterns before packaging; the app does not use `eval`, `new Function`, `innerHTML`, `dangerouslySetInnerHTML`, `document.write`, or `javascript:` URLs.
+- Existing Content Security Policy remains in `index.html`, restricting scripts to self and API/image origins used by the app.
+- Local backup import remains whitelist-based with size/array limits and never executes imported content.
+- ZIP integrity and source/package structure should be checked before deployment. A full local Vite build can only be marked verified when dependencies are available in the build environment; Cloudflare's build is the authoritative deployment check.
+
+### Next ideas
+- Discord login + Discord notifications.
+- Shareable item/screener URLs.
+- Volume and margin graph layers.
+- PWA/installable mobile experience.
+- D1/KV cloud sync for account-based watchlists, profiles and alerts.
