@@ -31,3 +31,11 @@ Use the V35.2.1 ZIP as a fresh Cloudflare Pages deployment/build. If an old Clou
 - Added mobile/tablet sort controls for Volume, Margin, Potential Profit, ROI, Flip Score and Limit Cost.
 - Added real browser paths: `/dashboard`, `/screener`, `/analysis`, `/recipes`, `/finance`, `/calculators`, `/money-makers`, `/movers`, `/watchlist`, `/alerts`, `/cool-stuff`.
 - Added Cloudflare Pages SPA fallback via `_redirects`.
+
+
+## V37.0 updates
+- Fixed Market/Screener Profiles interaction on phone and tablet with dedicated mobile/tablet profile panels.
+- Added **Aurora** theme: a cool blue/violet/cyan glass-style theme alongside Light, Dark and Warm.
+- Theme choice persists in localStorage and cycles Light → Dark → Warm → Aurora.
+- Added stronger Aurora treatment for tables, analytics, forms, navigation and mobile UI.
+- Future roadmap notes: OSRS account lookup, XP/time projections, quest-path optimisation, and data-driven monster/boss GP/hour modelling.
