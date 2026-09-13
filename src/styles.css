@@ -956,3 +956,117 @@ html:has(.fullDetailBack),body.analytics-open{overflow:hidden!important;}
 .fullDetailBack{touch-action:pan-y!important;pointer-events:auto!important;-webkit-overflow-scrolling:touch!important;overscroll-behavior:contain!important;}
 .fullDetail{touch-action:auto!important;}
 body.analytics-open{overscroll-behavior:none!important;}
+
+/* V33: analytics layout, desktop isolation, competition polish and mobile Safari zoom fix */
+.fullDetailBack{
+  position:fixed!important;
+  inset:0!important;
+  width:100vw!important;
+  height:100dvh!important;
+  max-width:none!important;
+  max-height:none!important;
+  min-height:100dvh!important;
+  z-index:5000!important;
+  display:flex!important;
+  align-items:flex-start!important;
+  justify-content:center!important;
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  background:var(--surface,#fff)!important;
+  opacity:1!important;
+  isolation:isolate!important;
+  -webkit-overflow-scrolling:touch!important;
+  overscroll-behavior:contain!important;
+}
+.fullDetail{
+  position:relative!important;
+  width:100%!important;
+  max-width:none!important;
+  min-height:100%!important;
+  height:auto!important;
+  margin:0!important;
+  padding:18px 5vw 104px!important;
+  overflow:visible!important;
+  background:var(--surface,#fff)!important;
+  color:var(--text,#111)!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  opacity:1!important;
+  isolation:isolate!important;
+}
+.fullDetail>*{position:relative;z-index:1}
+.fullDetail>.backDetail{order:0!important}
+.fullDetail>.eyebrow{order:1!important}
+.fullDetail>.itemtitle{order:2!important}
+.fullDetail>.detailTileControls{order:3!important}
+.fullDetail>.panelstats{order:4!important}
+.fullDetail>.chartbox{order:5!important}
+.fullDetail>.chartNote{order:6!important}
+.fullDetail>.scoreExplain{order:7!important}
+.fullDetail>.wikiLink{order:8!important}
+.fullDetail .detailTileControls{
+  display:flex!important;
+  align-items:center!important;
+  gap:8px!important;
+  margin:2px 0 8px!important;
+  padding:7px 9px!important;
+  min-height:0!important;
+}
+.fullDetail .detailTileControls>strong{white-space:nowrap!important}
+.fullDetail .detailTileControls>span{margin-left:0!important;white-space:nowrap!important}
+.fullDetail .detailTileControls>div{display:flex!important;flex-wrap:wrap!important;gap:4px!important;margin:0!important;min-width:0!important}
+.fullDetail .detailTileControls button{padding:5px 7px!important;font-size:9px!important}
+.fullDetail .panelstats{margin:0 0 10px!important}
+.fullDetail .chartbox{margin:0!important}
+body.analytics-open .nav .globalSearch{visibility:hidden!important;opacity:0!important;pointer-events:none!important}
+body.analytics-open .globalResults{display:none!important}
+body.analytics-open{overflow:hidden!important}
+
+/* Competition Snapshot: stable six-row view with a readable score bar. */
+.dashboardCard .competitionList{padding-top:4px!important;padding-bottom:7px!important}
+.dashboardCard .competitionRow{min-height:48px!important}
+.dashboardCard .competitionRow i{width:100%!important;min-width:70px!important}
+.dashboardCard .competitionRow em{font-weight:700!important}
+
+@media(max-width:700px){
+  html,body,#root,.app{width:100%;max-width:100%;min-width:0;overflow-x:hidden}
+  .fullDetailBack{background:var(--surface,#fff)!important}
+  .fullDetail{width:100%!important;max-width:100%!important;min-width:0!important;min-height:100%!important;padding:12px 12px 96px!important;background:var(--surface,#fff)!important}
+  .fullDetail .detailTileControls{display:block!important;padding:7px 8px!important;margin:3px 0 8px!important}
+  .fullDetail .detailTileControls>strong,.fullDetail .detailTileControls>span{display:inline-block!important}
+  .fullDetail .detailTileControls>div{display:flex!important;flex-wrap:nowrap!important;overflow-x:auto!important;overflow-y:hidden!important;max-width:100%!important;padding:4px 0 2px!important;scrollbar-width:none!important;white-space:nowrap!important}
+  .fullDetail .detailTileControls>div::-webkit-scrollbar{display:none!important}
+  .fullDetail .detailTileControls button{flex:0 0 auto!important}
+  .fullDetail .panelstats{grid-template-columns:repeat(2,minmax(0,1fr))!important;margin:0 0 9px!important}
+  .fullDetail .chartbox{width:100%!important;max-width:100%!important;background:var(--surface,#fff)!important}
+  .fullDetail .chartTouch{width:100%!important;max-width:100%!important;overflow:hidden!important}
+  .fullDetail .chartTouch .recharts-wrapper{max-width:100%!important}
+  .search input,.globalSearch input,.detectiveSearch input,.financeItemField input{font-size:16px!important;line-height:1.2!important;-webkit-text-size-adjust:100%!important}
+  .searchWithSuggestions{max-width:100%!important;min-width:0!important}
+  .itemSearchSuggestions{max-width:100%!important}
+}
+
+@media(max-width:700px) and (orientation:landscape){
+  .fullDetail{padding:9px 14px 78px!important}
+  .fullDetail .detailTileControls>div{max-width:calc(100vw - 28px)!important}
+  .fullDetail .panelstats{grid-template-columns:repeat(5,minmax(0,1fr))!important}
+  .fullDetail .chartTouch{height:230px!important;min-height:230px!important}
+  .fullDetail .chartTouch .recharts-wrapper,.fullDetail .chartTouch .recharts-surface{height:230px!important;min-height:230px!important}
+}
+
+.easterEgg{justify-self:end;font-size:9px;color:#b8b8c2;letter-spacing:.25px;opacity:.72;white-space:nowrap}
+html[data-theme="dark"] .easterEgg{color:#777582}
+@media(max-width:700px){.easterEgg{justify-self:start;font-size:8px}}
+
+/* V33 mobile Safari: prevent the browser's focus zoom from making the analytics view appear oversized. */
+@media(max-width:700px){
+  input,select,textarea{font-size:16px!important;}
+  input[type="number"],input[type="date"]{font-size:16px!important;}
+}
+.bankrollLine strong{margin-left:auto;font-size:12px;letter-spacing:-.2px;white-space:nowrap}
+.bankrollSummary{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:0 0 10px}
+.bankrollSummary span{padding:8px 9px;border:1px solid #eee;border-radius:9px;background:#fafafa;font-size:9px;color:#888}
+.bankrollSummary b{display:block;margin-top:2px;font-size:11px;color:#222}
+.bankrollSummary small{grid-column:1/-1;font-size:9px;color:#aaa;line-height:1.35}
+html[data-theme="dark"] .bankrollSummary span{background:#2c3441;border-color:#566174;color:#b5becb}
+html[data-theme="dark"] .bankrollSummary b{color:#f3f5f8}
