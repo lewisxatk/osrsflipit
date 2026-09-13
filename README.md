@@ -403,3 +403,15 @@ A future **Market Risk / News Context** system could combine sharp price drops w
 - ZIP extraction/integrity: passed.
 - Source checks: passed (V30.1 markers, Volume tile wiring, mobile navigation overrides, landscape analytics overrides).
 - Full `npm run build`: not locally verified in this environment because project dependencies are not installed; Cloudflare's production build remains the final compile check.
+
+
+## V30.2 mobile analytics + branding pass
+- Landscape Item Analytics now behaves as a true full document page; vertical scrolling is owned by the browser instead of a fixed modal.
+- Landscape order: item header → price/stat tiles → graph → analytics tile controls → explanation.
+- Phone bottom navigation is kept above the analytics surface.
+- Screener landscape quick tools explicitly include Filters, Profiles, Columns and Reset in one row.
+- Added a safer browser CSP/referrer policy in `index.html`.
+- Added OSRS Hub OH branding assets under `media/` (marketing-only; do not upload the media folder if you do not want it deployed).
+
+### Screenshot note
+The build package includes a capture helper and marketing asset pack. Authentic live-data screenshots require the app to be built and opened against the deployed site so the Grand Exchange data can finish loading; this environment could not install the npm dependencies because external package registry access was unavailable. No fake screenshots are included.
