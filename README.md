@@ -1,4 +1,4 @@
-# OSRS Hub V30.0
+# OSRS Hub V30.1
 
 OSRS Grand Exchange flipping dashboard built with React + Vite and designed for Cloudflare hosting.
 
@@ -382,3 +382,24 @@ A future **Market Risk / News Context** system could combine sharp price drops w
 - Mobile page chrome scrolls away instead of staying sticky.
 - iPhone portrait/landscape chart interaction uses a larger dedicated chart zone with pinch/drag isolation.
 - Chart pointer/click propagation is isolated to reduce accidental item switching while zooming.
+
+
+## V30.1 mobile analytics polish
+- Added Volume (24h) as a selectable Item Analytics tile, enabled by default for new users.
+- Reworked phone landscape Item Analytics into a spacious, full-width reading layout with generous side gutters and a larger chart.
+- Item name/title is no longer sticky while scrolling analytics.
+- Restored the five-button mobile bottom navigation from V29, including while viewing Item Analytics.
+- Kept graph touch interactions isolated and preserved chart zoom/pan protections.
+- Normal optimisation pass: reduced layout conflicts in mobile analytics overrides and kept the existing visual language intact.
+
+## V30.1 release notes
+- Volume (24h) is now an Item Analytics tile and is automatically added for existing saved tile layouts too.
+- Item Analytics on phones now uses a spacious, page-like layout inspired by the readable structure of OSRS price pages, without copying their visual design.
+- Landscape analytics has generous side gutters, a larger graph, and no sticky item title.
+- Restored the V29-style five-button mobile navigation at the bottom on phone layouts, including while an item is open.
+- Normal optimisation pass focused on mobile layout conflicts, graph interaction isolation, and avoiding sticky elements over the chart.
+
+### Build verification
+- ZIP extraction/integrity: passed.
+- Source checks: passed (V30.1 markers, Volume tile wiring, mobile navigation overrides, landscape analytics overrides).
+- Full `npm run build`: not locally verified in this environment because project dependencies are not installed; Cloudflare's production build remains the final compile check.
