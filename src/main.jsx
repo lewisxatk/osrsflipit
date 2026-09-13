@@ -157,7 +157,6 @@ const MONEY_MORE = [
   ["Making prayer potions","Herblore","Skilling",1100000,"Medium","Members",38,["Herblore 38"],"Bulk potion production; margins move with herb and secondary prices."],
   ["Cleaning herbs","Herblore","Skilling",1000000,"Low","Members",1,["Herblore 1"],"Low-attention processing whose margin changes with GE spreads."],
 ].map(([name,skill,category,gph,intensity,members,minLevel,skills,description])=>({name,skill,category,gph:Number(gph)||0,intensity,members,minLevel,skills,description}));
-MONEY_SEED.push(...MONEY_MORE);
 const MONEY_EXTRA = [{name:"Doom",skill:"Combat",category:"Bossing",gph:5000000,intensity:"High",members:"Members",minLevel:90,skills:["Combat 90"],description:"Doom bossing. Estimated GP/hour only; actual profit depends on kill speed, supplies, drops and current prices."}];
 const MONEY_SEED = [
   ["Zulrah","Combat","Bossing",1000000,"High","Members",85,["Ranged 85","Magic 80"],"Solo boss with consistent drops; real profit varies with kills per hour and supplies."],
@@ -177,7 +176,7 @@ const MONEY_SEED = [
   ["Telekinetic grab","Magic","Skilling",700000,"Medium","Free-to-play",33,["Magic 33"],"Low-risk magic training/profit loop with variable competition."],
   ["Flipping Grand Exchange items","Trading","Market",3000000,"High","Members",1,["No skill requirement"],"Trading profit is not guaranteed and depends on spreads, capital and fill speed."]
 ].map(([name,skill,category,gph,intensity,members,minLevel,skills,description])=>({name,skill,category,gph:Number(gph)||0,intensity,members,minLevel,skills,description}));
-MONEY_SEED.push(...MONEY_EXTRA);
+MONEY_SEED.push(...MONEY_MORE, ...MONEY_EXTRA);
 
 
 function QuickProfitCalculator(){
