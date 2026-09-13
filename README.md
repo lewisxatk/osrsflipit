@@ -1,4 +1,4 @@
-# OSRS Hub V29.0
+# OSRS Hub V30.0
 
 OSRS Grand Exchange flipping dashboard built with React + Vite and designed for Cloudflare hosting.
 
@@ -353,7 +353,7 @@ A future **Market Risk / News Context** system could combine sharp price drops w
 - Automated regression checks for mobile breakpoints.
 - Compare-items mode and advanced alert conditions.
 
-## V29.0 — Dashboard + Intelligence
+## V30.0 — Dashboard + Intelligence
 
 - Added local Personal Dashboard with Flip of the Day, Market Pulse, saved workspace summary, competition snapshot and quick P&L log.
 - Added one-click JSON export/import for recognised local OSRS Hub data: profiles, column order/widths, analytics tiles, filters, watchlist, alerts/rules, Mini GE, sound/theme/chart settings, recipes, P&L, bankroll and portfolio.
@@ -364,7 +364,7 @@ A future **Market Risk / News Context** system could combine sharp price drops w
 - Discord login/notifications intentionally remain the next major build area.
 
 
-## V29.0 additions
+## V30.0 additions
 - Personal Dashboard with local P&L log, Flip of the Day, Market Pulse, saved workspace summary and competition snapshot.
 - Full JSON workspace backup/restore for recognised local settings and data.
 - Profiles now remember filters, column order, column widths and analytics tiles; active custom profiles update as the workspace changes.
@@ -372,3 +372,13 @@ A future **Market Risk / News Context** system could combine sharp price drops w
 - Cool Stuff: Competition Indicator heuristic and easier intelligence jump navigation.
 - Security: strict import whitelist, 2 MB backup cap, bounded collections, JSON-only data handling, and no execution of imported content.
 - Next major build: Discord login and Discord notifications.
+
+
+## V30.0 Mobile UX pass
+- Screener defaults to highest 24h volume for a clean first visit.
+- Mobile Profiles now open as a full-width section below the item list.
+- Removed interface click sounds and alert sound playback.
+- Item Analytics mobile order is now analytics controls → price tiles → graph.
+- Mobile page chrome scrolls away instead of staying sticky.
+- iPhone portrait/landscape chart interaction uses a larger dedicated chart zone with pinch/drag isolation.
+- Chart pointer/click propagation is isolated to reduce accidental item switching while zooming.
