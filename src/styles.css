@@ -951,3 +951,8 @@ html:has(.fullDetailBack),body.analytics-open{overflow:hidden!important;}
 }
 .footerMark{width:30px;height:30px;border-radius:9px;font-size:11px;letter-spacing:-.4px;}
 .moverFilters label::first-line{font-weight:700;}
+
+/* V32.1: iOS/Safari analytics isolation. The overlay owns vertical scrolling while the app behind it is frozen. */
+.fullDetailBack{touch-action:pan-y!important;pointer-events:auto!important;-webkit-overflow-scrolling:touch!important;overscroll-behavior:contain!important;}
+.fullDetail{touch-action:auto!important;}
+body.analytics-open{overscroll-behavior:none!important;}
