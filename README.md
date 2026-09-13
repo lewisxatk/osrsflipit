@@ -1,0 +1,21 @@
+# OSRS Hub V35.1 — Startup + Calculator Fix
+
+## Changes
+- Hardened startup so module/runtime failures no longer present as an unexplained white page.
+- Added a self-contained boot fallback message and global error visibility.
+- Browser favicon now exactly matches the purple→blue OSRS Hub OH mark with white text.
+- Retained the V35 desktop Quick Profit Calculator beside Notifications.
+- Calculator accepts plain GP values and k/m/b shorthand, quantity, GE tax, per-item profit, total profit, investment, sale value and ROI.
+
+## Build
+`npm install`
+`npm run build`
+`npm run preview`
+
+## Deployment
+Use the V35.1 ZIP as a fresh Cloudflare Pages deployment/build. If an old Cloudflare deployment is cached, trigger a new deployment and hard refresh.
+
+## Verification
+- ZIP integrity: passed.
+- Static JSX/source checks: passed.
+- Full Vite production build: not executable in this offline environment because npm dependencies are not cached.
