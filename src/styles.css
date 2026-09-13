@@ -758,3 +758,51 @@ html[data-theme="dark"] .errorScreen{background:#0e0d12}.dark .errorCard,html[da
 @media(max-width:1000px){.dashboardStats{grid-template-columns:repeat(3,1fr)}.dashboardGrid{grid-template-columns:1fr}.dashboardWide{grid-column:auto}.dashboardFlipGrid{grid-template-columns:1fr}.dashboardFlipGrid>button{border-right:0;border-bottom:1px solid #eee}.dashboardFlipGrid>button:last-child{border-bottom:0}.dashboardPnlForm{grid-template-columns:repeat(3,1fr)}.dashboardActions{flex-wrap:wrap}}
 @media(max-width:700px){.dashboardHero{display:block;padding:15px}.dashboardHero h2{font-size:23px}.dashboardActions{margin-top:12px}.dashboardStats{grid-template-columns:repeat(2,1fr)}.dashboardPnlForm{grid-template-columns:1fr 1fr}.dashboardPnlForm button{grid-column:1/-1}.workspaceRows{grid-template-columns:1fr 1fr}.competitionRow{grid-template-columns:1fr 65px auto}}
 @media(max-width:430px){.dashboardStats{grid-template-columns:1fr 1fr}.dashboardPnlForm{grid-template-columns:1fr}.dashboardPnlForm button{grid-column:auto}.dashboardCardHead{padding:13px}.dashboardFlipGrid>button{grid-template-columns:24px 30px 1fr auto;padding:12px}.dashboardSecurity{font-size:9px}}
+
+/* V30 mobile-first UX pass: make analytics feel like a native item-view page. */
+@media(max-width:700px){
+  /* The page chrome scrolls away so the graph gets the full viewport. */
+  .nav{position:relative!important;top:auto!important;z-index:20!important}
+  .screenerTopbar{position:relative!important;top:auto!important;z-index:20!important}
+  .mobileNav{display:none!important}
+
+  /* Profiles are a clean full-width section after the item list, never a floating side panel. */
+  .mobileProfilePanel{position:relative!important;left:auto!important;right:auto!important;top:auto!important;margin:10px 0 12px!important;width:100%!important;max-height:none!important;overflow:visible!important;box-shadow:none!important;border:1px solid var(--line,#e4e7ec)!important;border-radius:13px!important;background:var(--surface,#fff)!important;padding:9px!important}
+  .mobileProfileChoice{width:100%!important;text-align:left!important}
+
+  /* Analytics order: tile selector -> price/stat tiles -> graph. */
+  .fullDetail{display:flex!important;flex-direction:column!important;overflow-y:auto!important;-webkit-overflow-scrolling:touch!important;padding:10px 10px 24px!important;height:auto!important;min-height:100dvh!important;max-height:none!important}
+  .fullDetail>.backDetail{order:0!important;position:relative!important;top:auto!important}
+  .fullDetail>.eyebrow{order:1!important}
+  .fullDetail>.itemtitle{order:2!important;position:relative!important;top:auto!important}
+  .fullDetail>.detailTileControls{order:3!important}
+  .fullDetail>.panelstats{order:4!important}
+  .fullDetail>.chartbox{order:5!important}
+  .fullDetail>.chartNote{order:6!important}
+  .fullDetail>.scoreExplain{order:7!important}
+  .fullDetail>.wikiLink{order:8!important}
+  .fullDetail .detailTileControls{position:relative!important;top:auto!important;margin:4px 0 7px!important}
+  .fullDetail .detailTileControls>div{max-height:62px!important;overflow-x:auto!important;overflow-y:hidden!important;flex-wrap:nowrap!important;white-space:nowrap!important}
+  .fullDetail .panelstats{grid-template-columns:repeat(2,minmax(0,1fr))!important;margin:0 0 9px!important}
+
+  /* Bigger, calmer graph interaction area. One finger pans; two fingers pinch-zoom. */
+  .fullDetail .chartbox{padding:9px!important;margin:0!important}
+  .fullDetail .chartTouch{height:270px!important;min-height:270px!important;touch-action:none!important;overscroll-behavior:contain!important;overflow:hidden!important;border-radius:10px!important}
+  .fullDetail .chartTouch .recharts-wrapper,.fullDetail .chartTouch .recharts-surface{height:270px!important;min-height:270px!important}
+  .fullDetail .charthead{position:relative!important;top:auto!important}
+  .fullDetail .rangeButtons{overflow-x:auto!important;flex-wrap:nowrap!important;scrollbar-width:none!important}
+  .fullDetail .rangeButtons button{flex:0 0 auto!important;min-width:44px!important;padding:7px 9px!important;font-size:9px!important}
+  .fullDetail .chartNote{font-size:9px!important;line-height:1.35!important;margin:6px 0!important}
+}
+
+@media(max-width:700px) and (orientation:landscape){
+  .fullDetail{padding:5px 8px 12px!important}
+  .fullDetail .chartTouch{height:210px!important;min-height:210px!important}
+  .fullDetail .chartTouch .recharts-wrapper,.fullDetail .chartTouch .recharts-surface{height:210px!important;min-height:210px!important}
+  .fullDetail .detailTileControls>div{max-height:34px!important}
+  .fullDetail .panelstats{grid-template-columns:repeat(5,minmax(0,1fr))!important}
+  .fullDetail .panelstats .stat{padding:5px!important}
+}
+
+/* V30: chart never acts like a click-through surface underneath the analytics page. */
+.fullDetail .chartTouch{isolation:isolate}
