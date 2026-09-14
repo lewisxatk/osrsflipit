@@ -50,3 +50,24 @@ Use the V35.2.1 ZIP as a fresh Cloudflare Pages deployment/build. If an old Clou
 - Market scanner now uses the chosen volume/margin floors instead of the fixed 250-volume rule.
 - Added a Cloudflare Pages Function at `/api/hiscores` so account lookups are server-side instead of browser-direct to Jagex, avoiding normal browser CORS blocking.
 - Added basic username validation, upstream status forwarding, short public caching, and CORS headers for the account lookup endpoint.
+
+
+## V39.1 scanner + account reliability
+- Fixed scanner threshold parsing so volume/margin filters accept plain numbers, commas, and GP shorthand such as `1k`, `50k`, `2.5m`.
+- Scanner now explicitly converts live volume/price fields to numbers before filtering, reports when no tracked items meet the chosen volume floor, and only shows the market scan button in Market mode.
+- Added clearer last-hour scanning diagnostics and preserves the one-item scanner flow.
+- Improved HiScores endpoint response handling so the UI shows the real reason for failure instead of the old generic CORS message.
+- Added a Cloudflare Workers-compatible `public/_worker.js` API handler as well as the Pages Function, covering both common Cloudflare deployment modes.
+- Added detailed RuneLite Profile export/import instructions in Calculations, including the important limitation that RuneLite Profiles are primarily plugin/settings exports and are not a guaranteed source of skill XP or quest data. RuneLite documents Profiles as separate plugin/settings sets and the export control is inside the expanded profile controls.
+- Added clearer styling for the RuneLite import guide in all themes.
+
+### Scanner input examples
+- `250` = 250 volume/day
+- `1,000` = 1,000 volume/day
+- `1k` = 1,000 volume/day
+- `10k` = 10,000 volume/day
+- `50k` = 50,000 GP minimum margin after tax
+- `2.5m` = 2.5m GP minimum margin after tax
+
+### Cloudflare note
+If the site is deployed as a Workers Static Assets project, `public/_worker.js` is copied into `dist` and handles `/api/hiscores`. If it is deployed as Cloudflare Pages, `functions/api/hiscores.js` handles the same route. This avoids relying on a browser-direct request to Jagex.
