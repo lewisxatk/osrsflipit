@@ -42,3 +42,11 @@ Use the V35.2.1 ZIP as a fresh Cloudflare Pages deployment/build. If an old Clou
 - RuneLite profile import accepts compatible text/JSON/profile exports and explains that the built-in RuneLite export is primarily client settings.
 - Cool Stuff now includes a Last 1 Hour Scanner for historical buy-low/sell-higher sequences with a 250+ 24h-volume quality floor.
 - `/calculations` is the primary calculations route; `/calculators` remains an alias.
+
+## V39 fixes
+- Last 1 Hour Scanner no longer leaves the item suggestion layer stuck open after selecting an item.
+- One-item scanner now opens the item's full analytics on demand and can open it automatically after a successful scan.
+- Added editable minimum 24h volume and minimum post-tax margin thresholds for the scanner.
+- Market scanner now uses the chosen volume/margin floors instead of the fixed 250-volume rule.
+- Added a Cloudflare Pages Function at `/api/hiscores` so account lookups are server-side instead of browser-direct to Jagex, avoiding normal browser CORS blocking.
+- Added basic username validation, upstream status forwarding, short public caching, and CORS headers for the account lookup endpoint.
