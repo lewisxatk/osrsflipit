@@ -585,39 +585,62 @@ function MarketOpportunityLab({items,onSelect}){
 
 
 function LastHourScanner({items,onSelect}){
- const [mode,setMode]=useState("market"),[query,setQuery]=useState(""),[rows,setRows]=useState([]),[loading,setLoading]=useState(false),[lastScan,setLastScan]=useState(0),[manual,setManual]=useState(null),[selectedItemId,setSelectedItemId]=useState(null),[minVolume,setMinVolume]=useState("250"),[minMargin,setMinMargin]=useState("0");
+ const [mode,setMode]=useState("market"),[query,setQuery]=useState(""),[rows,setRows]=useState([]),[loading,setLoading]=useState(false),[lastScan,setLastScan]=useState(0),[manual,setManual]=useState(null),[selectedItemId,setSelectedItemId]=useState(null);
+ const [minPrice,setMinPrice]=useState("1m"),[maxPrice,setMaxPrice]=useState("25m"),[minVolume,setMinVolume]=useState("250"),[minMargin,setMinMargin]=useState("200k"),[minPct,setMinPct]=useState("0"),[minInterval,setMinInterval]=useState("10");
  const tradableItems=useMemo(()=>items.filter(x=>Number(x.id)>0&&Number(x.volume)>0&&(Number(x.buy)>0||Number(x.sell)>0)),[items]);
  const find=useMemo(()=>fuzzyItems(tradableItems,query,8),[tradableItems,query]);
- const volumeFloor=parseThreshold(minVolume),marginFloor=parseThreshold(minMargin);
+ const priceFloor=Math.max(0,parseGp(minPrice)||0),priceCeil=Math.max(priceFloor,parseGp(maxPrice)||Infinity),volumeFloor=Math.max(0,parseThreshold(minVolume)),marginFloor=Math.max(0,parseThreshold(minMargin)),pctFloor=Math.max(0,Number(String(minPct).replace(/[^0-9.]/g,""))||0),intervalFloor=Math.max(0,Number(String(minInterval).replace(/[^0-9.]/g,""))||0);
+ const formatTime=ts=>new Intl.DateTimeFormat(undefined,{hour:"2-digit",minute:"2-digit"}).format(new Date(ts*1000));
+ const evaluateSeries=(item,raw)=>{
+   const points=(raw||[]).map(p=>({timestamp:Number(p.timestamp),entry:Number(p.avgLowPrice),exit:Number(p.avgHighPrice)})).filter(p=>p.timestamp>0&&p.entry>0&&p.exit>0&&p.entry>=priceFloor&&p.entry<=priceCeil&&p.exit>=priceFloor&&p.exit<=priceCeil).sort((a,b)=>a.timestamp-b.timestamp);
+   let best=null,count=0;
+   for(let i=0;i<points.length;i++){
+     for(let j=i+1;j<points.length;j++){
+       const minutes=(points[j].timestamp-points[i].timestamp)/60;
+       if(minutes<intervalFloor)continue;
+       const tax=taxFor(points[j].exit),profit=points[j].exit-points[i].entry-tax,marginPct=(profit/Math.max(1,points[i].entry))*100;
+       if(profit>=marginFloor&&marginPct>=pctFloor){count++;if(!best||profit>best.profit)best={entry:points[i].entry,exit:points[j].exit,profit,marginPct,tax,entryAt:points[i].timestamp,exitAt:points[j].timestamp,minutes};}
+     }
+   }
+   return best?{...item,...best,eventCount:count,scanWindow:points.length}:null;
+ };
  const selectItem=async(item)=>{setQuery(item.name);setSelectedItemId(item.id);setManual(null);await scanItem(item)};
- const scanItem=async(item)=>{setLoading(true);setManual(null);try{const r=await api(`/timeseries?timestep=5m&id=${item.id}`);const raw=(r.data||[]).slice(-13).map(p=>({timestamp:Number(p.timestamp),low:Number(p.avgLowPrice),high:Number(p.avgHighPrice)})).filter(p=>p.timestamp>0&&p.low>0&&p.high>0);let best=null;for(let i=0;i<raw.length;i++){for(let j=i+1;j<raw.length;j++){const entry=raw[i].low,exit=raw[j].high,profit=exit-entry-taxFor(exit);if(profit>=marginFloor&&(!best||profit>best.profit))best={buy:entry,sell:exit,profit,buyAt:raw[i].timestamp*1000,sellAt:raw[j].timestamp*1000,minutes:(raw[j].timestamp-raw[i].timestamp)/60};}}const result=best?{...item,...best}:null;setManual(result);if(result)onSelect({...item,hourScan:result});}catch(e){console.warn("one-item last-hour scan failed",item?.id,e);setManual(null)}finally{setLoading(false)}};
+ const scanItem=async(item)=>{setLoading(true);setManual(null);try{if(Number(item.volume||0)<volumeFloor){setManual(null);return}const current=Number(item.buy||item.sell||0);if(current<priceFloor||current>priceCeil){setManual(null);return}const r=await api(`/timeseries?timestep=5m&id=${item.id}`),result=evaluateSeries(item,(r.data||[]).slice(-13));setManual(result);if(result)onSelect({...item,hourScan:result});}catch(e){console.warn("one-item historical margin scan failed",item?.id,e);setManual(null)}finally{setLoading(false)}};
  const scan=async()=>{
-  setLoading(true);setRows([]);
+  setLoading(true);setRows([]);setLastScan(0);
   try{
-    const pool=tradableItems.filter(x=>Number(x.volume)>=volumeFloor).sort((a,b)=>Number(b.volume||0)-Number(a.volume||0)).slice(0,80);
+    const pool=tradableItems.filter(x=>Number(x.volume)>=volumeFloor).filter(x=>{const price=Number(x.buy||x.sell||0);return price>=priceFloor&&price<=priceCeil}).sort((a,b)=>Number(b.volume||0)-Number(a.volume||0)).slice(0,80);
     if(!pool.length){setLastScan(Date.now());return;}
     const out=[];
-    for(const item of pool){
-      try{
-        const r=await api(`/timeseries?timestep=5m&id=${item.id}`);
-        const raw=(r.data||[]).slice(-13).map(p=>({timestamp:Number(p.timestamp),low:Number(p.avgLowPrice),high:Number(p.avgHighPrice)})).filter(p=>p.timestamp>0&&p.low>0&&p.high>0);
-        let best=0,bestBuy=0,bestSell=0,bestMinutes=0;
-        for(let i=0;i<raw.length;i++){
-          for(let j=i+1;j<raw.length;j++){
-            const buy=raw[i].low,sell=raw[j].high,profit=sell-buy-taxFor(sell);
-            if(buy>0&&sell>0&&profit>best){best=profit;bestBuy=buy;bestSell=sell;bestMinutes=(raw[j].timestamp-raw[i].timestamp)/60;}
-          }
-        }
-        if(best>=marginFloor&&bestBuy>0&&bestSell>0)out.push({...item,hourMargin:best,buyPoint:bestBuy,sellPoint:bestSell,minutes:bestMinutes,nowMargin:item.margin});
-      }catch(e){console.warn("last-hour scan failed",item.id,e)}
+    for(let offset=0;offset<pool.length;offset+=8){
+      const batch=pool.slice(offset,offset+8);
+      const results=await Promise.all(batch.map(async item=>{try{const r=await api(`/timeseries?timestep=5m&id=${item.id}`);return evaluateSeries(item,(r.data||[]).slice(-13));}catch(e){console.warn("historical margin scan failed",item.id,e);return null}}));
+      results.forEach(x=>{if(x)out.push(x)});
     }
-    setRows(out.sort((a,b)=>b.hourMargin-a.hourMargin).slice(0,18));
+    setRows(out.sort((a,b)=>b.profit-a.profit).slice(0,18));
     setLastScan(Date.now());
   }finally{setLoading(false)}
-};
- return <div className="lastHourScanner"><div className="lastHourHead"><div><div className="eyebrow">LAST 1 HOUR SCANNER</div><h2>Find the margin before it appears.</h2><p>Looks at recent 5-minute market observations and asks: “Was there a cheaper buy point, followed later by a higher sell point?” Set your own volume and minimum margin floor.</p></div>{mode==="market"&&<button className="primary" onClick={scan} disabled={loading}>{loading?"Scanning…":"Scan last hour"}</button>}</div><div className="lastHourControls"><div className="segmented"><button className={mode==="market"?"active":""} onClick={()=>{setMode("market");setSelectedItemId(null)}}>Market scan</button><button className={mode==="item"?"active":""} onClick={()=>setMode("item")}>One item</button></div><label className="lastHourThreshold"><span>Min volume / 24h</span><input value={minVolume} onChange={e=>setMinVolume(e.target.value)} inputMode="decimal" placeholder="250, 1k, 10k" aria-label="Minimum 24 hour volume"/></label><label className="lastHourThreshold"><span>Min margin after tax</span><input value={minMargin} onChange={e=>setMinMargin(e.target.value)} inputMode="decimal" placeholder="0, 5k, 50k" aria-label="Minimum margin after tax"/></label>{mode==="item"&&<div className="lastHourSearch"><Search size={15}/><input value={query} onChange={e=>{setQuery(e.target.value);setSelectedItemId(null)}} placeholder="Dragon claws, Tumeken's shadow…"/>{selectedItemId&&<button className="lastHourChange" onClick={()=>{setSelectedItemId(null);setManual(null)}}>Change</button>}{!selectedItemId&&find.length>0&&<div className="lastHourSuggestions">{find.map(x=><button key={x.id} onClick={()=>selectItem(x)}><img src={iconUrl(x.icon)}/><span>{x.name}</span><small>{num(x.volume)} vol</small></button>)}</div>}</div>}</div>{mode==="item"&&loading&&<div className="lastHourEmpty">Reading the last 1 hour of 5-minute observations for {query}…</div>}{mode==="item"&&!loading&&manual&&<><div className="lastHourManual"><div><strong>{manual.name}</strong><small>Best observed sequence in the last hour</small></div><div><span>Buy point</span><b>{money(manual.buy)}</b></div><div><span>Later sell point</span><b>{money(manual.sell)}</b></div><div><span>Profit after tax</span><strong className="green">{money(manual.profit)}</strong></div><div><span>Time between</span><b>{manual.minutes.toFixed(0)} min</b></div></div><button className="secondary lastHourOpen" onClick={()=>onSelect(manual)}>Open full item analytics <ChevronRight size={14}/></button></>}{mode==="item"&&!loading&&!manual&&selectedItemId&&<div className="lastHourEmpty">No sequence met your {money(marginFloor)} minimum margin in the last hour. Try lowering the margin floor or choosing a more active item.</div>}{mode==="market"&&(rows.length?<div className="lastHourRows">{rows.map((x,i)=><button key={x.id} onClick={()=>onSelect(x)}><b className="rank">{String(i+1).padStart(2,"0")}</b><img src={iconUrl(x.icon)}/><span><strong>{x.name}</strong><small>Now {money(x.buy)} buy · {money(x.sell)} sell · {num(x.volume)} vol/24h</small></span><span><small>Observed buy</small><b>{money(x.buyPoint)}</b></span><span><small>Later sell</small><b>{money(x.sellPoint)}</b></span><span><small>Margin after tax</small><strong className="green">{money(x.hourMargin)}</strong></span><ChevronRight size={14}/></button>)}</div>:<div className="lastHourEmpty">{lastScan?(items.filter(x=>Number(x.volume||0)>=volumeFloor&&Number(x.buy||0)>0).length?`No positive post-tax sequences met your ${num(volumeFloor)} volume / ${money(marginFloor)} margin floors.`:`No tracked items currently meet the ${num(volumeFloor)} volume floor. Try a lower volume or use k/m notation, e.g. 1k.`):"Run the scan to see recent historical opportunities."}</div>)}<small className="lastHourFoot">Important: this is a historical opportunity scanner, not proof that a GE offer would have filled at both prices. It uses observed trade-price history and GE tax.</small></div>
+ };
+ return <div className="lastHourScanner">
+  <div className="lastHourHead"><div><div className="eyebrow">HISTORICAL MARGIN SCANNER</div><h2>Find real historical opportunities.</h2><p>Checks the last hour in 5-minute observations and finds the best earlier entry → later exit sequence that clears your after-tax profit rules.</p></div>{mode==="market"&&<button className="primary" onClick={scan} disabled={loading}>{loading?"Scanning…":"Scan last hour"}</button>}</div>
+  <div className="lastHourControls">
+   <div className="segmented"><button className={mode==="market"?"active":""} onClick={()=>{setMode("market");setSelectedItemId(null)}}>Market scan</button><button className={mode==="item"?"active":""} onClick={()=>setMode("item")}>One item</button></div>
+   <label className="lastHourThreshold"><span>Min price</span><input value={minPrice} onChange={e=>setMinPrice(e.target.value)} inputMode="decimal" placeholder="1m" aria-label="Minimum current price"/></label>
+   <label className="lastHourThreshold"><span>Max price</span><input value={maxPrice} onChange={e=>setMaxPrice(e.target.value)} inputMode="decimal" placeholder="25m" aria-label="Maximum current price"/></label>
+   <label className="lastHourThreshold"><span>Min volume / 24h</span><input value={minVolume} onChange={e=>setMinVolume(e.target.value)} inputMode="decimal" placeholder="250" aria-label="Minimum 24 hour volume"/></label>
+   <label className="lastHourThreshold"><span>Min profit after tax</span><input value={minMargin} onChange={e=>setMinMargin(e.target.value)} inputMode="decimal" placeholder="200k" aria-label="Minimum historical profit after GE tax"/></label>
+   <label className="lastHourThreshold"><span>Min margin %</span><input value={minPct} onChange={e=>setMinPct(e.target.value)} inputMode="decimal" placeholder="0" aria-label="Minimum historical profit percentage"/></label>
+   <label className="lastHourThreshold"><span>Min time between</span><input value={minInterval} onChange={e=>setMinInterval(e.target.value)} inputMode="numeric" placeholder="10" aria-label="Minimum minutes between entry and exit"/></label>
+   {mode==="item"&&<div className="lastHourSearch"><Search size={15}/><input value={query} onChange={e=>{setQuery(e.target.value);setSelectedItemId(null)}} placeholder="Dragon claws, Tumeken's shadow…"/>{selectedItemId&&<button className="lastHourChange" onClick={()=>{setSelectedItemId(null);setManual(null)}}>Change</button>}{!selectedItemId&&find.length>0&&<div className="lastHourSuggestions">{find.map(x=><button key={x.id} onClick={()=>selectItem(x)}><img src={iconUrl(x.icon)}/><span>{x.name}</span><small>{num(x.volume)} vol</small></button>)}</div>}</div>}
+  </div>
+  <div className="lastHourRule"><strong>How the margin works:</strong> historical profit = later observed high price − earlier observed low price − GE tax on the later sale. The tax is capped using the same <b>2% / 5m maximum</b> rule as the rest of OSRS Hub.</div>
+  {mode==="item"&&loading&&<div className="lastHourEmpty">Reading the last hour of 5-minute observations for {query}…</div>}
+  {mode==="item"&&!loading&&manual&&<><div className="lastHourManual"><div><strong>{manual.name}</strong><small>Best qualifying historical sequence</small></div><div><span>Observed entry</span><b>{money(manual.entry)}</b><small>{formatTime(manual.entryAt)}</small></div><div><span>Observed exit</span><b>{money(manual.exit)}</b><small>{formatTime(manual.exitAt)}</small></div><div><span>Profit after tax</span><strong className="green">{money(manual.profit)}</strong><small>{manual.marginPct.toFixed(2)}% · tax {money(manual.tax)}</small></div><div><span>Time between</span><b>{manual.minutes.toFixed(0)} min</b><small>{manual.eventCount} qualifying event{manual.eventCount===1?"":"s"}</small></div></div><button className="secondary lastHourOpen" onClick={()=>onSelect(manual)}>Open full item analytics <ChevronRight size={14}/></button></>}
+  {mode==="item"&&!loading&&!manual&&selectedItemId&&<div className="lastHourEmpty">No historical sequence met all your rules. Try lowering the after-tax profit, margin %, or volume floor.</div>}
+  {mode==="market"&&(rows.length?<div className="lastHourRows">{rows.map((x,i)=><button key={x.id} onClick={()=>onSelect(x)}><b className="rank">{String(i+1).padStart(2,"0")}</b><img src={iconUrl(x.icon)}/><span><strong>{x.name}</strong><small>Current {money(x.buy||x.sell)} · {num(x.volume)} vol/24h · {x.eventCount} qualifying</small></span><span><small>Entry · {formatTime(x.entryAt)}</small><b>{money(x.entry)}</b></span><span><small>Exit · {formatTime(x.exitAt)}</small><b>{money(x.exit)}</b></span><span><small>Profit after tax</small><strong className="green">{money(x.profit)} · {x.marginPct.toFixed(2)}%</strong></span><ChevronRight size={14}/></button>)}</div>:<div className="lastHourEmpty">{lastScan?(tradableItems.filter(x=>Number(x.volume||0)>=volumeFloor).filter(x=>{const price=Number(x.buy||x.sell||0);return price>=priceFloor&&price<=priceCeil}).length?`No historical sequences met your ${money(marginFloor)} after-tax profit, ${pctFloor}% margin and ${intervalFloor} minute interval rules.`:`No tracked items currently meet your price range / ${num(volumeFloor)} volume floor. Try widening the price range or lowering volume.`):"Run the scan to find the strongest historical opportunities in your chosen range."}</div>)}
+  <small className="lastHourFoot">Historical opportunity only — 5-minute values are aggregated market observations, not guaranteed GE fills. Every profit figure shown here has the GE tax deducted from the later sale.</small>
+ </div>
 }
-
 function CoolStuff({items,onSelect}){
   const [query,setQuery]=useState(""),[bankroll,setBankroll]=useState("20m"),[radar,setRadar]=useState([]),[radarLoading,setRadarLoading]=useState(false),[selected,setSelected]=useState(null),[portfolio,setPortfolio]=useState(()=>safeRead("osrsflipit-portfolio",[])),[bestTimes,setBestTimes]=useState([]),[timesLoading,setTimesLoading]=useState(false);
   const moneyValue=parseGp(bankroll)||20000000;

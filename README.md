@@ -81,3 +81,22 @@ If the site is deployed as a Workers Static Assets project, `public/_worker.js` 
 - Main market price semantics corrected: Buy Price uses the live high/instant-buy side and Sell Price uses the live low/instant-sell side; margin is calculated accordingly.
 - RuneLite import now attempts to extract an account name from JSON/profile exports and automatically runs the HiScores lookup when a username is present.
 - RuneLite import now gives a precise explanation when the exported profile contains settings but no account name or skill data.
+
+
+## V40.0 — Historical Margin Scanner
+- Replaced the previous last-hour scanner logic with a configurable historical opportunity scanner.
+- Filters: current price range, minimum 24h volume, minimum after-tax profit, minimum margin %, and minimum time between observations.
+- Uses 5-minute time-series observations across the last hour.
+- Finds the best earlier observed low → later observed high sequence per item.
+- GE tax is explicitly deducted from the later sale using the site-wide 2% tax rate with the 5m cap.
+- Shows exact local entry/exit times, observed prices, after-tax profit, margin %, tax paid, and number of qualifying sequences.
+- Scans candidates in concurrent batches of 8 to reduce waiting time while avoiding an uncontrolled request burst.
+- Clearly labels results as historical opportunities rather than guaranteed GE fills.
+
+### V40 test defaults
+- Min price: 1m
+- Max price: 25m
+- Min 24h volume: 250
+- Min profit after tax: 200k
+- Min margin: 0%
+- Minimum time between observations: 10 minutes
