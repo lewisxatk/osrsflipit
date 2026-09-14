@@ -33,9 +33,12 @@ Use the V35.2.1 ZIP as a fresh Cloudflare Pages deployment/build. If an old Clou
 - Added Cloudflare Pages SPA fallback via `_redirects`.
 
 
-## V37.0 updates
-- Fixed Market/Screener Profiles interaction on phone and tablet with dedicated mobile/tablet profile panels.
-- Added **Aurora** theme: a cool blue/violet/cyan glass-style theme alongside Light, Dark and Warm.
-- Theme choice persists in localStorage and cycles Light → Dark → Warm → Aurora.
-- Added stronger Aurora treatment for tables, analytics, forms, navigation and mobile UI.
-- Future roadmap notes: OSRS account lookup, XP/time projections, quest-path optimisation, and data-driven monster/boss GP/hour modelling.
+## V38 updates
+- Mobile/tablet Profiles fixed on Market and landscape layouts.
+- Desktop header cleaned up; Analysis moved into Extras.
+- Quick profit calculator restored on wider desktop screens and expanded with GE-limit profit after tax.
+- Aurora theme added with stronger dark-mode contrast and ticker/table surface fixes.
+- New Calculations page: HiScores account lookup, XP-to-level/99 planning, quest-pathway beta, and live-price-linked boss/monster GP/hour modelling.
+- RuneLite profile import accepts compatible text/JSON/profile exports and explains that the built-in RuneLite export is primarily client settings.
+- Cool Stuff now includes a Last 1 Hour Scanner for historical buy-low/sell-higher sequences with a 250+ 24h-volume quality floor.
+- `/calculations` is the primary calculations route; `/calculators` remains an alias.
