@@ -52,7 +52,7 @@ Use the V35.2.1 ZIP as a fresh Cloudflare Pages deployment/build. If an old Clou
 - Added basic username validation, upstream status forwarding, short public caching, and CORS headers for the account lookup endpoint.
 
 
-## V39.1 scanner + account reliability
+## V39.2 scanner + account reliability
 - Fixed scanner threshold parsing so volume/margin filters accept plain numbers, commas, and GP shorthand such as `1k`, `50k`, `2.5m`.
 - Scanner now explicitly converts live volume/price fields to numbers before filtering, reports when no tracked items meet the chosen volume floor, and only shows the market scan button in Market mode.
 - Added clearer last-hour scanning diagnostics and preserves the one-item scanner flow.
@@ -71,3 +71,13 @@ Use the V35.2.1 ZIP as a fresh Cloudflare Pages deployment/build. If an old Clou
 
 ### Cloudflare note
 If the site is deployed as a Workers Static Assets project, `public/_worker.js` is copied into `dist` and handles `/api/hiscores`. If it is deployed as Cloudflare Pages, `functions/api/hiscores.js` handles the same route. This avoids relying on a browser-direct request to Jagex.
+
+
+## V39.2 fixes
+- Last 1 Hour Scanner now rejects zero/missing time-series prices instead of treating them as valid buy prices.
+- Scanner uses positive historical entry/exit prices only.
+- Market scan accepts custom 24h volume floors and minimum after-tax margin floors using gp/k/m/b notation.
+- Item search is restricted to currently tradable GE items with live volume/prices; monster/activity names are not used as scanner suggestions.
+- Main market price semantics corrected: Buy Price uses the live high/instant-buy side and Sell Price uses the live low/instant-sell side; margin is calculated accordingly.
+- RuneLite import now attempts to extract an account name from JSON/profile exports and automatically runs the HiScores lookup when a username is present.
+- RuneLite import now gives a precise explanation when the exported profile contains settings but no account name or skill data.
