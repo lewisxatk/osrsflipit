@@ -1,0 +1,2 @@
+import {envOk,json,sessionUser} from "./_shared.js";
+export async function onRequestGet({request,env}){if(!envOk(env))return json({user:null,data:null,configured:false});const user=await sessionUser(request,env);if(!user)return json({user:null,data:null});const row=await env.DB.prepare("SELECT data_json FROM user_data WHERE user_id=?1").bind(user.id).first();let data=null;try{data=row?.data_json?JSON.parse(row.data_json):null}catch{}return json({user,data})}

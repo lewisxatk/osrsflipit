@@ -1,102 +1,54 @@
-# OSRS Hub V35.2.1 — Startup + Calculator Fix
+# OSRS Hub V41 — Discord Accounts + Cloud Sync
 
-## Changes
-- Hardened startup so module/runtime failures no longer present as an unexplained white page.
-- Added a self-contained boot fallback message and global error visibility.
-- Browser favicon now exactly matches the purple→blue OSRS Hub OH mark with white text.
-- Retained the V35.2 desktop Quick Profit Calculator beside Notifications.
-- Calculator accepts plain GP values and k/m/b shorthand, quantity, GE tax, per-item profit, total profit, investment, sale value and ROI.
+## What changed
+- Discord OAuth2 sign-in added to the top-right Login button.
+- Cloudflare D1 account storage keyed to the Discord user ID.
+- Cloud sync for profiles, filters, column order/widths, analytics tiles, watchlist, alerts/rules, Mini GE, theme, chart preferences, recipe favourites, Finance P&L log, bankroll, portfolio, dashboard pins and saved Calculations account snapshot.
+- Historical Margin Scanner upgraded with min/max price, 24h volume, after-tax profit, margin %, minimum observation gap and exact entry/exit times.
+- Recipe enchanting data corrected to use the actual jewellery/amulet input items (for example Sapphire ring → Ring of recoil and Dragonstone amulet → Amulet of glory).
+- RuneLite import messaging and username extraction made more robust. Important: RuneLite Profiles are primarily plugin/settings profiles, not reliable OSRS account-stat exports; HiScores lookup remains the authoritative account-stat route.
+- Screener mobile Profiles panel moved above the table instead of appearing below the market items.
+- Desktop/mobile duplicate Profiles panels hidden appropriately so Home does not show the same profile list twice.
+- Existing V39/V40 price/tax behaviour retained.
 
-## Build
-`npm install`
-`npm run build`
-`npm run preview`
+## Discord setup — easiest route
 
-## Deployment
-Use the V35.2.1 ZIP as a fresh Cloudflare Pages deployment/build. If an old Cloudflare deployment is cached, trigger a new deployment and hard refresh.
+1. Create a Discord application at https://discord.com/developers/applications.
+2. Open the application → OAuth2.
+3. Add this redirect URL exactly:
+   `https://YOUR-DOMAIN/api/auth/callback`
+   Replace YOUR-DOMAIN with the real OSRS Hub domain.
+4. Copy the Application/Client ID.
+5. Reset/copy the Client Secret. Never put this secret in React code or GitHub.
+6. In Cloudflare, create a D1 database, for example `osrshub-accounts`.
+7. Open the D1 database → Console and run the SQL in `migrations/0001_auth.sql`.
+8. In Cloudflare Pages → your project → Settings → Bindings → Add → D1 database binding.
+9. Set the variable name to exactly `DB` and select the new D1 database.
+10. In Cloudflare Pages → Settings → Environment variables/secrets, add:
+    - `DISCORD_CLIENT_ID` = your Discord Application ID
+    - `DISCORD_CLIENT_SECRET` = your Discord Client Secret (encrypted secret)
+    - `DISCORD_REDIRECT_URI` = `https://YOUR-DOMAIN/api/auth/callback`
+    - `OSRSHUB_AUTH_SECRET` = a long random secret (32+ random characters)
+11. Redeploy the Pages project.
+12. Open the site → Login → Continue with Discord.
 
-## Verification
-- ZIP integrity: passed.
-- Static JSX/source checks: passed.
-- Full Vite production build: not executable in this offline environment because npm dependencies are not cached.
+Discord's OAuth2 flow redirects the user to the configured callback and returns an authorization code which the backend exchanges server-side. The site requests only the `identify` scope for this login flow. Discord documents the standard OAuth2 flow and redirect configuration in its developer documentation.
 
+## Cloudflare notes
 
-## V36 updates
-- Dark-mode parity fixes for Screener and full Item Analytics, with brighter profit-green in dark mode.
-- Item Analytics title no longer sticks while scrolling.
-- Recipe cards show skill requirements more clearly and include expanded Magic enchanting and Herblore unfinished-potion methods.
-- Recipes remain sorted by highest estimated GP/hour by default.
-- Finance Flip Log item picker uses the shared searchable suggestion menu and is no longer clipped/sticky.
-- Added optional **Full GE Limit Cost** column/filter: buy price × GE limit. It is opt-in and not part of the default columns.
-- Added mobile/tablet sort controls for Volume, Margin, Potential Profit, ROI, Flip Score and Limit Cost.
-- Added real browser paths: `/dashboard`, `/screener`, `/analysis`, `/recipes`, `/finance`, `/calculators`, `/money-makers`, `/movers`, `/watchlist`, `/alerts`, `/cool-stuff`.
-- Added Cloudflare Pages SPA fallback via `_redirects`.
+The project currently uses the Pages advanced `_worker.js` route. V41 therefore routes Discord OAuth, session, sync and HiScores through `public/_worker.js`, while the `/functions` versions are retained as standard Pages Function equivalents.
 
+Cloudflare documents that Pages Functions can use D1 bindings and that the binding is available as `env.DB`; the dashboard path is Workers & Pages → project → Settings → Bindings → D1 database binding.
 
-## V38 updates
-- Mobile/tablet Profiles fixed on Market and landscape layouts.
-- Desktop header cleaned up; Analysis moved into Extras.
-- Quick profit calculator restored on wider desktop screens and expanded with GE-limit profit after tax.
-- Aurora theme added with stronger dark-mode contrast and ticker/table surface fixes.
-- New Calculations page: HiScores account lookup, XP-to-level/99 planning, quest-pathway beta, and live-price-linked boss/monster GP/hour modelling.
-- RuneLite profile import accepts compatible text/JSON/profile exports and explains that the built-in RuneLite export is primarily client settings.
-- Cool Stuff now includes a Last 1 Hour Scanner for historical buy-low/sell-higher sequences with a 250+ 24h-volume quality floor.
-- `/calculations` is the primary calculations route; `/calculators` remains an alias.
+## Security
+- Discord client secret is server-side only.
+- OAuth state is random and stored in a short-lived HttpOnly cookie.
+- Login sessions are signed with HMAC and stored in an HttpOnly, Secure, SameSite cookie.
+- SQL writes use prepared statements/bind parameters.
+- Cloud sync payloads are capped below 1 MB.
+- No Discord bot token or password is stored.
+- OSRS Hub does not claim to store data "inside Discord"; Discord is the identity provider and D1 is the account database.
 
-## V39 fixes
-- Last 1 Hour Scanner no longer leaves the item suggestion layer stuck open after selecting an item.
-- One-item scanner now opens the item's full analytics on demand and can open it automatically after a successful scan.
-- Added editable minimum 24h volume and minimum post-tax margin thresholds for the scanner.
-- Market scanner now uses the chosen volume/margin floors instead of the fixed 250-volume rule.
-- Added a Cloudflare Pages Function at `/api/hiscores` so account lookups are server-side instead of browser-direct to Jagex, avoiding normal browser CORS blocking.
-- Added basic username validation, upstream status forwarding, short public caching, and CORS headers for the account lookup endpoint.
+## Build check
 
-
-## V39.2 scanner + account reliability
-- Fixed scanner threshold parsing so volume/margin filters accept plain numbers, commas, and GP shorthand such as `1k`, `50k`, `2.5m`.
-- Scanner now explicitly converts live volume/price fields to numbers before filtering, reports when no tracked items meet the chosen volume floor, and only shows the market scan button in Market mode.
-- Added clearer last-hour scanning diagnostics and preserves the one-item scanner flow.
-- Improved HiScores endpoint response handling so the UI shows the real reason for failure instead of the old generic CORS message.
-- Added a Cloudflare Workers-compatible `public/_worker.js` API handler as well as the Pages Function, covering both common Cloudflare deployment modes.
-- Added detailed RuneLite Profile export/import instructions in Calculations, including the important limitation that RuneLite Profiles are primarily plugin/settings exports and are not a guaranteed source of skill XP or quest data. RuneLite documents Profiles as separate plugin/settings sets and the export control is inside the expanded profile controls.
-- Added clearer styling for the RuneLite import guide in all themes.
-
-### Scanner input examples
-- `250` = 250 volume/day
-- `1,000` = 1,000 volume/day
-- `1k` = 1,000 volume/day
-- `10k` = 10,000 volume/day
-- `50k` = 50,000 GP minimum margin after tax
-- `2.5m` = 2.5m GP minimum margin after tax
-
-### Cloudflare note
-If the site is deployed as a Workers Static Assets project, `public/_worker.js` is copied into `dist` and handles `/api/hiscores`. If it is deployed as Cloudflare Pages, `functions/api/hiscores.js` handles the same route. This avoids relying on a browser-direct request to Jagex.
-
-
-## V39.2 fixes
-- Last 1 Hour Scanner now rejects zero/missing time-series prices instead of treating them as valid buy prices.
-- Scanner uses positive historical entry/exit prices only.
-- Market scan accepts custom 24h volume floors and minimum after-tax margin floors using gp/k/m/b notation.
-- Item search is restricted to currently tradable GE items with live volume/prices; monster/activity names are not used as scanner suggestions.
-- Main market price semantics corrected: Buy Price uses the live high/instant-buy side and Sell Price uses the live low/instant-sell side; margin is calculated accordingly.
-- RuneLite import now attempts to extract an account name from JSON/profile exports and automatically runs the HiScores lookup when a username is present.
-- RuneLite import now gives a precise explanation when the exported profile contains settings but no account name or skill data.
-
-
-## V40.0 — Historical Margin Scanner
-- Replaced the previous last-hour scanner logic with a configurable historical opportunity scanner.
-- Filters: current price range, minimum 24h volume, minimum after-tax profit, minimum margin %, and minimum time between observations.
-- Uses 5-minute time-series observations across the last hour.
-- Finds the best earlier observed low → later observed high sequence per item.
-- GE tax is explicitly deducted from the later sale using the site-wide 2% tax rate with the 5m cap.
-- Shows exact local entry/exit times, observed prices, after-tax profit, margin %, tax paid, and number of qualifying sequences.
-- Scans candidates in concurrent batches of 8 to reduce waiting time while avoiding an uncontrolled request burst.
-- Clearly labels results as historical opportunities rather than guaranteed GE fills.
-
-### V40 test defaults
-- Min price: 1m
-- Max price: 25m
-- Min 24h volume: 250
-- Min profit after tax: 200k
-- Min margin: 0%
-- Minimum time between observations: 10 minutes
+The local environment used for this build does not have the Vite dependencies cached and has no reliable package-download access, so a complete `vite build` cannot be truthfully claimed locally. Cloudflare's production `npm run build`/`vite build` remains the authoritative build check.
