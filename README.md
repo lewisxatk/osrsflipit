@@ -59,3 +59,7 @@ If Cloudflare still reports `dist/_worker.js`, it is not running this V41.5 repo
 - `site/.assetsignore` blocks `_worker.js` from Worker Assets.
 - Source maps are disabled for production output.
 - Discord client secret and auth signing secret remain server-side.
+
+## V41.6 deployment verification
+This build is a normal Cloudflare Worker + Worker Assets deployment. The Vite output directory is `site/`, not `dist/`. After uploading this repository to GitHub, verify that `package.json` shows version `0.41.6` before deploying. The build also writes `site/_osrshub_build.txt` as a fingerprint. If Cloudflare logs `osrshub@0.41.1` or says it is reading assets from `/dist`, Cloudflare is building a different commit/repository/branch than this V41.6 source.
+The D1 binding is configured as `DB` for database `osrshub-accounts`.

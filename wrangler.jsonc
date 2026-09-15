@@ -12,7 +12,7 @@
     {
       "binding": "DB",
       "database_name": "osrshub-accounts",
-      "database_id": "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+      "database_id": "fa4e3c64-2267-4e2e-a378-11dc0011be3c"
     }
   ]
 }
