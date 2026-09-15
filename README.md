@@ -52,3 +52,15 @@ Cloudflare documents that Pages Functions can use D1 bindings and that the bindi
 ## Build check
 
 The local environment used for this build does not have the Vite dependencies cached and has no reliable package-download access, so a complete `vite build` cannot be truthfully claimed locally. Cloudflare's production `npm run build`/`vite build` remains the authoritative build check.
+
+## IMPORTANT — if your live URL is `*.workers.dev`
+
+If the live site is using a `workers.dev` address, configure the project under **Workers**, not only the Pages Bindings screen. V41.1 includes a root `worker.js` entry point and `wrangler.jsonc` so the Discord API routes are actually executed by a Cloudflare Worker while Vite's `dist` folder is served as static assets. Cloudflare Advanced Pages `_worker.js` routing is different; when `_worker.js` is used by Pages it takes control of requests, while `/functions` routing is ignored.
+
+For a Worker deployment:
+1. Cloudflare → Workers & Pages → **Workers** → `osrshub` → **Settings/Bindings**.
+2. Add D1 database binding: variable name exactly `DB`, database `osrshub-accounts`.
+3. Add the four environment variables/secrets under the Worker (not the React/Vite frontend).
+4. Redeploy.
+
+If the D1 binding screen still says there are no connected bindings, make sure you are inside the actual Worker named `osrshub`, not a Pages project with a similar name. Cloudflare documents D1 bindings for Workers and Pages separately.
