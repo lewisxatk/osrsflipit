@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover" />
+    <title>OSRS Hub — Grand Exchange Analytics</title>
+    <meta name="description" content="OSRS Hub — clean Grand Exchange analytics, flipping tools, alerts and market intelligence." />
+    <meta name="theme-color" content="#171225" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; connect-src 'self' https://prices.runescape.wiki https://oldschool.runescape.wiki; img-src 'self' data: https://oldschool.runescape.wiki https://prices.runescape.wiki; style-src 'self' 'unsafe-inline'; font-src 'self' data:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+  <body><div id="bootScreen"><div class="bootMark">OH</div><strong>OSRS Hub</strong><span id="bootStatus">Loading market tools…</span></div><div id="root"></div><script>window.__osrsHubBootTimer=setTimeout(function(){var s=document.getElementById("bootStatus");if(s&&!document.documentElement.classList.contains("osrshub-mounted")){s.textContent="Still loading… if this stays here, reload the page."}},7000);window.addEventListener("error",function(e){if(e&&e.target&&e.target.tagName==="LINK")return;var s=document.getElementById("bootStatus");if(s){s.textContent="The app could not start. Please reload OSRS Hub.";s.style.color="#b42318"}},{capture:true});window.addEventListener("unhandledrejection",function(){var s=document.getElementById("bootStatus");if(s){s.textContent="The app could not start. Please reload OSRS Hub.";s.style.color="#b42318"}});</script><script type="module" src="/src/main.jsx"></script><style>#bootScreen{position:fixed;inset:0;display:grid;place-content:center;text-align:center;gap:6px;background:#fff;color:#222;font:14px system-ui,-apple-system,sans-serif;z-index:99999}#bootScreen .bootMark{margin:auto;width:52px;height:52px;display:grid;place-items:center;border-radius:14px;font-weight:800;font-size:18px;background:linear-gradient(135deg,#8b5cf6,#22d3ee);color:#fff;box-shadow:0 10px 30px #8b5cf633}#bootScreen span{font-size:11px;color:#999}html.osrshub-mounted #bootScreen{display:none}</style></body>
+</html>
