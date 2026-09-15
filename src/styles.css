@@ -1401,3 +1401,45 @@ html[data-theme="dark"] .discordAlertsCard summary,html[data-theme="aurora"] .di
 /* Consistent full-page canvas in every non-light theme. */
 html[data-theme="dark"] main,html[data-theme="aurora"] main{min-height:calc(100dvh - 130px)}
 html[data-theme="dark"] .siteFooter,html[data-theme="aurora"] .siteFooter{background:transparent}
+
+
+/* V44.2 — desktop visual refinement: Apple-like light mode + Aurora consistency */
+@media(min-width:1101px){
+  html[data-theme="light"] body{background:radial-gradient(circle at 8% 0%,rgba(124,92,246,.045),transparent 25%),radial-gradient(circle at 92% 0%,rgba(34,211,238,.04),transparent 24%),#fafbfe;color:#171a22}
+  html[data-theme="light"] .nav{background:rgba(255,255,255,.88)!important;border-bottom:1px solid #e7e9ef!important;box-shadow:0 5px 24px rgba(35,42,65,.07)!important}
+  html[data-theme="light"] .navlinks>button{color:#666d7b!important;font-weight:600!important;background:transparent!important}
+  html[data-theme="light"] .navlinks>button:hover{color:#171a22!important;background:#f4f5f8!important}
+  html[data-theme="light"] .navlinks>button.active{color:#4630a8!important;background:linear-gradient(180deg,#f7f5ff,#f0efff)!important;box-shadow:inset 0 0 0 1px rgba(124,92,246,.12)!important}
+  html[data-theme="light"] .extrasDock>button{color:#666d7b!important;font-weight:600!important}
+  html[data-theme="light"] .globalSearch{background:rgba(255,255,255,.96)!important;border-color:#dfe2e9!important;box-shadow:0 3px 14px rgba(40,48,70,.055),inset 0 0 0 1px rgba(124,92,246,.025)!important;max-width:390px!important;min-width:240px!important;height:42px!important}
+  html[data-theme="light"] .globalSearch input{color:#20242d!important}
+  html[data-theme="light"] .iconbtn,html[data-theme="light"] .secondary{border-color:#dfe2e9!important;box-shadow:0 2px 10px rgba(40,48,70,.045)!important;color:#353a45!important}
+  html[data-theme="light"] .primary{box-shadow:0 7px 20px rgba(99,72,190,.13)!important}
+  html[data-theme="light"] .pageIntro,html[data-theme="light"] .hero{position:relative}
+  html[data-theme="light"] .pageIntro:before{content:"";position:absolute;left:-2vw;right:-2vw;top:-30px;height:120px;background:radial-gradient(circle at 18% 30%,rgba(124,92,246,.045),transparent 34%),radial-gradient(circle at 82% 20%,rgba(34,211,238,.035),transparent 30%);pointer-events:none;z-index:-1}
+  html[data-theme="light"] .tablewrap,html[data-theme="light"] .screenerTableShell,html[data-theme="light"] .stat,html[data-theme="light"] .chartbox,html[data-theme="light"] .filterPanel,html[data-theme="light"] .profileMenu,html[data-theme="light"] .dropdownPanel,html[data-theme="light"] .recipeCard,html[data-theme="light"] .financeCard,html[data-theme="light"] .dashboardCard,html[data-theme="light"] .coolCard,html[data-theme="light"] .calcLabCard,html[data-theme="light"] .screenerCard{background:rgba(255,255,255,.96)!important;border-color:#e4e7ed!important;box-shadow:0 8px 28px rgba(30,38,60,.065),0 1px 2px rgba(30,38,60,.035)!important}
+  html[data-theme="light"] .stat:hover,html[data-theme="light"] .recipeCard:hover{box-shadow:0 12px 32px rgba(55,48,95,.09),0 1px 2px rgba(30,38,60,.04)!important}
+  html[data-theme="light"] .tablewrap td,html[data-theme="light"] .tablewrap th,html[data-theme="light"] .pageIntro p,html[data-theme="light"] .sectionhead p{color:#555c69}
+  html[data-theme="light"] .eyebrow{color:#6751c9!important}
+  html[data-theme="light"] .pageIntro h1,html[data-theme="light"] .sectionhead h2{color:#171a22!important}
+  html[data-theme="light"] .pageIntro h1:after{content:"";display:block;width:56px;height:3px;margin-top:12px;border-radius:99px;background:linear-gradient(90deg,#8b5cf6,#22d3ee);opacity:.45}
+
+  html[data-theme="aurora"] body{background:radial-gradient(circle at 8% -8%,rgba(41,216,255,.12),transparent 28%),radial-gradient(circle at 92% -5%,rgba(124,92,255,.17),transparent 30%),#07101c!important}
+  html[data-theme="aurora"] .globalSearch{background:#0d1a2b!important;border-color:#29435f!important;box-shadow:0 8px 24px rgba(0,0,0,.2)!important;max-width:390px!important;min-width:240px!important;height:42px!important}
+  html[data-theme="aurora"] .globalSearch input{color:#edf7ff!important}
+  html[data-theme="aurora"] .pageIntro,html[data-theme="aurora"] .hero{background:transparent!important}
+  html[data-theme="aurora"] .pageIntro:before{content:"";position:absolute;left:-2vw;right:-2vw;top:-25px;height:130px;background:radial-gradient(circle at 20% 30%,rgba(124,92,255,.10),transparent 32%),radial-gradient(circle at 80% 20%,rgba(41,216,255,.08),transparent 32%);pointer-events:none;z-index:-1}
+  html[data-theme="aurora"] .pageIntro h1,html[data-theme="aurora"] .sectionhead h2{color:#f2f8ff!important}
+  html[data-theme="aurora"] .eyebrow{color:#65ddff!important}
+  html[data-theme="aurora"] .recipeCard,html[data-theme="aurora"] .stat,html[data-theme="aurora"] .tablewrap,html[data-theme="aurora"] .screenerTableShell,html[data-theme="aurora"] .chartbox,html[data-theme="aurora"] .filterPanel,html[data-theme="aurora"] .profileMenu,html[data-theme="aurora"] .dropdownPanel,html[data-theme="aurora"] .financeCard,html[data-theme="aurora"] .dashboardCard,html[data-theme="aurora"] .coolCard,html[data-theme="aurora"] .calcLabCard,html[data-theme="aurora"] .screenerCard{background:linear-gradient(145deg,rgba(15,29,48,.97),rgba(10,22,37,.97))!important;color:#edf7ff!important;border-color:#29445f!important;box-shadow:0 14px 36px rgba(0,0,0,.22)!important}
+  html[data-theme="aurora"] .recipeCard strong,html[data-theme="aurora"] .recipeCard small,html[data-theme="aurora"] .recipeCard .recipeFormula{color:inherit!important}
+  html[data-theme="aurora"] .recipeCard small,html[data-theme="aurora"] .pageIntro p,html[data-theme="aurora"] .sectionhead p{color:#9eb3c8!important}
+  html[data-theme="aurora"] .recipeFilters select{background:#0d1a2b!important;color:#edf7ff!important;border-color:#29445f!important}
+}
+@media(min-width:1101px){
+  .nav{gap:16px!important}
+  .brand{margin-right:4px!important}
+  .navlinks{gap:2px!important}
+  .navlinks>button,.extrasDock>button{padding:8px 10px!important;font-weight:650!important;letter-spacing:0!important}
+  .globalSearch{margin-left:auto!important;margin-right:2px!important}
+}
