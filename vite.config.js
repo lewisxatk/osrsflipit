@@ -20,7 +20,7 @@ function cleanWorkerAssets() {
       await cp(resolve(process.cwd(), "favicon.svg"), resolve(SITE_DIR, "favicon.svg"));
       await writeFile(resolve(SITE_DIR, ".assetsignore"), "_worker.js\n", "utf8");
       await rm(resolve(process.cwd(), "dist"), { recursive: true, force: true });
-      await writeFile(resolve(SITE_DIR, "_osrshub_build.txt"), "OSRSHUB-0.41.6-WORKER-SITE\n", "utf8");
+      await writeFile(resolve(SITE_DIR, "_osrshub_build.txt"), "OSRSHUB-0.42.0-WORKER-SITE\n", "utf8");
     }
   };
 }
