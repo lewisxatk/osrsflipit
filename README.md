@@ -1,4 +1,4 @@
-# OSRSHub V41.5 — Clean Cloudflare Worker Build
+# OSRSHub V43.0 — Stability, UI & Protected Auth Build
 
 This build switches the static frontend output from `dist/` to a dedicated `site/` directory.
 It is designed for a standard Cloudflare Worker deployment using `wrangler deploy`, not Pages Advanced Mode.
@@ -67,3 +67,23 @@ The D1 binding is configured as `DB` for database `osrshub-accounts`.
 
 ## V42.0 OAuth routing fix
 Cloudflare Workers Static Assets SPA navigation can serve index.html for direct browser navigation to `/api/*`. The Wrangler config now uses `assets.run_worker_first: ["/api/*"]` so Discord OAuth and the OAuth callback are handled by `worker.js` before SPA fallback.
+
+
+## V43.0 protected systems
+This release is based directly on the working V42.0 Discord OAuth routing build. Discord authentication and D1 are frozen/protected in this release. Do not remove, rename, or replace `worker.js`, `wrangler.jsonc`, the `DB` D1 binding, `/api/*` Worker-first routing, or the existing Discord auth/session/sync routes unless authentication is explicitly being redesigned.
+
+### V43.0 fixes
+- Finance page recoverable UI error fixed: removed an accidental reference to an undefined `account` state inside the Finance component.
+- Discord/cloud hydration loop fixed: cloud data can trigger at most one tab-scoped hydration reload per Discord user, instead of reloading on every page load.
+- Market table readability increased slightly on desktop and mobile.
+- Dark-mode surface parity strengthened across pages, forms, tables, dropdowns and analytics.
+- Screener full item analytics now explicitly owns the complete scrollable page height so the lower edge cannot reveal a transparent/underlying page.
+- Minor list rendering hardening and Finance data-change events added to improve cloud sync responsiveness.
+
+### V43.0 validation
+- `worker.js` JavaScript syntax: PASS
+- `src/main.jsx` delimiter balance: PASS
+- `wrangler.jsonc` retains Worker Assets + `run_worker_first: ["/api/*"]` + `DB` D1 binding
+- No legacy `public/_worker.js` introduced
+- Discord auth files/routes were not modified as part of the UI fixes
+- Full Vite production build is still best verified by the connected Cloudflare build environment because this working environment does not have the project's npm dependency cache/network access.

@@ -1219,3 +1219,125 @@ html[data-theme="dark"] .discordUserCard,html[data-theme="aurora"] .discordUserC
 .lastHourControls .lastHourSearch{grid-column:1/-1;max-width:none}
 @media(max-width:1100px){.lastHourControls{grid-template-columns:repeat(3,minmax(120px,1fr))!important}.lastHourControls .segmented{grid-column:1/-1}}
 @media(max-width:700px){.lastHourControls{grid-template-columns:1fr 1fr!important}.lastHourControls .segmented,.lastHourControls .lastHourSearch{grid-column:1/-1}.lastHourThreshold{min-width:0!important}.lastHourRows button{min-width:920px}}
+
+
+/* V43 stability + readability pass.
+   Authentication/Worker code is intentionally untouched. These are UI-only hardening rules. */
+
+/* Home Market readability: slightly larger type without changing the table density dramatically. */
+.marketPage .tablewrap td,
+.marketPage .tablewrap th{font-size:12px}
+.marketPage .tablewrap .item strong{font-size:13px}
+.marketPage .tablewrap td .instantLabel{font-size:9px}
+.marketPage .mobileFlipCard{font-size:12px}
+.marketPage .mobileItem strong{font-size:13px}
+.marketPage .mobilePriceRow b{font-size:12px}
+.marketPage .mobileMeta span,.marketPage .mobileMeta b{font-size:9px}
+
+/* Dark-mode parity: remove remaining white/light default surfaces from secondary pages and controls. */
+html[data-theme="dark"] body,
+html[data-theme="dark"] main,
+html[data-theme="dark"] .app,
+html[data-theme="dark"] .pageIntro,
+html[data-theme="dark"] .hero,
+html[data-theme="dark"] .marketPage,
+html[data-theme="dark"] .dashboardPage,
+html[data-theme="dark"] .analysisPage,
+html[data-theme="dark"] .recipesPage,
+html[data-theme="dark"] .financePage,
+html[data-theme="dark"] .calculatorPage,
+html[data-theme="dark"] .moneyPage,
+html[data-theme="dark"] .moversPage,
+html[data-theme="dark"] .watchPage,
+html[data-theme="dark"] .alertsPage,
+html[data-theme="dark"] .coolPage{background:#111821!important;color:#eef2f7!important}
+html[data-theme="dark"] .nav{background:rgba(17,24,33,.96)!important;border-color:#303846!important}
+html[data-theme="dark"] .pageIntro,
+html[data-theme="dark"] .hero,
+html[data-theme="dark"] .dashboardCard,
+html[data-theme="dark"] .analysisCard,
+html[data-theme="dark"] .recipeCard,
+html[data-theme="dark"] .financeCard,
+html[data-theme="dark"] .calcCard,
+html[data-theme="dark"] .screenerCard,
+html[data-theme="dark"] .coolCard,
+html[data-theme="dark"] .watchcard,
+html[data-theme="dark"] .alertintro,
+html[data-theme="dark"] .rule,
+html[data-theme="dark"] .moneyTable,
+html[data-theme="dark"] .moverow,
+html[data-theme="dark"] .emptybox{background:#202631!important;color:#eef2f7!important;border-color:#3b4555!important}
+html[data-theme="dark"] input,
+html[data-theme="dark"] select,
+html[data-theme="dark"] textarea,
+html[data-theme="dark"] .search,
+html[data-theme="dark"] .globalSearch,
+html[data-theme="dark"] .filterButton,
+html[data-theme="dark"] .secondary,
+html[data-theme="dark"] .iconbtn{background:#171e28!important;color:#eef2f7!important;border-color:#3b4555!important}
+html[data-theme="dark"] input::placeholder,
+html[data-theme="dark"] textarea::placeholder{color:#7f8b9b!important}
+html[data-theme="dark"] .tablewrap,
+html[data-theme="dark"] .financeTable,
+html[data-theme="dark"] .calcCard .tablewrap{background:#111821!important;border-color:#303846!important}
+html[data-theme="dark"] .tablewrap table,
+html[data-theme="dark"] .financeTable table,
+html[data-theme="dark"] .calcCard table{background:#111821!important;color:#eef2f7!important}
+html[data-theme="dark"] .tablewrap th,
+html[data-theme="dark"] .financeTable th,
+html[data-theme="dark"] .calcCard th{background:#1c2531!important;color:#c9d3df!important;border-color:#303d4f!important}
+html[data-theme="dark"] .tablewrap td,
+html[data-theme="dark"] .financeTable td,
+html[data-theme="dark"] .calcCard td{background:#111821!important;color:#eef2f7!important;border-color:#283442!important}
+html[data-theme="dark"] .tablewrap tbody tr:hover,
+html[data-theme="dark"] .financeTable tbody tr:hover{background:#182331!important}
+html[data-theme="dark"] .globalResults,
+html[data-theme="dark"] .notificationPopover,
+html[data-theme="dark"] .dropdownPanel,
+html[data-theme="dark"] .columnMenu,
+html[data-theme="dark"] .profileMenu,
+html[data-theme="dark"] .filterPanel,
+html[data-theme="dark"] .mobileColumnsPanel,
+html[data-theme="dark"] .mobileProfilePanel,
+html[data-theme="dark"] .extrasMenu,
+html[data-theme="dark"] .mobileMore{background:#202631!important;color:#eef2f7!important;border-color:#3b4555!important}
+html[data-theme="dark"] .globalResults button,
+html[data-theme="dark"] .notificationPopover button,
+html[data-theme="dark"] .extrasMenu button,
+html[data-theme="dark"] .mobileMore button{background:transparent!important;color:#eef2f7!important}
+html[data-theme="dark"] .globalResults button:hover,
+html[data-theme="dark"] .notificationPopover button:hover,
+html[data-theme="dark"] .extrasMenu button:hover,
+html[data-theme="dark"] .mobileMore button:hover{background:#293446!important}
+html[data-theme="dark"] .sectionhead p,
+html[data-theme="dark"] .pageIntro p,
+html[data-theme="dark"] .financeCard>label,
+html[data-theme="dark"] .financeForm label,
+html[data-theme="dark"] .journalRow small,
+html[data-theme="dark"] .allocatorRow small{color:#aeb9c7!important}
+html[data-theme="dark"] .fullDetailBack{background:#111821!important}
+html[data-theme="dark"] .fullDetail{background:#111821!important;color:#eef2f7!important}
+html[data-theme="dark"] .fullDetail .chartbox,
+html[data-theme="dark"] .fullDetail .detailgrid>div,
+html[data-theme="dark"] .fullDetail .panelstats{background:#171e28!important;color:#eef2f7!important;border-color:#303d4f!important}
+
+/* Item Analytics: own the complete scrollable page so the bottom never reveals the page underneath. */
+.fullDetailBack{background:#fff!important;min-height:100dvh!important;overflow-y:auto!important;overflow-x:hidden!important}
+.fullDetail{min-height:100dvh!important;flex:0 0 auto!important;background:#fff!important}
+.fullDetailBack .fullDetail{padding-bottom:max(110px,env(safe-area-inset-bottom) + 90px)!important}
+
+/* Finance is a page, not a floating card: keep the surrounding canvas consistent. */
+.financePage{min-height:calc(100dvh - 140px)}
+html[data-theme="dark"] .financePage{background:#111821!important}
+
+/* Small rendering/performance hardening for long lists. */
+.marketPage .tablewrap tbody,
+.screenerTableShell tbody,
+.financeTable tbody{contain:layout paint}
+@media(max-width:700px){
+  .marketPage .tablewrap td,.marketPage .tablewrap th{font-size:11px}
+  .marketPage .tablewrap .item strong{font-size:12px}
+  .marketPage .mobileFlipCard{font-size:12px}
+  .fullDetailBack{min-height:100dvh!important}
+  .fullDetail{min-height:100dvh!important}
+}

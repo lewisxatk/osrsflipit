@@ -274,7 +274,36 @@ function App() {
   const [moverMinVolume,setMoverMinVolume]=useState("25"),[moverMaxVolume,setMoverMaxVolume]=useState(""),[moverPage,setMoverPage]=useState(1),[dashboardRefresh,setDashboardRefresh]=useState(0),[geSlots,setGeSlots]=useState(()=>safeRead("osrsflipit-mini-ge",Array(8).fill(null))),[miniGeOpen,setMiniGeOpen]=useState(false),[soundOn,setSoundOn]=useState(()=>safeRead("osrsflipit-sound",true)),[soundVolume,setSoundVolume]=useState(()=>safeRead("osrsflipit-sound-volume",0.35)),[soundType,setSoundType]=useState(()=>safeRead("osrsflipit-sound-type","pulse"));
   const [recipeTick,setRecipeTick]=useState(Date.now());
   const cloudSyncTimer=useRef(null);
-  useEffect(()=>{let alive=true;(async()=>{try{const me=await cloudFetch("/api/auth/me");if(!alive)return;setCloudUser(me.user||null);if(me.data){applyCloudData(me.data);window.location.reload();return}}catch{}finally{if(alive)setCloudLoading(false)}})();return()=>{alive=false}},[]);
+  useEffect(()=>{
+    let alive=true;
+    (async()=>{
+      try{
+        const me=await cloudFetch("/api/auth/me");
+        if(!alive)return;
+        setCloudUser(me.user||null);
+        if(me.user&&me.data){
+          const hydrateKey=`osrshub-cloud-hydrated:${me.user.id}`;
+          const alreadyHydrated=sessionStorage.getItem(hydrateKey)==="1";
+          let changed=false;
+          if(!alreadyHydrated){
+            for(const k of CLOUD_KEYS){
+              if(!(k in me.data))continue;
+              try{
+                const incoming=JSON.stringify(me.data[k]);
+                const local=localStorage.getItem(k);
+                if(local!==incoming){changed=true;break}
+              }catch{}
+            }
+            applyCloudData(me.data);
+            sessionStorage.setItem(hydrateKey,"1");
+            if(changed)window.location.reload();
+          }
+        }
+      }catch{}
+      finally{if(alive)setCloudLoading(false)}
+    })();
+    return()=>{alive=false};
+  },[]);
   const syncCloud=()=>{if(!cloudUser||cloudLoading)return;clearTimeout(cloudSyncTimer.current);cloudSyncTimer.current=setTimeout(async()=>{try{setCloudSyncing(true);await cloudFetch("/api/auth/sync",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({data:collectCloudData()})})}catch(e){console.warn("OSRS Hub cloud sync failed",e)}finally{setCloudSyncing(false)}},900)};
   useEffect(()=>{if(!cloudUser||cloudLoading)return;const t=setInterval(syncCloud,5000);return()=>clearInterval(t)},[cloudUser,cloudLoading]);
   const toastTimer=useRef(null),audioRef=useRef(null);
@@ -399,7 +428,7 @@ function App() {
   function addToGe(item){setGeSlots(slots=>{if(slots.some(x=>x?.id===item.id)){setMiniGeOpen(true);return slots}const i=slots.findIndex(x=>!x);if(i<0){notify("GE is full — remove a slot first");setMiniGeOpen(true);return slots}const next=[...slots];next[i]={id:item.id,name:item.name,icon:item.icon,buy:item.buy,sell:item.sell,margin:item.margin};setMiniGeOpen(true);return next})}
   function emitDataChanged(){try{window.dispatchEvent(new Event("osrshub-data-changed"))}catch{}}
   const DATA_KEYS=CLOUD_KEYS;
-  function exportWebsiteData(){const data={app:"OSRS Hub",version:"38.0",exportedAt:new Date().toISOString(),data:{}};DATA_KEYS.forEach(k=>{try{const raw=localStorage.getItem(k);if(raw!==null)data.data[k]=JSON.parse(raw)}catch{}});data.data["osrsflipit-columns"]=[...columns];data.data["osrsflipit-column-widths"]={...columnWidths};data.data["osrsflipit-detail-tiles"]=[...detailTiles];data.data["osrsflipit-filters"]=conditions||[];data.data["osrsflipit-profiles"]=profiles.filter(p=>!p.standard);const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});const url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download=`osrshub-backup-${new Date().toISOString().slice(0,10)}.json`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),500)}
+  function exportWebsiteData(){const data={app:"OSRS Hub",version:"43.0",exportedAt:new Date().toISOString(),data:{}};DATA_KEYS.forEach(k=>{try{const raw=localStorage.getItem(k);if(raw!==null)data.data[k]=JSON.parse(raw)}catch{}});data.data["osrsflipit-columns"]=[...columns];data.data["osrsflipit-column-widths"]={...columnWidths};data.data["osrsflipit-detail-tiles"]=[...detailTiles];data.data["osrsflipit-filters"]=conditions||[];data.data["osrsflipit-profiles"]=profiles.filter(p=>!p.standard);const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});const url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download=`osrshub-backup-${new Date().toISOString().slice(0,10)}.json`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),500)}
   function importWebsiteData(file){if(!file)return;if(file.size>2*1024*1024){notify("Import rejected — backup is larger than 2 MB.");return}const reader=new FileReader();reader.onload=()=>{try{const parsed=JSON.parse(String(reader.result||""));if(!parsed||parsed.app!=="OSRS Hub"||!parsed.data||typeof parsed.data!=="object")throw new Error("Invalid OSRS Hub backup");const allowed=new Set(DATA_KEYS);let count=0;Object.entries(parsed.data).forEach(([k,v])=>{if(!allowed.has(k))return;if(k==="osrsflipit-profiles"&&(!Array.isArray(v)||v.length>100))return;if(["osrsflipit-columns","osrsflipit-detail-tiles","osrsflipit-filters","osrsflipit-watch","osrsflipit-alerts","osrsflipit-rules","osrsflipit-mini-ge","osrsflipit-recipe-favs","osrsflipit-portfolio"].includes(k)&&!Array.isArray(v))return;if(k==="osrsflipit-watch"&&v.length>25)return;if(k==="osrsflipit-mini-ge"&&v.length>8)return;if(k==="osrsflipit-portfolio"&&v.length>8)return;if(k==="osrsflipit-alerts"&&v.length>500)return;if(k==="osrsflipit-rules"&&v.length>100)return;if(k==="osrsflipit-flip-log"&&(!Array.isArray(v)||v.length>500))return;if(["osrsflipit-column-widths","osrsflipit-bankroll"].includes(k)&&(typeof v!=="object"||Array.isArray(v)||v===null))return;if(typeof v==="string"&&v.length>1000)return;try{localStorage.setItem(k,JSON.stringify(v));count++}catch{}});if(count<1)throw new Error("No recognised settings in backup");notify(`Imported ${count} OSRS Hub data sections — reloading…`);setTimeout(()=>window.location.reload(),450)}catch(e){console.error("OSRS Hub import rejected",e);notify("Import rejected — that file is not a valid OSRS Hub backup.")}};reader.readAsText(file)}
   function deleteRule(rule){const next=alertRulesRef.current.filter(r=>r.id!==rule.id);const nextAlerts=alertsRef.current.filter(a=>a.ruleId!==rule.id);alertRulesRef.current=next;alertsRef.current=nextAlerts;setAlertRules(next);setAlerts(nextAlerts);localStorage.setItem("osrsflipit-rules",JSON.stringify(next));localStorage.setItem("osrsflipit-alerts",JSON.stringify(nextAlerts))}
   const columnOptions=[["buy","Buy Price"],["sell","Sell Price"],["margin","Margin"],["potentialProfit","Potential Profit"],["roi","ROI %"],["volume","Volume (24h)"],["flipScore","Flip Score"],["riskScore","Risk"],["capitalEfficiency","Profit / 1m"],["slotProfit","Profit / slot"],["limit","GE Limit"],["limitCost","Full GE Limit Cost"],["tax","GE Tax"],["alch","Alch Price"],["buyUpdated","Last Buy Time"],["sellUpdated","Last Sell Time"],["updated","Last Update"]];
@@ -476,13 +505,12 @@ function Finance({items}){
   const [form,setForm]=useState({item:"",buy:0,qty:1,sell:0,date:new Date().toISOString().slice(0,10),note:""});
   const [bankroll,setBankroll]=useState(()=>safeRead("osrsflipit-bankroll",{gp:10000000,slots:8}));
   const importRef=useRef(null);
- useEffect(()=>{if(account){try{localStorage.setItem("osrshub-account",JSON.stringify(account))}catch{}}},[account]);
   useEffect(()=>localStorage.setItem("osrsflipit-flip-log",JSON.stringify(logs)),[logs]);
   useEffect(()=>localStorage.setItem("osrsflipit-bankroll",JSON.stringify(bankroll)),[bankroll]);
   const item=fuzzyItems(items,form.item,1)[0];
-  const add=()=>{const buy=Number(form.buy)||0,sell=Number(form.sell)||0,qty=Math.max(1,Number(form.qty)||1);if(!form.item||buy<=0||sell<=0)return;const gross=sell*qty,cost=buy*qty,tax=taxFor(sell)*qty,profit=gross-cost-tax;setLogs([{id:crypto.randomUUID(),name:item?.name||form.item,buy,sell,qty,tax,profit,date:form.date,note:form.note},...logs].slice(0,500));setForm({...form,item:"",buy:0,sell:0,qty:1,note:""})};
+  const add=()=>{const buy=Number(form.buy)||0,sell=Number(form.sell)||0,qty=Math.max(1,Number(form.qty)||1);if(!form.item||buy<=0||sell<=0)return;const gross=sell*qty,cost=buy*qty,tax=taxFor(sell)*qty,profit=gross-cost-tax;setLogs([{id:crypto.randomUUID(),name:item?.name||form.item,buy,sell,qty,tax,profit,date:form.date,note:form.note},...logs].slice(0,500));window.dispatchEvent(new Event("osrshub-data-changed"));setForm({...form,item:"",buy:0,sell:0,qty:1,note:""})};
   const exportLogs=()=>{const headers=["Date","Item","Buy","Sell","Qty","Tax","P&L","Note"];const esc=v=>`"${String(v??"").replace(/"/g,'""')}"`;const csv=[headers,...logs.map(x=>[x.date,x.name,x.buy,x.sell,x.qty,x.tax,x.profit,x.note||""])].map(r=>r.map(esc).join(",")).join("\n");const blob=new Blob([csv],{type:"text/csv;charset=utf-8"});const url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download=`osrsflipit-pnl-${new Date().toISOString().slice(0,10)}.csv`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),500)};
-  const importLogs=e=>{const file=e.target.files?.[0];if(!file)return;const reader=new FileReader();reader.onload=()=>{try{const text=String(reader.result||"");const lines=text.split(/\r?\n/).filter(Boolean);const parseLine=line=>{const out=[];let cur="",quoted=false;for(let i=0;i<line.length;i++){const ch=line[i];if(ch==='"'){if(quoted&&line[i+1]==='"'){cur+='"';i++;}else quoted=!quoted}else if(ch===","&&!quoted){out.push(cur);cur=""}else cur+=ch}out.push(cur);return out};const rows=lines.slice(1).map(parseLine).filter(r=>r.length>=7).map(r=>({id:crypto.randomUUID(),date:r[0]||new Date().toISOString().slice(0,10),name:r[1]||"Imported item",buy:Number(r[2])||0,sell:Number(r[3])||0,qty:Math.max(1,Number(r[4])||1),tax:Number(r[5])||0,profit:Number(r[6])||0,note:r[7]||""})).filter(r=>r.name&&r.buy>0&&r.sell>0);setLogs(prev=>[...rows,...prev].slice(0,500));}catch(err){console.error("P&L import failed",err)}};reader.readAsText(file);e.target.value=""};
+  const importLogs=e=>{const file=e.target.files?.[0];if(!file)return;const reader=new FileReader();reader.onload=()=>{try{const text=String(reader.result||"");const lines=text.split(/\r?\n/).filter(Boolean);const parseLine=line=>{const out=[];let cur="",quoted=false;for(let i=0;i<line.length;i++){const ch=line[i];if(ch==='"'){if(quoted&&line[i+1]==='"'){cur+='"';i++;}else quoted=!quoted}else if(ch===","&&!quoted){out.push(cur);cur=""}else cur+=ch}out.push(cur);return out};const rows=lines.slice(1).map(parseLine).filter(r=>r.length>=7).map(r=>({id:crypto.randomUUID(),date:r[0]||new Date().toISOString().slice(0,10),name:r[1]||"Imported item",buy:Number(r[2])||0,sell:Number(r[3])||0,qty:Math.max(1,Number(r[4])||1),tax:Number(r[5])||0,profit:Number(r[6])||0,note:r[7]||""})).filter(r=>r.name&&r.buy>0&&r.sell>0);setLogs(prev=>[...rows,...prev].slice(0,500));window.dispatchEvent(new Event("osrshub-data-changed"));}catch(err){console.error("P&L import failed",err)}};reader.readAsText(file);e.target.value=""};
   const totals=useMemo(()=>({profit:logs.reduce((a,x)=>a+x.profit,0),wins:logs.filter(x=>x.profit>=0).length,losses:logs.filter(x=>x.profit<0).length}),[logs]);
   const journal=useMemo(()=>{const m={};logs.forEach(x=>{m[x.name]=(m[x.name]||0)+x.profit});return Object.entries(m).sort((a,b)=>b[1]-a[1])},[logs]);
   const candidates=useMemo(()=>{const gp=Math.max(0,Number(bankroll.gp)||0),slots=Math.max(1,Math.min(8,Number(bankroll.slots)||1)),perSlot=gp/slots;return items.filter(x=>x.buy>0&&x.sell>x.buy&&x.buy<=perSlot&&x.volume>0&&x.flipScore>0).map(x=>{const qty=Math.min(x.limit||1,Math.max(1,Math.floor(perSlot/x.buy)),Math.max(1,Math.floor(x.volume*.01)));const capital=qty*x.buy;const expected=qty*x.margin;const fit=Math.min(100,capital/perSlot*100);return {...x,qty,capital,expected,allocatorScore:Math.round(x.flipScore*.7+fit*.3)}}).sort((a,b)=>b.allocatorScore-a.allocatorScore).slice(0,12)},[items,bankroll]);
