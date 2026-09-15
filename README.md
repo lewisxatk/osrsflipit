@@ -1,3 +1,7 @@
+V43.1 — Cloudflare runtime-variable preservation fix
+
+Important: wrangler.jsonc sets keep_vars=true so dashboard runtime variables are preserved on deployment. Discord auth architecture is frozen.
+
 # OSRSHub V43.0 — Stability, UI & Protected Auth Build
 
 This build switches the static frontend output from `dist/` to a dedicated `site/` directory.
