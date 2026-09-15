@@ -1,3 +1,41 @@
+# OSRS Hub V44.0 — Production Polish + Discord Item Alerts
+
+Authentication is FROZEN. Do not modify Discord authentication architecture, worker auth routes, D1 bindings, OAuth state/session handling, or keep_vars unless explicitly requested.
+
+## V44 changes
+- Discord channel webhook alerts for triggered item price rules. Webhook is local-only and deliberately excluded from cloud sync.
+- Discord alert test button + setup guide in Alerts.
+- Unified Profiles list: built-in and saved profiles appear together.
+- Improved phone landscape/touch selection for flip cards.
+- Remembered theme is applied before React mounts to prevent the white-theme flash.
+- Light theme receives restrained purple/cyan identity accents.
+- Aurora logo is white and top navigation gets subtle premium effects.
+- Desktop-only navigation typography and spacing refinement. Mobile navigation is intentionally left app-like.
+- Full-page dark/Aurora canvas consistency and additional visual polish.
+- Performance hardening remains in place for long tables.
+
+## Discord item alerts setup
+1. In Discord, open the server and channel where alerts should arrive.
+2. Channel Settings → Integrations → Webhooks → New Webhook.
+3. Copy the webhook URL.
+4. OSRS Hub → Alerts → Discord Notifications.
+5. Paste the webhook URL and press Save.
+6. Press Test and confirm the message appears.
+7. Create an OSRS Hub price alert. When its threshold is crossed, OSRS Hub will send an embed to that channel.
+
+The webhook is stored in localStorage on the device and is NOT included in CLOUD_KEYS, so it is not uploaded to the OSRS Hub D1 account database. Keep the webhook URL private.
+
+## Planned anti-spam / monetisation architecture (not enabled in V44)
+Suggested scanner allowance: guest 3 scans/hour, signed-in free 5/hour, Pro 30/hour. The correct long-term implementation is server-side entitlement + rate limiting through the Worker, not a frontend-only counter. Historical scans should be cached/batched and the scanner should return a friendly cooldown message.
+
+## Production checks
+- Authentication files/routes preserved.
+- D1 DB binding and ASSETS binding preserved.
+- `keep_vars: true` preserved.
+- `/api/*` Worker-first routing preserved.
+- No `public/_worker.js`.
+- No Discord credentials or webhook URLs shipped in source.
+- Run `npm install` then `npm run build` before deployment. Cloudflare build output is authoritative.
 V43.1 — Cloudflare runtime-variable preservation fix
 
 Important: wrangler.jsonc sets keep_vars=true so dashboard runtime variables are preserved on deployment. Discord auth architecture is frozen.

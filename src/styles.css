@@ -1341,3 +1341,63 @@ html[data-theme="dark"] .financePage{background:#111821!important}
   .fullDetailBack{min-height:100dvh!important}
   .fullDetail{min-height:100dvh!important}
 }
+
+
+/* V44 — production polish */
+@media(min-width:1101px){
+  .nav{min-height:66px!important;padding:0 30px!important;gap:14px!important;border-bottom:1px solid #e7e8ee;box-shadow:0 8px 28px rgba(30,35,55,.055);}
+  .navlinks{gap:7px!important}
+  .navlinks>button,.extrasDock>button{font-size:12px!important;font-weight:800!important;letter-spacing:.02em!important;padding:9px 12px!important}
+  .navlinks>button.active,.extrasDock>button.active{font-weight:850!important}
+  .globalSearch{height:38px!important;border-radius:11px!important;box-shadow:inset 0 0 0 1px rgba(139,92,246,.035)}
+  .brand{font-weight:850!important;letter-spacing:-.04em}
+  .pageIntro h1,.sectionhead h2{font-weight:820!important}
+}
+
+/* Light theme gets the same restrained purple/cyan identity as Aurora, without becoming dark. */
+html[data-theme="light"] body{background:radial-gradient(circle at 8% -8%,rgba(124,92,255,.055),transparent 24%),radial-gradient(circle at 92% -4%,rgba(41,216,255,.045),transparent 22%),#fff;}
+html[data-theme="light"] .nav{position:relative;overflow:hidden}
+html[data-theme="light"] .nav:before{content:"";position:absolute;left:0;right:0;top:0;height:2px;background:linear-gradient(90deg,rgba(124,92,255,.72),rgba(41,216,255,.68),rgba(124,92,255,.72));opacity:.65}
+html[data-theme="light"] .nav:after{content:"";position:absolute;top:-30px;right:6%;width:170px;height:70px;border-radius:50%;background:radial-gradient(circle,rgba(41,216,255,.10),transparent 68%);pointer-events:none}
+html[data-theme="light"] .brand:after{content:"";position:absolute;left:0;bottom:-4px;width:58px;height:2px;background:linear-gradient(90deg,#8b5cf6,#22d3ee);opacity:.35;border-radius:99px}
+
+html[data-theme="aurora"] .brand{color:#fff!important;text-shadow:0 1px 8px rgba(0,0,0,.3)}
+html[data-theme="aurora"] .brand span,html[data-theme="aurora"] .brand b{color:#fff!important}
+html[data-theme="aurora"] .nav{position:relative;overflow:hidden}
+html[data-theme="aurora"] .nav:before{content:"";position:absolute;left:0;right:0;top:0;height:2px;background:linear-gradient(90deg,rgba(124,92,255,.9),rgba(41,216,255,.95),rgba(124,92,255,.9));box-shadow:0 0 18px rgba(41,216,255,.28)}
+html[data-theme="aurora"] .nav:after{content:"";position:absolute;top:-42px;left:48%;width:260px;height:80px;border-radius:50%;background:radial-gradient(circle,rgba(41,216,255,.09),transparent 70%);pointer-events:none}
+
+/* Unified profile list: built-ins and user profiles share one clean list. */
+.profileMenu .profileLabel{margin-bottom:5px}
+.profileMenu .profileRow{margin:2px 0}
+.profileMenu .customLabel{display:none!important}
+.profileMenu .profileRow>button:first-child{flex:1;min-width:0}
+.profileMenu .customRow{border-left:2px solid rgba(139,92,246,.55)}
+.mobileProfilePanel .profileChoiceUnified{display:flex!important;align-items:stretch!important;padding:0!important}
+.mobileProfilePanel .profileChoiceUnified>button:first-child{flex:1!important;text-align:left!important}
+.mobileProfilePanel .profileChoiceUnified .profileDelete{width:38px!important;flex:0 0 38px!important}
+
+/* Touch/landscape stability for flip cards. */
+.mobileFlipCard{touch-action:manipulation!important;-webkit-tap-highlight-color:transparent!important;user-select:none!important;-webkit-user-select:none!important;cursor:pointer!important;position:relative!important;min-height:116px!important}
+.mobileFlipCard *{touch-action:manipulation}
+.mobileFlipCard .star{touch-action:manipulation!important;min-width:32px;min-height:32px;display:inline-flex;align-items:center;justify-content:center}
+@media(max-width:700px) and (orientation:landscape){
+  .mobileFlipList{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px!important;overflow:visible!important}
+  .mobileFlipCard{min-width:0!important;width:100%!important;padding:10px!important}
+  .mobilePriceRow{grid-template-columns:repeat(2,1fr)!important}
+  .mobileMeta{grid-template-columns:repeat(4,1fr)!important}
+}
+
+/* Discord item alerts */
+.discordAlertsCard{display:grid;grid-template-columns:42px 1fr;gap:12px;align-items:start;margin:14px 0;padding:15px;border:1px solid #e4e6eb;border-radius:15px;background:linear-gradient(135deg,#fff,#faf9ff);box-shadow:0 10px 28px rgba(40,40,70,.045)}
+.discordAlertsIcon{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(135deg,#5865f2,#8b5cf6);color:#fff;font-weight:900;box-shadow:0 8px 20px rgba(88,101,242,.2)}
+.discordAlertsCopy>strong{display:block;font-size:14px;margin:2px 0 4px}.discordAlertsCopy>p{font-size:10px;line-height:1.5;color:#777;margin:0 0 10px;max-width:800px}.discordWebhookRow{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:7px}.discordWebhookRow input{height:38px;border:1px solid #dfe2e8;border-radius:9px;padding:0 10px;background:#fff;font:inherit;font-size:11px;min-width:0}.discordWebhookRow button{height:38px!important}.discordStatus{display:block;margin-top:6px;color:#6d56d8;font-size:9px;font-weight:750}.discordAlertsCard details{margin-top:9px;border-top:1px solid #e8e9ed;padding-top:8px;font-size:9px;color:#777}.discordAlertsCard summary{cursor:pointer;font-weight:800;color:#555}.discordAlertsCard ol{margin:7px 0 5px;padding-left:18px;line-height:1.7}.discordAlertsCard details small{font-size:8px;color:#999}
+html[data-theme="dark"] .discordAlertsCard,html[data-theme="aurora"] .discordAlertsCard{background:#111b29!important;border-color:#30445d!important;box-shadow:none}
+html[data-theme="dark"] .discordAlertsCopy>p,html[data-theme="aurora"] .discordAlertsCopy>p,html[data-theme="dark"] .discordAlertsCard details,html[data-theme="aurora"] .discordAlertsCard details{color:#aebdd0!important}
+html[data-theme="dark"] .discordWebhookRow input,html[data-theme="aurora"] .discordWebhookRow input{background:#0b1523!important;color:#edf7ff!important;border-color:#30445d!important}
+html[data-theme="dark"] .discordAlertsCard summary,html[data-theme="aurora"] .discordAlertsCard summary{color:#dce9f7!important}
+@media(max-width:600px){.discordAlertsCard{grid-template-columns:34px 1fr;padding:12px}.discordAlertsIcon{width:34px;height:34px;border-radius:10px}.discordWebhookRow{grid-template-columns:1fr 1fr}.discordWebhookRow input{grid-column:1/-1}.discordWebhookRow button{width:100%}}
+
+/* Consistent full-page canvas in every non-light theme. */
+html[data-theme="dark"] main,html[data-theme="aurora"] main{min-height:calc(100dvh - 130px)}
+html[data-theme="dark"] .siteFooter,html[data-theme="aurora"] .siteFooter{background:transparent}
