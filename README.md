@@ -1,4 +1,4 @@
-# OSRS Hub V41 — Discord Accounts + Cloud Sync
+# OSRS Hub V41.1 — Discord Accounts + Cloudflare Worker Fix
 
 ## What changed
 - Discord OAuth2 sign-in added to the top-right Login button.
@@ -53,7 +53,7 @@ Cloudflare documents that Pages Functions can use D1 bindings and that the bindi
 
 The local environment used for this build does not have the Vite dependencies cached and has no reliable package-download access, so a complete `vite build` cannot be truthfully claimed locally. Cloudflare's production `npm run build`/`vite build` remains the authoritative build check.
 
-## IMPORTANT — if your live URL is `*.workers.dev`
+## IMPORTANT — this build is for the current `*.workers.dev` Worker deployment
 
 If the live site is using a `workers.dev` address, configure the project under **Workers**, not only the Pages Bindings screen. V41.1 includes a root `worker.js` entry point and `wrangler.jsonc` so the Discord API routes are actually executed by a Cloudflare Worker while Vite's `dist` folder is served as static assets. Cloudflare Advanced Pages `_worker.js` routing is different; when `_worker.js` is used by Pages it takes control of requests, while `/functions` routing is ignored.
 
