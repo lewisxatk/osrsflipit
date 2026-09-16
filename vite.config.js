@@ -19,7 +19,16 @@ function cleanWorkerAssets() {
       await mkdir(resolve(SITE_DIR, "assets"), { recursive: true });
       await mkdir(resolve(SITE_DIR, "media"), { recursive: true });
       await cp(resolve(process.cwd(), "favicon.svg"), resolve(SITE_DIR, "favicon.svg"));
-      await cp(resolve(process.cwd(), "media"), resolve(SITE_DIR, "media"), { recursive: true });
+      // GitHub/Cloudflare builds can omit an empty/untracked media directory.
+      // Keep the build resilient: copy branding assets when present, but do
+      // not fail the entire production build when the optional folder is absent.
+      const mediaDir = resolve(process.cwd(), "media");
+      try {
+        await cp(mediaDir, resolve(SITE_DIR, "media"), { recursive: true });
+      } catch (error) {
+        if (error?.code !== "ENOENT") throw error;
+        console.warn("OSRSHub: media directory not found; continuing without optional media assets.");
+      }
       await cp(resolve(process.cwd(), "robots.txt"), resolve(SITE_DIR, "robots.txt"));
       await cp(resolve(process.cwd(), "sitemap.xml"), resolve(SITE_DIR, "sitemap.xml"));
       await writeFile(resolve(SITE_DIR, ".assetsignore"), "_worker.js\n", "utf8");

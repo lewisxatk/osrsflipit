@@ -28,3 +28,11 @@ See `/media` for OSRS Hub logo and social-preview assets.
 - OSRS Hub brand/title/description metadata
 
 If the final custom domain is different from `https://osrs-hub.com/`, update the canonical/OG URLs in `index.html` and the sitemap before launch.
+
+
+## V46.2 build fix
+The Vite production build can complete successfully and then fail in `closeBundle`
+with `ENOENT: no such file or directory, lstat '/opt/buildhome/repo/media'`.
+The build hook now treats `/media` as optional and only copies it when the directory
+exists. If branding assets are present in the repository, they are still copied into
+`site/media` normally.
