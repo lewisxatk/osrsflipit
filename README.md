@@ -48,3 +48,25 @@ Keep these as normal variables. Keep the following as encrypted Cloudflare Worke
 - `OSRSHUB_AUTH_SECRET`
 
 Do not commit any secret values to GitHub.
+
+## V47.0 update notes
+
+- Added three persistent watchlists (25 items each) with active-list ticker switching.
+- Moved Screener Columns into a dedicated Market Results header.
+- Added Market Spotlight intelligence page.
+- Added Loadout Lab with equipment-stat retrieval through OSRSBox and transparent sustained-DPS estimation.
+- Improved RuneLite import flow: readable RSN -> HiScores + quest sync.
+- Added account quest sync through WikiSync/RuneMetrics when available.
+- Added unfinished quest picker and skill-gap training panel.
+- Added configurable Overnight Flip Finder with local-time wake window, minimum profit, volume, price, and ROI thresholds.
+- Restored visible auto-expiring alert toast notifications.
+- Fixed Worker Discord alert cron to use `rule.itemId` instead of the rule UUID when reading live GE prices.
+- Added `/api/account` and `/api/itemstats` Worker endpoints.
+- Preserved Discord OAuth, Discord bot token, D1, Cloudflare Worker Assets, media, sitemap and existing data exports.
+- White-mode calculation tiles were refreshed for stronger contrast.
+
+### Data-source notes
+
+Equipment fields are retrieved from the OSRSBox item database. Full combat DPS remains a future engine upgrade; the current Loadout Lab intentionally labels its figure as an estimate rather than pretending to reproduce every special attack, prayer, monster attribute, raid modifier or encounter mechanic.
+
+Quest completion sync is dependent on available account data. WikiSync is the preferred route for OSRS quest completion state; the site can fall back to RuneMetrics where available.
