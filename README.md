@@ -1,131 +1,42 @@
-# OSRS Hub V44.0 — Production Polish + Discord Item Alerts
+# OSRSHub V46.1 — Full roadmap consolidation
 
-Authentication is FROZEN. Do not modify Discord authentication architecture, worker auth routes, D1 bindings, OAuth state/session handling, or keep_vars unless explicitly requested.
+This build consolidates the next roadmap features into the existing pages rather than creating a large number of extra navigation pages.
 
-## V44 changes
-- Discord channel webhook alerts for triggered item price rules. Webhook is local-only and deliberately excluded from cloud sync.
-- Discord alert test button + setup guide in Alerts.
-- Unified Profiles list: built-in and saved profiles appear together.
-- Improved phone landscape/touch selection for flip cards.
-- Remembered theme is applied before React mounts to prevent the white-theme flash.
-- Light theme receives restrained purple/cyan identity accents.
-- Aurora logo is white and top navigation gets subtle premium effects.
-- Desktop-only navigation typography and spacing refinement. Mobile navigation is intentionally left app-like.
-- Full-page dark/Aurora canvas consistency and additional visual polish.
-- Performance hardening remains in place for long tables.
+## Included
+- Production/UX polish foundation
+- Simplified first-glance charts with advanced options retained
+- Personal Discord DM alerts using the signed-in Discord account; no webhook/server required
+- Discord alert frequency controls
+- Historical opportunity buy/sell pinning in item analytics
+- Smart Flip / historical intelligence / market radar foundations in Cool Stuff
+- Transparent Flip Score / evidence breakdown
+- Watchlist intelligence and liquidity/ROI context
+- Item analytics and historical pins
+- Flip Simulator
+- Finance trading-profile analytics
+- Theme persistence locally and through signed-in account sync
+- Mobile Profiles/Extras refinements without redesigning the mobile layout
+- Aurora/light-mode contrast fixes
 
-## Discord item alerts setup
-1. In Discord, open the server and channel where alerts should arrive.
-2. Channel Settings → Integrations → Webhooks → New Webhook.
-3. Copy the webhook URL.
-4. OSRS Hub → Alerts → Discord Notifications.
-5. Paste the webhook URL and press Save.
-6. Press Test and confirm the message appears.
-7. Create an OSRS Hub price alert. When its threshold is crossed, OSRS Hub will send an embed to that channel.
+## Discord setup
+1. Create/configure the Discord application and enable User Install in Discord Developer Portal.
+2. Add a bot user to the application and generate a bot token.
+3. In Cloudflare Worker Settings → Variables and Secrets, add an encrypted secret named `DISCORD_BOT_TOKEN`.
+4. Do not place the token in GitHub, the ZIP, frontend code, or normal variables.
+5. Users sign in with Discord, choose **Add OSRS Hub to Discord**, then choose **Connect alerts** on the Alerts page.
 
-The webhook is stored in localStorage on the device and is NOT included in CLOUD_KEYS, so it is not uploaded to the OSRS Hub D1 account database. Keep the webhook URL private.
+The Worker creates the personal DM only after the user explicitly connects, and the site stores the resulting channel ID/frequency with the signed-in OSRSHub account.
 
-## Planned anti-spam / monetisation architecture (not enabled in V44)
-Suggested scanner allowance: guest 3 scans/hour, signed-in free 5/hour, Pro 30/hour. The correct long-term implementation is server-side entitlement + rate limiting through the Worker, not a frontend-only counter. Historical scans should be cached/batched and the scanner should return a friendly cooldown message.
+## Protected architecture
+- Normal Cloudflare Worker + Worker Assets
+- `worker.js` retained
+- `wrangler.jsonc` retained
+- D1 `DB` retained
+- `ASSETS` retained
+- `/api/*` Worker-first routing retained
+- Discord OAuth/session/authentication retained
+- No `public/_worker.js`
+- No credentials included
 
-## Production checks
-- Authentication files/routes preserved.
-- D1 DB binding and ASSETS binding preserved.
-- `keep_vars: true` preserved.
-- `/api/*` Worker-first routing preserved.
-- No `public/_worker.js`.
-- No Discord credentials or webhook URLs shipped in source.
-- Run `npm install` then `npm run build` before deployment. Cloudflare build output is authoritative.
-V43.1 — Cloudflare runtime-variable preservation fix
-
-Important: wrangler.jsonc sets keep_vars=true so dashboard runtime variables are preserved on deployment. Discord auth architecture is frozen.
-
-# OSRSHub V43.0 — Stability, UI & Protected Auth Build
-
-This build switches the static frontend output from `dist/` to a dedicated `site/` directory.
-It is designed for a standard Cloudflare Worker deployment using `wrangler deploy`, not Pages Advanced Mode.
-
-## 1. Replace the GitHub repository
-Delete the old repository contents first, then upload/extract every file from this ZIP.
-An empty `public/` directory is NOT required and should not be recreated.
-
-The important deployment files are:
-- `worker.js` — the actual Cloudflare Worker
-- `wrangler.jsonc` — Worker + Worker Assets configuration
-- `vite.config.js` — builds the frontend into `site/`
-- `site/` — generated by the build; it is not required in GitHub
-
-## 2. Cloudflare build settings
-Use:
-- Build command: `npm run build`
-- Deploy command: `npx wrangler deploy`
-
-Do NOT use a Pages `_worker.js` deployment.
-
-After the build, Wrangler should say it is reading assets from:
-`/opt/buildhome/repo/site`
-
-It should NOT say:
-`/opt/buildhome/repo/dist`
-
-## 3. Discord OAuth
-Discord Developer Portal → OAuth2 → Redirects:
-`https://osrsflipit.prices-app.workers.dev/api/auth/callback`
-
-Worker variables/secrets:
-- `DISCORD_CLIENT_ID`
-- `DISCORD_CLIENT_SECRET`
-- `DISCORD_REDIRECT_URI`
-- `OSRSHUB_AUTH_SECRET`
-
-## 4. D1
-Create/use the D1 database `osrshub-accounts` and bind it to the Worker as:
-- Binding variable: `DB`
-
-Run:
-`migrations/0001_auth.sql`
-
-## 5. Important check after deployment
-The build log should show:
-`osrshub@0.41.5 build`
-
-Then Wrangler should report the assets directory as `site`.
-
-If Cloudflare still reports `dist/_worker.js`, it is not running this V41.5 repository/configuration. Do not keep changing the source code; check the Cloudflare build/deploy settings and connected GitHub repository.
-
-## Safety / hardening in this build
-- No `public/_worker.js` is used.
-- Vite does not copy a `public/` directory.
-- Frontend builds into a clean `site/` directory.
-- Build cleanup removes any accidental `site/_worker.js`.
-- `site/.assetsignore` blocks `_worker.js` from Worker Assets.
-- Source maps are disabled for production output.
-- Discord client secret and auth signing secret remain server-side.
-
-## V42.0 deployment verification
-This build is a normal Cloudflare Worker + Worker Assets deployment. The Vite output directory is `site/`, not `dist/`. After uploading this repository to GitHub, verify that `package.json` shows version `0.42.0` before deploying. The build also writes `site/_osrshub_build.txt` as a fingerprint. If Cloudflare logs `osrshub@0.41.1` or says it is reading assets from `/dist`, Cloudflare is building a different commit/repository/branch than this V42.0 source.
-The D1 binding is configured as `DB` for database `osrshub-accounts`.
-
-
-## V42.0 OAuth routing fix
-Cloudflare Workers Static Assets SPA navigation can serve index.html for direct browser navigation to `/api/*`. The Wrangler config now uses `assets.run_worker_first: ["/api/*"]` so Discord OAuth and the OAuth callback are handled by `worker.js` before SPA fallback.
-
-
-## V43.0 protected systems
-This release is based directly on the working V42.0 Discord OAuth routing build. Discord authentication and D1 are frozen/protected in this release. Do not remove, rename, or replace `worker.js`, `wrangler.jsonc`, the `DB` D1 binding, `/api/*` Worker-first routing, or the existing Discord auth/session/sync routes unless authentication is explicitly being redesigned.
-
-### V43.0 fixes
-- Finance page recoverable UI error fixed: removed an accidental reference to an undefined `account` state inside the Finance component.
-- Discord/cloud hydration loop fixed: cloud data can trigger at most one tab-scoped hydration reload per Discord user, instead of reloading on every page load.
-- Market table readability increased slightly on desktop and mobile.
-- Dark-mode surface parity strengthened across pages, forms, tables, dropdowns and analytics.
-- Screener full item analytics now explicitly owns the complete scrollable page height so the lower edge cannot reveal a transparent/underlying page.
-- Minor list rendering hardening and Finance data-change events added to improve cloud sync responsiveness.
-
-### V43.0 validation
-- `worker.js` JavaScript syntax: PASS
-- `src/main.jsx` delimiter balance: PASS
-- `wrangler.jsonc` retains Worker Assets + `run_worker_first: ["/api/*"]` + `DB` D1 binding
-- No legacy `public/_worker.js` introduced
-- Discord auth files/routes were not modified as part of the UI fixes
-- Full Vite production build is still best verified by the connected Cloudflare build environment because this working environment does not have the project's npm dependency cache/network access.
+## Build note
+Worker syntax and source delimiter checks were run. Full Vite production build could not be completed in this environment because `npm install` timed out.
