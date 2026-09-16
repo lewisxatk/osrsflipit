@@ -4,6 +4,10 @@
   "main": "worker.js",
   "compatibility_date": "2026-09-15",
   "keep_vars": true,
+  "vars": {
+    "DISCORD_CLIENT_ID": "1549203891449626748",
+    "DISCORD_REDIRECT_URI": "https://osrsflipit.prices-app.workers.dev/api/auth/callback"
+  },
   "triggers": { "crons": ["* * * * *"] },
   "assets": {
     "directory": "./site",

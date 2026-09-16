@@ -36,3 +36,15 @@ with `ENOENT: no such file or directory, lstat '/opt/buildhome/repo/media'`.
 The build hook now treats `/media` as optional and only copies it when the directory
 exists. If branding assets are present in the repository, they are still copied into
 `site/media` normally.
+
+## V46.2 Discord configuration sync fix
+The Wrangler config now includes the non-secret Discord runtime variables so the Cloudflare dashboard and repository stay in sync:
+- `DISCORD_CLIENT_ID`
+- `DISCORD_REDIRECT_URI`
+
+Keep these as normal variables. Keep the following as encrypted Cloudflare Worker Secrets only:
+- `DISCORD_CLIENT_SECRET`
+- `DISCORD_BOT_TOKEN`
+- `OSRSHUB_AUTH_SECRET`
+
+Do not commit any secret values to GitHub.
