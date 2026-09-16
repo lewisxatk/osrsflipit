@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>/</loc></url>
+  <url><loc>/dashboard</loc></url>
+  <url><loc>/screener</loc></url>
+  <url><loc>/recipes</loc></url>
+  <url><loc>/analysis</loc></url>
+  <url><loc>/watchlist</loc></url>
+  <url><loc>/alerts</loc></url>
+  <url><loc>/finance</loc></url>
+  <url><loc>/calculations</loc></url>
+  <url><loc>/money-makers</loc></url>
+  <url><loc>/movers</loc></url>
+  <url><loc>/cool-stuff</loc></url>
+</urlset>

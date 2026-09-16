@@ -17,10 +17,14 @@ function cleanWorkerAssets() {
     async closeBundle() {
       await rm(resolve(SITE_DIR, "_worker.js"), { force: true });
       await mkdir(resolve(SITE_DIR, "assets"), { recursive: true });
+      await mkdir(resolve(SITE_DIR, "media"), { recursive: true });
       await cp(resolve(process.cwd(), "favicon.svg"), resolve(SITE_DIR, "favicon.svg"));
+      await cp(resolve(process.cwd(), "media"), resolve(SITE_DIR, "media"), { recursive: true });
+      await cp(resolve(process.cwd(), "robots.txt"), resolve(SITE_DIR, "robots.txt"));
+      await cp(resolve(process.cwd(), "sitemap.xml"), resolve(SITE_DIR, "sitemap.xml"));
       await writeFile(resolve(SITE_DIR, ".assetsignore"), "_worker.js\n", "utf8");
       await rm(resolve(process.cwd(), "dist"), { recursive: true, force: true });
-      await writeFile(resolve(SITE_DIR, "_osrshub_build.txt"), "OSRSHUB-0.43.0-WORKER-SITE\n", "utf8");
+      await writeFile(resolve(SITE_DIR, "_osrshub_build.txt"), "OSRSHUB-0.46.2-WORKER-SITE\n", "utf8");
     }
   };
 }

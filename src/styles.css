@@ -1476,3 +1476,116 @@ html[data-theme="aurora"] .mobileProfilePanel,html[data-theme="aurora"] .mobileP
 .discordAccountActions{display:flex;flex-wrap:wrap;gap:10px;align-items:center}.discordAccountActions a{display:inline-flex;align-items:center;justify-content:center;text-decoration:none}.discordStatus{display:block;margin-top:10px;color:var(--muted)}
 .watchcard small+small{margin-top:3px}.watchcard{min-height:78px}.watchcard>div{min-width:0}.watchcard strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 @media(max-width:700px){.discordAccountActions{display:grid;grid-template-columns:1fr}.discordAccountActions a,.discordAccountActions button{width:100%}.watchcard{grid-template-columns:36px minmax(0,1fr) auto 28px;gap:9px}.watchcard small{font-size:11px}}
+
+/* V46.2 — Aurora readability, alert UX, graph intelligence, and light canvas polish */
+html[data-theme="aurora"] body{color:#edf7ff!important}
+html[data-theme="aurora"] .notificationPopover,
+html[data-theme="aurora"] .notificationPopover .popoverList button,
+html[data-theme="aurora"] .quickCalcPopover,
+html[data-theme="aurora"] .chartTooltip,
+html[data-theme="aurora"] .chartTimeReadout,
+html[data-theme="aurora"] .chartOptionsMenu,
+html[data-theme="aurora"] .profileMenu,
+html[data-theme="aurora"] .columnMenu,
+html[data-theme="aurora"] .dropdownPanel{background:#0d1a2b!important;color:#edf7ff!important;border-color:#29445f!important}
+html[data-theme="aurora"] .notificationPopover .popoverHead,
+html[data-theme="aurora"] .notificationPopover .popoverList button,
+html[data-theme="aurora"] .notificationPopover .clearPopover,
+html[data-theme="aurora"] .quickCalcHead,
+html[data-theme="aurora"] .quickCalcResult>div,
+html[data-theme="aurora"] .chartOptionsMenu label{border-color:#29445f!important}
+html[data-theme="aurora"] .notificationPopover strong,
+html[data-theme="aurora"] .notificationPopover button,
+html[data-theme="aurora"] .quickCalcPopover strong,
+html[data-theme="aurora"] .quickCalcPopover b,
+html[data-theme="aurora"] .chartTooltip strong,
+html[data-theme="aurora"] .chartTooltip b,
+html[data-theme="aurora"] .chartTimeReadout strong,
+html[data-theme="aurora"] .chartOptionsMenu strong,
+html[data-theme="aurora"] .profileMenu strong,
+html[data-theme="aurora"] .columnMenu strong{color:#f4f9ff!important}
+html[data-theme="aurora"] .notificationPopover small,
+html[data-theme="aurora"] .quickCalcPopover small,
+html[data-theme="aurora"] .quickCalcPopover span,
+html[data-theme="aurora"] .chartTimeReadout span,
+html[data-theme="aurora"] .chartOptionsMenu label,
+html[data-theme="aurora"] .profileMenu small,
+html[data-theme="aurora"] .columnMenu label{color:#9eb5ca!important}
+html[data-theme="aurora"] .notificationPopover .popoverList button:hover,
+html[data-theme="aurora"] .chartOptionsMenu label:hover,
+html[data-theme="aurora"] .profileMenu .profileRow>button:first-child:hover{background:#14263c!important}
+html[data-theme="aurora"] .iconbtn,
+html[data-theme="aurora"] .secondary,
+html[data-theme="aurora"] .filterButton{background:#102035!important;color:#edf7ff!important;border-color:#31506d!important}
+html[data-theme="aurora"] .iconbtn:hover,
+html[data-theme="aurora"] .secondary:hover,
+html[data-theme="aurora"] .filterButton:hover{background:#162a43!important}
+html[data-theme="aurora"] .calculatorBtn.active{background:#1d3150!important;color:#7deaff!important;border-color:#45617e!important}
+html[data-theme="aurora"] .quickCalcFields input,
+html[data-theme="aurora"] .quickCalcResult>div{background:#101f33!important;color:#edf7ff!important;border-color:#304a66!important}
+html[data-theme="aurora"] .chartbox .recharts-text{fill:#b9cadb!important}
+html[data-theme="aurora"] .chartTooltip .legendDot.buy{background:#a78bfa!important}
+html[data-theme="aurora"] .chartTooltip .legendDot.sell{background:#22d3ee!important}
+html[data-theme="aurora"] .chartModeButtons{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin:6px 0 9px}
+.chartModeButtons button{border:1px solid var(--line,#e1e5eb);background:var(--surface2,#f5f6f8);color:var(--text,#333);border-radius:7px;padding:6px 5px;font-size:9px;cursor:pointer}
+.chartModeButtons button.active{background:#7c5cff;color:#fff;border-color:#7c5cff}
+html[data-theme="aurora"] .chartModeButtons button{background:#13243a!important;color:#cfe0ef!important;border-color:#31506d!important}
+html[data-theme="aurora"] .chartModeButtons button.active{background:#7c5cff!important;color:#fff!important;border-color:#7c5cff!important}
+
+/* Aurora text hardening: catch legacy black text in secondary tools without changing the mobile layout. */
+html[data-theme="aurora"] .calculationsPage,
+html[data-theme="aurora"] .calculationsPage h1,
+html[data-theme="aurora"] .calculationsPage h2,
+html[data-theme="aurora"] .calculationsPage h3,
+html[data-theme="aurora"] .calculationsPage strong,
+html[data-theme="aurora"] .calculationsPage label,
+html[data-theme="aurora"] .calculationsPage .calcLead,
+html[data-theme="aurora"] .calculationsPage .calcDisclaimer,
+html[data-theme="aurora"] .calculationsPage .xpRow,
+html[data-theme="aurora"] .calculationsPage .questReqGrid,
+html[data-theme="aurora"] .calculationsPage .pvmResult,
+html[data-theme="aurora"] .calculationsPage .lootModel,
+html[data-theme="aurora"] .calculationsPage .accountTitle{color:#edf7ff!important}
+html[data-theme="aurora"] .calculationsPage input,
+html[data-theme="aurora"] .calculationsPage select{background:#0e1d30!important;color:#edf7ff!important;border-color:#29445f!important}
+html[data-theme="aurora"] .calculationsPage small,
+html[data-theme="aurora"] .calculationsPage .calcLead,
+html[data-theme="aurora"] .calculationsPage .calcDisclaimer{color:#9eb5ca!important}
+html[data-theme="aurora"] .calcLabCard .calcRoadmap,
+html[data-theme="aurora"] .questGoalCard,
+html[data-theme="aurora"] .questReqGrid>div,
+html[data-theme="aurora"] .pvmResult>div,
+html[data-theme="aurora"] .lootModel>div{background:#0f1f33!important;border-color:#29445f!important;color:#edf7ff!important}
+
+/* Historical scanner markers should read as a single paired event on the graph. */
+.historicalPin{position:relative}
+.historicalPin:after{content:"BUY → SELL";position:absolute;right:10px;top:-10px;padding:3px 6px;border-radius:99px;background:linear-gradient(90deg,#8b5cf6,#22d3ee);color:#fff;font-size:8px;font-weight:800;letter-spacing:.5px}
+
+/* Simulator: clearer controls when it grows beyond the original four inputs. */
+.simInputsExtended{grid-template-columns:repeat(5,minmax(0,1fr))!important}
+.simInputsExtended label{min-width:0}
+@media(max-width:1100px){.simInputsExtended{grid-template-columns:repeat(3,minmax(0,1fr))!important}}
+@media(max-width:700px){.simInputsExtended{grid-template-columns:1fr 1fr!important}}
+
+/* Screener desktop columns control. */
+.screenerColumnControls{position:relative;flex:0 0 auto}
+.screenerColumnControls .columnMenu{right:0;left:auto;top:46px}
+@media(max-width:1100px){.screenerColumnControls{display:none!important}}
+
+/* Light mode: slightly more varied canvas while keeping the Apple/minimal feel. */
+@media(min-width:1101px){
+ html[data-theme="light"] body{background:radial-gradient(circle at 7% 4%,rgba(124,92,246,.055),transparent 24%),radial-gradient(circle at 93% 9%,rgba(34,211,238,.05),transparent 22%),linear-gradient(180deg,#fbfcff 0%,#f8faff 48%,#fcfcff 100%)!important}
+ html[data-theme="light"] main:before{content:"";position:fixed;inset:66px 0 auto 0;height:320px;background:linear-gradient(115deg,rgba(124,92,246,.018),transparent 42%,rgba(34,211,238,.018));pointer-events:none;z-index:-1}
+ html[data-theme="light"] .stats{background:rgba(255,255,255,.45);border-color:#e6e9ef}
+ html[data-theme="light"] .tablewrap,html[data-theme="light"] .recipeGrid,html[data-theme="light"] .financeGrid,html[data-theme="light"] .dashboardGrid{position:relative}
+}
+
+/* Recipe performance: avoid transition-heavy rendering on large grids. */
+.recipeCard{content-visibility:auto;contain-intrinsic-size:180px}
+
+/* Mobile profile panel remains a single clean vertical surface. */
+@media(max-width:700px){
+ .mobileProfilePanel{touch-action:pan-y!important;-webkit-overflow-scrolling:touch!important}
+ .mobileProfilePanel .profileChoiceUnified{min-height:48px!important}
+ .mobileProfilePanel .profileChoiceUnified>button:first-child{padding:9px 10px!important}
+}

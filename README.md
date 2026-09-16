@@ -1,42 +1,30 @@
-# OSRSHub V46.1 — Full roadmap consolidation
+# OSRS Hub V46.2
 
-This build consolidates the next roadmap features into the existing pages rather than creating a large number of extra navigation pages.
-
-## Included
-- Production/UX polish foundation
-- Simplified first-glance charts with advanced options retained
-- Personal Discord DM alerts using the signed-in Discord account; no webhook/server required
-- Discord alert frequency controls
-- Historical opportunity buy/sell pinning in item analytics
-- Smart Flip / historical intelligence / market radar foundations in Cool Stuff
-- Transparent Flip Score / evidence breakdown
-- Watchlist intelligence and liquidity/ROI context
-- Item analytics and historical pins
-- Flip Simulator
-- Finance trading-profile analytics
-- Theme persistence locally and through signed-in account sync
-- Mobile Profiles/Extras refinements without redesigning the mobile layout
-- Aurora/light-mode contrast fixes
-
-## Discord setup
-1. Create/configure the Discord application and enable User Install in Discord Developer Portal.
-2. Add a bot user to the application and generate a bot token.
-3. In Cloudflare Worker Settings → Variables and Secrets, add an encrypted secret named `DISCORD_BOT_TOKEN`.
-4. Do not place the token in GitHub, the ZIP, frontend code, or normal variables.
-5. Users sign in with Discord, choose **Add OSRS Hub to Discord**, then choose **Connect alerts** on the Alerts page.
-
-The Worker creates the personal DM only after the user explicitly connects, and the site stores the resulting channel ID/frequency with the signed-in OSRSHub account.
+Combined UX, reliability, Discord account alerts, graph intelligence, SEO and branding update.
 
 ## Protected architecture
 - Normal Cloudflare Worker + Worker Assets
-- `worker.js` retained
-- `wrangler.jsonc` retained
-- D1 `DB` retained
-- `ASSETS` retained
-- `/api/*` Worker-first routing retained
-- Discord OAuth/session/authentication retained
-- No `public/_worker.js`
-- No credentials included
+- `worker.js` + `wrangler.jsonc`
+- D1 binding `DB`
+- Assets binding `ASSETS`
+- `/api/*` Worker-first routing
+- Discord OAuth routes/session handling
+- D1 `users` and `user_data`
+- Cloud sync keys
 
-## Build note
-Worker syntax and source delimiter checks were run. Full Vite production build could not be completed in this environment because `npm install` timed out.
+## Discord setup
+Add `DISCORD_BOT_TOKEN` as an encrypted Cloudflare Worker Secret. Never commit or paste the token into this repository.
+
+For user-installed Discord notifications, enable **User Install** in the Discord Developer Portal and use the application's install link from OSRS Hub Alerts. Users install OSRS Hub to their own Discord account; no OSRS Hub server or webhook is required.
+
+## Branding/media
+See `/media` for OSRS Hub logo and social-preview assets.
+
+## SEO
+- `robots.txt`
+- `sitemap.xml`
+- OpenGraph/Twitter metadata
+- JSON-LD WebApplication metadata
+- OSRS Hub brand/title/description metadata
+
+If the final custom domain is different from `https://osrs-hub.com/`, update the canonical/OG URLs in `index.html` and the sitemap before launch.
