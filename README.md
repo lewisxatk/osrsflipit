@@ -1,8 +1,14 @@
-# OSRS Hub V47.2 — Reliability, Market API & UX Fixes
+# OSRS Hub V47.3 — Reliability, Market API & UX Fixes
 
 This build is based on the V47.1 project and focuses on the issues found on the live site rather than adding placeholder pages.
 
 ## Major fixes
+## V47.3 urgent production fix
+- **Critical item/alert crash fixed:** V47.2 had accidentally dropped the production `ItemPanel`, `RuleModal`, `ChartTooltip`, `ColumnResizeEffect` and `MiniGE` component definitions while leaving their render calls in place. That meant clicking an item or opening the alert flow could throw a runtime `ReferenceError`, leaving the boot overlay stuck on **“Loading market tools…”**. All five components are restored from the last known-good V47.1 implementation and remain compatible with the V47.2 watchlist/theme/market changes.
+- **Market item clicks restored:** Market, Screener, Watchlist, Movers and other item-selection paths now have the analytics panel component available again.
+- **Create Alert restored:** the standalone alert modal and the `+ Create Alert` event path are restored.
+- **Mini GE and column resizing restored:** these were also missing definitions and are now back so the fix does not trade one runtime crash for another.
+
 - **Prices API 403:** all browser price requests now go through `/api/prices/*`, which adds the required identifying User-Agent and edge caching. The Discord alert Worker uses the same protected price fetch path.
 - **Background Discord alerts:** the Worker cron remains enabled every minute and now has a `PUBLIC_ORIGIN`; it does not depend on the OSRS Hub browser tab being open. Discord delivery can therefore continue in the background when the user is signed in and connected.
 - **Check alerts now:** syncs the current alert rules to D1 before running the real Discord alert evaluation, so a newly-created rule is not lost to the 5-second cloud-sync window.

@@ -33,7 +33,7 @@ function cleanWorkerAssets() {
       await cp(resolve(process.cwd(), "sitemap.xml"), resolve(SITE_DIR, "sitemap.xml"));
       await writeFile(resolve(SITE_DIR, ".assetsignore"), "_worker.js\n", "utf8");
       await rm(resolve(process.cwd(), "dist"), { recursive: true, force: true });
-      await writeFile(resolve(SITE_DIR, "_osrshub_build.txt"), "OSRSHUB-0.47.2-WORKER-SITE\n", "utf8");
+      await writeFile(resolve(SITE_DIR, "_osrshub_build.txt"), "OSRSHUB-0.47.3-WORKER-SITE\n", "utf8");
     }
   };
 }
