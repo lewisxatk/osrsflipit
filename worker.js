@@ -60,8 +60,47 @@ async function discordIntegration(request,env){
  if(request.method==="POST"&&new URL(request.url).pathname==="/api/discord/settings"){const body=await request.json().catch(()=>({})),frequency=["instant","5m","15m","30m","1h"].includes(body?.frequency)?body.frequency:"instant";const data=await readUserData(env,user.id),d=data.osrshubDiscord||{};if(!d.connected)return json({error:"Connect Discord alerts first."},400);data.osrshubDiscord={...d,frequency};await writeUserData(env,user.id,data);return json({ok:true,frequency})}
  if(request.method==="POST"&&new URL(request.url).pathname==="/api/discord/disconnect"){const data=await readUserData(env,user.id);delete data.osrshubDiscord;await writeUserData(env,user.id,data);return json({ok:true})}
  return json({error:"Not found"},404)}
-async function latestPriceRows(){
- const latestRes=await fetch(`${PRICES_API}/latest`,{cf:{cacheTtl:45,cacheEverything:true}});if(!latestRes.ok)throw new Error(`Prices API returned ${latestRes.status}`);const latest=await latestRes.json();return latest.data||{};
+async function fetchPricesApi(path,ttl=45){
+ const clean=String(path||"/latest").startsWith("/")?String(path||"/latest"):`/${String(path||"latest")}`;
+ const url=`${PRICES_API}${clean}`;
+ const headers={"User-Agent":"OSRSHub/47.2 (Grand Exchange analytics; contact via OSRSHub)",Accept:"application/json"};
+ let res=await fetch(url,{headers,cf:{cacheTtl:ttl,cacheEverything:true}});
+ if(!res.ok){res=await fetch(url,{headers:{...headers,"User-Agent":"OSRSHub/47.2 (+https://osrshub.prices-app.workers.dev; Grand Exchange analytics)"},cf:{cacheTtl:ttl,cacheEverything:true}});}
+ if(!res.ok)throw new Error(`Prices API returned ${res.status}`);
+ const data=await res.json();
+ return {data,headers:{"Cache-Control":`public, max-age=${ttl}, s-maxage=${ttl}`}};
+}
+async function latestPriceRows(){const result=await fetchPricesApi("/latest",30);return result.data?.data||{};}
+async function priceProxy(request){
+ const url=new URL(request.url);const path=url.pathname.replace(/^\/api\/prices/,"")||"/latest";const qs=url.search;
+ try{const ttl=path.startsWith("/timeseries")?300:path==="/mapping"?86400:path==="/24h"?120:30;const result=await fetchPricesApi(path+qs,ttl);return new Response(JSON.stringify(result.data),{status:200,headers:{"Content-Type":"application/json; charset=utf-8",...result.headers,"Vary":"Accept"}})}catch(e){return json({error:e?.message||"Price service unavailable."},502)}
+}
+async function questDetails(request){
+ const url=new URL(request.url);const name=String(url.searchParams.get("name")||"").trim().slice(0,120);if(!name)return json({error:"Quest name required."},400);
+ const headers={"User-Agent":"OSRSHub/47.2 (quest pathway; contact via OSRSHub)",Accept:"application/json"};
+ try{
+  const apiBase="https://oldschool.runescape.wiki/api.php";
+  const sectionsUrl=`${apiBase}?action=parse&page=${encodeURIComponent(name)}&prop=sections&format=json`;
+  const sr=await fetch(sectionsUrl,{headers});if(!sr.ok)throw new Error(`Wiki quest lookup returned ${sr.status}`);const sj=await sr.json();
+  const section=(sj?.parse?.sections||[]).find(x=>/^(requirements|requirements and recommendations)$/i.test(String(x.line||"")))||(sj?.parse?.sections||[]).find(x=>/requirements/i.test(String(x.line||"")));
+  if(!section?.index)return json({name,source:"OSRS Wiki",requirements:[],quests:[],notes:["Requirements section was not available for this quest."]},200,{"Cache-Control":"public, max-age=21600"});
+  const tr=await fetch(`${apiBase}?action=parse&page=${encodeURIComponent(name)}&prop=text&section=${encodeURIComponent(section.index)}&format=json`,{headers});if(!tr.ok)throw new Error(`Wiki quest requirements returned ${tr.status}`);const tj=await tr.json();
+  const html=String(tj?.parse?.text?.["*"]||"");
+  const li=[...html.matchAll(/<li[^>]*>([\s\S]*?)<\/li>/gi)].map(m=>m[1].replace(/<br\s*\/?>/gi," ").replace(/<[^>]+>/g," ").replace(/&nbsp;/g," ").replace(/&amp;/g,"&").replace(/&#39;/g,"'").replace(/&quot;/g,'"').replace(/\s+/g," ").trim()).filter(Boolean);
+  const skills=["Attack","Strength","Defence","Hitpoints","Ranged","Prayer","Magic","Cooking","Woodcutting","Fletching","Fishing","Firemaking","Crafting","Smithing","Mining","Runecraft","Hunter","Construction","Thieving","Slayer","Farming","Herblore","Agility","Sailing"];
+  const skillPattern=new RegExp(`(?:^|\\b)(\\d{1,3})\\s+(${skills.map(x=>x.replace(/[.*+?^${}()|[\\]\\\\]/g,"\\$&")).join("|")})(?:\\s|$)`,"i");
+  const requirements=[],quests=[];
+  for(const text of li){
+   const clean=text.replace(/\[[^\]]*\]/g,"");const sm=clean.match(skillPattern);
+   if(sm){requirements.push({type:"skill",skill:skills.find(x=>x.toLowerCase()===sm[2].toLowerCase())||sm[2],level:Number(sm[1]),text:clean});continue;}
+   const qp=clean.match(/(\d{1,3})\s+quest points?/i);if(qp){requirements.push({type:"questpoints",level:Number(qp[1]),text:clean});continue;}
+   if(/completion of the following quests?/i.test(clean)||/^(?:and )?completion of/i.test(clean))continue;
+   if(/required to start|boostable|not boostable|higher recommended|recommended/i.test(clean)&&/\d/.test(clean)){requirements.push({type:"note",text:clean});continue;}
+   if(clean.length>=3&&clean.length<=100&&!/^items? required/i.test(clean)&&!/^bring /i.test(clean))quests.push(clean);
+  }
+  const uniq=(arr,key)=>[...new Map(arr.map(x=>[key(x),x])).values()];
+  return json({name,source:"OSRS Wiki",requirements:uniq(requirements,x=>JSON.stringify(x)),quests:[...new Set(quests)],rawBullets:li.slice(0,120)},200,{"Cache-Control":"public, max-age=21600"});
+ }catch(e){return json({error:e?.message||"Quest requirements unavailable."},502)}
 }
 async function sendDiscordChannelMessage(env,channelId,payload){if(channelId)return discordBotRequest(env,`/channels/${channelId}/messages`,{method:"POST",body:JSON.stringify(payload)});throw new Error("No Discord alert channel is saved for this account.")}
 function alertPayload(a,origin){const itemUrl=`${origin||""}/?item=${encodeURIComponent(a.itemId)}`;return {embeds:[{title:`${a.name} alert triggered`,description:`**${a.metric}** ${a.metric==="roi"?"is":"reached"} **${a.metric==="roi"?Number(a.target).toFixed(2)+"%":Math.round(a.target).toLocaleString("en-GB")+" gp"}**`,color:0x8b5cf6,fields:[{name:"Current value",value:a.metric==="roi"?`${Number(a.value).toFixed(2)}%`:`${Math.round(a.value).toLocaleString("en-GB")} gp`,inline:true},{name:"Condition",value:`${a.direction||"threshold"}`,inline:true},{name:"Item",value:a.name,inline:true}],footer:{text:"OSRS Hub · live GE alert"},timestamp:new Date(a.at).toISOString(),url:itemUrl||undefined,thumbnail:{url:`https://prices.runescape.wiki/osrs/item/${a.itemId}/icon`}}]};}
@@ -89,4 +128,4 @@ async function runDiscordAlertCron(env){
  if(!env.DB||!botConfigured(env))return;
  try{const rows=await latestPriceRows();const users=await env.DB.prepare("SELECT user_id,data_json FROM user_data WHERE data_json LIKE '%osrshubDiscord%'").all();for(const row of users.results||[]){let data;try{data=JSON.parse(row.data_json)}catch{continue}try{await evaluateDiscordUser(env,row.user_id,data,rows,{origin:env.PUBLIC_ORIGIN||""});}catch(e){console.warn("Discord user alert check failed",row.user_id,e?.message)}}}catch(e){console.warn("Discord alert cron failed",e?.message)}
 }
-export default {async fetch(request,env){const url=new URL(request.url);if(url.pathname.startsWith("/api/auth/"))return auth(request,env);if(url.pathname.startsWith("/api/discord/"))return discordIntegration(request,env);if(request.method==="OPTIONS"&&url.pathname==="/api/hiscores")return new Response(null,{status:204,headers:{"Access-Control-Allow-Origin":"*","Access-Control-Allow-Methods":"GET, OPTIONS","Access-Control-Allow-Headers":"Content-Type"}});if(request.method==="GET"&&url.pathname==="/api/account")return accountSync(request,env);if(request.method==="GET"&&url.pathname==="/api/itemstats")return itemStats(request,env);if(request.method==="GET"&&url.pathname==="/api/hiscores")return hiscores(request);return env.ASSETS.fetch(request)},async scheduled(event,env,ctx){ctx.waitUntil(runDiscordAlertCron(env))}};
+export default {async fetch(request,env){const url=new URL(request.url);if(url.pathname.startsWith("/api/auth/"))return auth(request,env);if(url.pathname.startsWith("/api/discord/"))return discordIntegration(request,env);if(request.method==="OPTIONS"&&url.pathname==="/api/hiscores")return new Response(null,{status:204,headers:{"Access-Control-Allow-Origin":"*","Access-Control-Allow-Methods":"GET, OPTIONS","Access-Control-Allow-Headers":"Content-Type"}});if(request.method==="GET"&&url.pathname.startsWith("/api/prices/"))return priceProxy(request);if(request.method==="GET"&&url.pathname==="/api/quest")return questDetails(request);if(request.method==="GET"&&url.pathname==="/api/account")return accountSync(request,env);if(request.method==="GET"&&url.pathname==="/api/itemstats")return itemStats(request,env);if(request.method==="GET"&&url.pathname==="/api/hiscores")return hiscores(request);return env.ASSETS.fetch(request)},async scheduled(event,env,ctx){ctx.waitUntil(runDiscordAlertCron(env))}};

@@ -6,7 +6,8 @@
   "keep_vars": true,
   "vars": {
     "DISCORD_CLIENT_ID": "1549203891449626748",
-    "DISCORD_REDIRECT_URI": "https://osrsflipit.prices-app.workers.dev/api/auth/callback"
+    "DISCORD_REDIRECT_URI": "https://osrsflipit.prices-app.workers.dev/api/auth/callback",
+    "PUBLIC_ORIGIN": "https://osrsflipit.prices-app.workers.dev"
   },
   "triggers": { "crons": ["* * * * *"] },
   "assets": {

@@ -1630,3 +1630,56 @@ html[data-theme="comfort"] .screenerToolsRow,html[data-theme="comfort"] .screene
 html[data-theme="aurora"] .screenerToolsRow,html[data-theme="aurora"] .screenerMarketHeader,html[data-theme="aurora"] .screenerAbsolutePanel,html[data-theme="aurora"] .watchPickerMenu{background:#0e192a;color:#edf7ff;border-color:#29415f}
 @media(max-width:900px){.screenerToolsRow{align-items:stretch}.screenerToolGroup{width:100%}.screenerToolSummary{display:none}.screenerSort{flex:1;min-width:140px}.screenerAbsolutePanel{position:fixed!important;left:10px!important;right:10px!important;top:120px!important;width:auto!important;max-width:none!important}.screenerMarketHeader{margin-top:8px}.tickerInner{padding:5px 10px}}
 @media(max-width:560px){.screenerToolsRow{padding:8px}.screenerToolGroup{gap:5px}.screenerToolsRow .secondary,.screenerSort{height:36px;font-size:10px}.watchPickerMenu{position:fixed;left:10px!important;right:10px;top:110px;width:auto;max-width:none}.osrshubToast{top:64px!important;right:10px!important;max-width:calc(100vw - 20px)!important}}
+
+/* V47.2 REAL FIXES — navigation, watchlists, themes, mobile controls */
+.ticker{position:sticky!important;top:72px!important;height:38px!important;background:var(--nav-bg,rgba(255,255,255,.94))!important;border-top:0!important;border-bottom:1px solid var(--line,#e5e7eb)!important;overflow:hidden!important;z-index:40!important}
+.tickerInner{height:38px!important;padding:5px 22px!important;max-width:1500px!important}
+.staticWatchlistLabel{flex:0 0 auto!important;min-width:0!important;height:28px!important;padding:0 10px!important;white-space:nowrap!important;background:var(--surface,#fff)!important;border:1px solid var(--line,#e2e4e9)!important;box-shadow:none!important;font-size:10px!important}
+.staticWatchlistLabel strong{font-size:10px!important;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.staticWatchlistLabel span{font-size:8px!important;color:var(--muted,#8a9098)!important}
+.tickerTrack{height:28px!important;min-width:0!important;flex:1 1 auto!important;overflow:hidden!important;display:flex!important;align-items:center!important;gap:7px!important}
+.tickerTrack>button{height:25px!important;flex:0 0 auto!important;padding:0 9px!important;background:var(--surface,#fff)!important;color:inherit!important;border-color:var(--line,#e2e4e9)!important}
+@media(max-width:700px){.ticker{top:58px!important;height:38px!important}.tickerInner{padding:5px 8px!important}.staticWatchlistLabel{max-width:145px}.staticWatchlistLabel strong{max-width:88px}.tickerTrack{min-width:0!important}.tickerTrack>button{font-size:9px!important;padding:0 8px!important}}
+
+/* Keep screener dropdowns above the market table instead of letting table stacking cover them. */
+.screenerToolsRow{z-index:100!important}
+.screenerAbsolutePanel{position:fixed!important;top:116px!important;left:24px!important;right:auto!important;z-index:99999!important;max-height:calc(100vh - 140px)!important}
+.screenerAbsolutePanel.profileMenu,.screenerAbsolutePanel.columnMenu{min-width:300px!important}
+@media(max-width:700px){.screenerAbsolutePanel{top:104px!important;left:8px!important;right:8px!important;width:auto!important;max-width:none!important;max-height:calc(100dvh - 118px)!important}.screenerToolGroup{gap:5px!important}.screenerToolsRow .secondary,.screenerSort{height:34px!important;padding:0 8px!important;font-size:10px!important}.screenerToolGroup .toolDropdown{flex:0 0 auto}.screenerToolGroup .toolDropdown>.secondary{min-width:0!important}.screenerToolGroup{flex-wrap:nowrap!important;overflow-x:auto!important;scrollbar-width:none!important}.screenerToolGroup::-webkit-scrollbar{display:none}}
+
+/* Item analytics watchlist picker: open inward so it never disappears off-screen. */
+.itemtitle>.watchPicker .watchPickerMenu{left:auto!important;right:0!important}
+@media(max-width:700px){.fullDetail .itemtitle>.watchPicker .watchPickerMenu{position:fixed!important;left:auto!important;right:10px!important;top:74px!important;width:min(300px,calc(100vw - 20px))!important;z-index:100000!important}.drawer:not(.fullDetail) .watchPickerMenu{position:fixed!important;right:10px!important;left:auto!important;top:74px!important;z-index:100000!important;width:min(300px,calc(100vw - 20px))!important}}
+
+/* Watchlist manager */
+.watchManager{display:flex;flex-direction:column;gap:8px;min-width:min(520px,100%)}
+.watchManager label{font-size:10px;color:var(--muted,#7b818c);font-weight:700}
+.watchManager select{display:block;width:100%;height:40px;margin-top:5px;border:1px solid var(--line,#e2e4e9);border-radius:10px;background:var(--surface,#fff);color:inherit;padding:0 10px;font:inherit;font-size:12px}
+.watchManagerActions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.watchManagerActions input{height:36px;min-width:170px;border:1px solid var(--line,#e2e4e9);border-radius:9px;background:var(--surface,#fff);color:inherit;padding:0 9px;font:inherit;font-size:11px}
+.watchManagerActions .secondary{height:36px}
+.watchPageSub{margin:5px 0 0!important;font-size:11px!important;color:var(--muted,#858b95)!important}
+@media(max-width:700px){.watchManager{min-width:0;width:100%;margin-top:12px}.sectionhead:has(.watchManager){display:block}.watchManagerActions{justify-content:flex-start}.watchManagerActions input{flex:1;min-width:130px}.watchManagerActions .secondary{font-size:10px;padding:0 9px}}
+
+/* XP planner + quest pathway */
+.xpPlannerControls{display:flex;gap:7px;align-items:end;flex-wrap:wrap}
+.xpPlannerControls label{font-size:9px;color:var(--muted,#858b95)}
+.xpPlannerControls select,.xpPlannerControls input{display:block;height:34px;margin-top:4px;border:1px solid var(--line,#e1e4e9);border-radius:8px;background:var(--surface,#fff);color:inherit;padding:0 8px;font:inherit;font-size:10px}
+.xpPlannerControls input{width:105px}
+.xpRow>div{min-width:150px}.xpRow>div small{display:block;color:var(--muted,#858b95);font-size:8px;margin-top:3px}.xpRow select{height:30px;border:1px solid var(--line,#e1e4e9);border-radius:8px;background:var(--surface,#fff);color:inherit;font:inherit;font-size:9px;padding:0 7px;min-width:150px}
+.questPrereqList{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin:9px 0}.questPrereqList>div{display:grid;grid-template-columns:18px 1fr;gap:5px;padding:8px;border:1px solid var(--line,#e7e8ec);border-radius:9px;background:var(--surface,#fff)}.questPrereqList span{font-weight:900}.questPrereqList b{font-size:9px}.questPrereqList small{grid-column:2;color:var(--muted,#858b95);font-size:8px}.questPrereqList .done{border-color:#b9efd3;background:#f1fff7}.questPrereqList .done span{color:#0aa85b}.questPrereqList .missing{border-color:#ffd0d8;background:#fff6f7}.questPrereqList .missing span{color:#e13d5c}.questReady{display:flex;align-items:center;gap:6px;padding:8px;border-radius:9px;background:#effaf4;color:#0a9a55;font-size:10px;font-weight:800}
+@media(max-width:700px){.xpPlannerControls{width:100%;display:grid;grid-template-columns:1fr 1fr}.xpPlannerControls label:last-child{grid-column:1/-1}.xpRow{grid-template-columns:1fr 1fr!important;gap:6px!important}.xpRow select{grid-column:1/-1;width:100%;min-width:0}.questPrereqList{grid-template-columns:1fr}}
+
+/* Dark / Aurora surface cleanup: no accidental white cards or low-contrast text. */
+html[data-theme="dark"] body,html[data-theme="dark"] main,html[data-theme="dark"] .app,html[data-theme="dark"] .pageIntro,html[data-theme="dark"] .hero{background:#0f151d!important;color:#eef2f7!important}
+html[data-theme="dark"] .nav,html[data-theme="dark"] .ticker{--surface:#171e28;--line:#303846;--muted:#aab6c5;background:rgba(15,21,29,.96)!important;color:#eef2f7!important;border-color:#303846!important}
+html[data-theme="dark"] .pageIntro,html[data-theme="dark"] .dashboardCard,html[data-theme="dark"] .analysisCard,html[data-theme="dark"] .recipeCard,html[data-theme="dark"] .financeCard,html[data-theme="dark"] .calcLabCard,html[data-theme="dark"] .coolCard,html[data-theme="dark"] .watchcard,html[data-theme="dark"] .rule,html[data-theme="dark"] .alertintro,html[data-theme="dark"] .stabilityCard,html[data-theme="dark"] .opportunityLab,html[data-theme="dark"] .moneyTable,html[data-theme="dark"] .moverow,html[data-theme="dark"] .movecol{background:#171e28!important;color:#eef2f7!important;border-color:#303846!important}
+html[data-theme="dark"] .mobileNav,html[data-theme="dark"] .mobileMore{background:#111821!important;color:#eef2f7!important;border-color:#303846!important}.mobileNav>button.active{background:var(--surface,#f1f2f4)}
+html[data-theme="aurora"] body,html[data-theme="aurora"] main,html[data-theme="aurora"] .app,html[data-theme="aurora"] .pageIntro,html[data-theme="aurora"] .hero{background:#08111e!important;color:#edf7ff!important}
+html[data-theme="aurora"] .nav,html[data-theme="aurora"] .ticker{--surface:#0e192a;--line:#29415f;--muted:#aebbd0;background:rgba(8,17,30,.97)!important;color:#edf7ff!important;border-color:#29415f!important}
+html[data-theme="aurora"] .pageIntro,html[data-theme="aurora"] .dashboardCard,html[data-theme="aurora"] .analysisCard,html[data-theme="aurora"] .recipeCard,html[data-theme="aurora"] .financeCard,html[data-theme="aurora"] .calcLabCard,html[data-theme="aurora"] .coolCard,html[data-theme="aurora"] .watchcard,html[data-theme="aurora"] .rule,html[data-theme="aurora"] .alertintro,html[data-theme="aurora"] .stabilityCard,html[data-theme="aurora"] .opportunityLab,html[data-theme="aurora"] .moneyTable,html[data-theme="aurora"] .moverow,html[data-theme="aurora"] .movecol{background:#0e192a!important;color:#edf7ff!important;border-color:#29415f!important}
+html[data-theme="aurora"] input,html[data-theme="aurora"] select,html[data-theme="aurora"] textarea,html[data-theme="aurora"] .secondary,html[data-theme="aurora"] .iconbtn,html[data-theme="aurora"] .search,html[data-theme="aurora"] .globalSearch{background:#0b1626!important;color:#edf7ff!important;border-color:#29415f!important}
+html[data-theme="aurora"] .mobileNav,html[data-theme="aurora"] .mobileMore{background:#091525!important;color:#edf7ff!important;border-color:#29415f!important}
+html[data-theme="aurora"] .mobileNav>button{color:#9eb0c5!important}.mobileNav>button.active{color:inherit!important}
+html[data-theme="aurora"] .calcLabCard .skillMiniGrid>div,html[data-theme="aurora"] .calcLabCard .questGoalCard,html[data-theme="aurora"] .calcLabCard .pvmResult>div,html[data-theme="aurora"] .calcLabCard .calcDisclaimer,html[data-theme="aurora"] .calcLabCard .calcRoadmap{background:#13243a!important;color:#edf7ff!important;border-color:#29415f!important}
+html[data-theme="aurora"] .questPrereqList>div,html[data-theme="dark"] .questPrereqList>div{background:#13243a!important;color:inherit;border-color:#29415f!important}.questPrereqList .done{background:#102c23!important;border-color:#1f6f52!important}.questPrereqList .missing{background:#321b23!important;border-color:#6c3443!important}
