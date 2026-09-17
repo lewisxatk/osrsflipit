@@ -1,72 +1,41 @@
-# OSRS Hub V46.2
+# OSRS Hub V47.1 — Reliability & Intelligence Fix
 
-Combined UX, reliability, Discord account alerts, graph intelligence, SEO and branding update.
+This build is based on the V46.2/V47 project and is intended to fix the features that were previously only partially wired up.
 
-## Protected architecture
-- Normal Cloudflare Worker + Worker Assets
-- `worker.js` + `wrangler.jsonc`
-- D1 binding `DB`
-- Assets binding `ASSETS`
-- `/api/*` Worker-first routing
-- Discord OAuth routes/session handling
-- D1 `users` and `user_data`
-- Cloud sync keys
+## Included
+- 3 saved watchlists, 25 items each, with per-item watchlist picker and active ticker list.
+- Watchlists, active list, theme, account, loadout and loadout details included in cloud/export data.
+- Screener controls are now in a dedicated toolbar above Market Results; filters, profiles and columns are no longer positioned behind the table.
+- Desktop Extras includes Market Spotlight and Loadout.
+- Loadout Lab persists equipment details, retrieves OSRSBox slot data, filters equipment by slot, estimates DPS/kills per hour and shows upgrade candidates.
+- Account sync uses WikiSync's actual object-shaped `levels` and `quests` response, with HiScores fallback.
+- RuneLite profile import no longer pretends a settings profile contains skill/quest progression. If an RSN is present it is synced; otherwise the UI explains why the user must enter the RSN.
+- Quest Pathway uses synced unfinished quests plus the existing structured goal requirements and skill-gap planner. WikiSync requires the RuneLite WikiSync plugin to have synced the account.
+- Live PVM Model now accepts style, combat stats, weapon speed, max hit, target HP/defence, supply cost and an optional manual kills/hour override.
+- Overnight Flip Finder uses the user's local time window and compares the same overnight window across recent hourly observations, with configurable profit, volume, price, ROI and risk thresholds.
+- Alert triggers now create a visible top-right toast for 30 seconds and play the configured alert sound.
+- Discord live alert delivery now uses the saved Discord channel, retries only when delivery succeeds, and includes an authenticated `Check alerts now` endpoint for troubleshooting.
+- Discord OAuth, bot token, D1, Worker Assets, media, SEO, Wrangler vars and the `/media` build fix are preserved.
 
-## Discord setup
-Add `DISCORD_BOT_TOKEN` as an encrypted Cloudflare Worker Secret. Never commit or paste the token into this repository.
-
-For user-installed Discord notifications, enable **User Install** in the Discord Developer Portal and use the application's install link from OSRS Hub Alerts. Users install OSRS Hub to their own Discord account; no OSRS Hub server or webhook is required.
-
-## Branding/media
-See `/media` for OSRS Hub logo and social-preview assets.
-
-## SEO
-- `robots.txt`
-- `sitemap.xml`
-- OpenGraph/Twitter metadata
-- JSON-LD WebApplication metadata
-- OSRS Hub brand/title/description metadata
-
-If the final custom domain is different from `https://osrs-hub.com/`, update the canonical/OG URLs in `index.html` and the sitemap before launch.
-
-
-## V46.2 build fix
-The Vite production build can complete successfully and then fail in `closeBundle`
-with `ENOENT: no such file or directory, lstat '/opt/buildhome/repo/media'`.
-The build hook now treats `/media` as optional and only copies it when the directory
-exists. If branding assets are present in the repository, they are still copied into
-`site/media` normally.
-
-## V46.2 Discord configuration sync fix
-The Wrangler config now includes the non-secret Discord runtime variables so the Cloudflare dashboard and repository stay in sync:
-- `DISCORD_CLIENT_ID`
-- `DISCORD_REDIRECT_URI`
-
-Keep these as normal variables. Keep the following as encrypted Cloudflare Worker Secrets only:
+## Discord secrets
+Keep these in Cloudflare as encrypted Worker Secrets only:
 - `DISCORD_CLIENT_SECRET`
 - `DISCORD_BOT_TOKEN`
 - `OSRSHUB_AUTH_SECRET`
 
-Do not commit any secret values to GitHub.
+Normal variables in `wrangler.jsonc`:
+- `DISCORD_CLIENT_ID`
+- `DISCORD_REDIRECT_URI`
 
-## V47.0 update notes
+Never commit secret values to GitHub.
 
-- Added three persistent watchlists (25 items each) with active-list ticker switching.
-- Moved Screener Columns into a dedicated Market Results header.
-- Added Market Spotlight intelligence page.
-- Added Loadout Lab with equipment-stat retrieval through OSRSBox and transparent sustained-DPS estimation.
-- Improved RuneLite import flow: readable RSN -> HiScores + quest sync.
-- Added account quest sync through WikiSync/RuneMetrics when available.
-- Added unfinished quest picker and skill-gap training panel.
-- Added configurable Overnight Flip Finder with local-time wake window, minimum profit, volume, price, and ROI thresholds.
-- Restored visible auto-expiring alert toast notifications.
-- Fixed Worker Discord alert cron to use `rule.itemId` instead of the rule UUID when reading live GE prices.
-- Added `/api/account` and `/api/itemstats` Worker endpoints.
-- Preserved Discord OAuth, Discord bot token, D1, Cloudflare Worker Assets, media, sitemap and existing data exports.
-- White-mode calculation tiles were refreshed for stronger contrast.
+## Important production checks
+After uploading to GitHub, Cloudflare should run `npm run build` successfully. The previous `/media` ENOENT closeBundle failure is guarded in `vite.config.js`.
 
-### Data-source notes
+For Discord price alerts, sign in with Discord, connect alerts, send a test, create a price rule, then use **Check alerts now** once a live item price satisfies the rule. The scheduled Worker cron also checks every minute.
 
-Equipment fields are retrieved from the OSRSBox item database. Full combat DPS remains a future engine upgrade; the current Loadout Lab intentionally labels its figure as an estimate rather than pretending to reproduce every special attack, prayer, monster attribute, raid modifier or encounter mechanic.
-
-Quest completion sync is dependent on available account data. WikiSync is the preferred route for OSRS quest completion state; the site can fall back to RuneMetrics where available.
+## Data-source notes
+- OSRSBox provides item/equipment metadata including equipment bonuses and weapon attack speed.
+- RuneLite Profiles are settings/plugin profiles, not guaranteed skill/quest exports.
+- WikiSync provides RuneLite-synced quest and level data when the account has the WikiSync plugin enabled and synced.
+- PVM/DPS and overnight results are models/analysis, not guarantees of kills, fills or profit.

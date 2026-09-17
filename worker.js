@@ -21,21 +21,27 @@ async function sendDiscordDM(env,userId,payload){const channel=await discordBotR
 async function sendDiscordAlert(env,userId,a){const itemUrl=`${env.PUBLIC_ORIGIN||""}/?item=${encodeURIComponent(a.itemId)}`;return sendDiscordDM(env,userId,{embeds:[{title:`${a.name} alert triggered`,description:`**${a.metric}** ${a.metric==="roi"?"is":"reached"} **${a.metric==="roi"?Number(a.target).toFixed(2)+"%":Math.round(a.target).toLocaleString("en-GB")+" gp"}**`,color:0x8b5cf6,fields:[{name:"Current value",value:a.metric==="roi"?`${Number(a.value).toFixed(2)}%`:`${Math.round(a.value).toLocaleString("en-GB")} gp`,inline:true},{name:"Condition",value:`${a.direction||"threshold"}`,inline:true},{name:"Item",value:a.name,inline:true}],footer:{text:"OSRS Hub · Discord alerts"},timestamp:new Date(a.at).toISOString(),url:itemUrl||undefined,thumbnail:a.icon?{url:`https://prices.runescape.wiki/osrs/item/${a.itemId}/icon`}:undefined}]});}
 async function currentUser(request,env){if(!authConfigured(env))return null;const c=cookies(request)[SESSION_COOKIE];if(!c)return null;const [uid,exp,sig]=c.split(".");if(!uid||!exp||!sig||Number(exp)<Date.now()||!(await validSig(env.OSRSHUB_AUTH_SECRET,`${uid}.${exp}`,sig)))return null;return env.DB.prepare("SELECT id,username,global_name,avatar FROM users WHERE id=?1").bind(uid).first()}
 async function accountSync(request,env){
- const url=new URL(request.url); const player=String(url.searchParams.get("player")||"").trim().slice(0,12); if(!player)return json({error:"Player name required."},400);
- const quests=[];
+ const url=new URL(request.url);const player=String(url.searchParams.get("player")||"").trim().slice(0,12);if(!player)return json({error:"Player name required."},400);
+ const quests=[];let levels={};let questSource="none";
  try{
-  const qres=await fetch(`https://sync.runescape.wiki/runelite/player/${encodeURIComponent(player)}/STANDARD`,{headers:{"User-Agent":"OSRSHub/1.0 (account quest sync)"}});
-  if(qres.ok){const q=await qres.json();const source=Array.isArray(q?.quests)?q.quests:(Array.isArray(q?.questData)?q.questData:[]);for(const item of source){const title=item.title||item.name;if(title)quests.push({title,status:String(item.status||item.state||"UNKNOWN").toUpperCase(),difficulty:item.difficulty||""})}}
- }catch{}
+  const qres=await fetch(`https://sync.runescape.wiki/runelite/player/${encodeURIComponent(player)}/STANDARD`,{headers:{"User-Agent":"OSRSHub/1.1 (account quest sync)"}});
+  if(qres.ok){
+   const q=await qres.json();
+   if(q?.levels&&typeof q.levels==="object")levels=q.levels;
+   const source=q?.quests&&typeof q.quests==="object"&&!Array.isArray(q.quests)?q.quests:{};
+   for(const [title,state] of Object.entries(source)){const n=Number(state);quests.push({title,status:n>=2?"FINISHED":n===1?"IN_PROGRESS":"NOT_STARTED",state:n});}
+   if(quests.length||Object.keys(levels).length)questSource="WikiSync";
+  }
+ }catch(e){console.warn("WikiSync account sync failed",e?.message)}
  if(!quests.length){
   try{
-   const qres=await fetch(`https://apps.runescape.com/runemetrics/quests?user=${encodeURIComponent(player)}`,{headers:{"User-Agent":"OSRSHub/1.0 (account quest sync)"}});
-   if(qres.ok){const q=await qres.json();for(const item of (Array.isArray(q)?q:(q?.quests||[]))){if(item?.title)quests.push({title:item.title,status:String(item.status||"UNKNOWN").toUpperCase(),difficulty:item.difficulty||"",members:!!item.members,questPoints:item.questPoints||0,userEligible:item.userEligible})}}
-  }catch{}
+   const qres=await fetch(`https://apps.runescape.com/runemetrics/quests?user=${encodeURIComponent(player)}`,{headers:{"User-Agent":"OSRSHub/1.1 (account quest sync)"}});
+   if(qres.ok){const q=await qres.json();for(const item of (Array.isArray(q)?q:(q?.quests||[]))){if(item?.title)quests.push({title:item.title,status:String(item.status||"UNKNOWN").toUpperCase(),difficulty:item.difficulty||"",members:!!item.members,questPoints:item.questPoints||0,userEligible:item.userEligible});}if(quests.length)questSource="RuneMetrics";}
+  }catch(e){console.warn("RuneMetrics quest sync failed",e?.message)}
  }
- return json({player,quests,questSource:quests.length?"WikiSync/RuneMetrics":"none"});
+ return json({player,levels,quests,questSource});
 }
-async function itemStats(request,env){const url=new URL(request.url),id=Number(url.searchParams.get("id")||0);if(!Number.isInteger(id)||id<1)return json({error:"Valid item id required."},400);try{const r=await fetch(`https://www.osrsbox.com/osrsbox-db/items-json/${id}.json`,{headers:{"User-Agent":"OSRSHub/1.0 (equipment analytics)"}});if(!r.ok)return json({error:"Item data unavailable."},r.status);const d=await r.json();return json(d,200,{"Cache-Control":"public, max-age=86400"})}catch(e){return json({error:"Item data request failed."},502)}}
+async function itemStats(request,env){const url=new URL(request.url),id=Number(url.searchParams.get("id")||0),slot=String(url.searchParams.get("slot")||"").toLowerCase();const allowed=["head","cape","neck","ammo","weapon","body","legs","shield","hands","feet","ring"];try{if(slot){if(!allowed.includes(slot))return json({error:"Invalid equipment slot."},400);const r=await fetch(`https://www.osrsbox.com/osrsbox-db/items-json-slot/items-${slot}.json`,{headers:{"User-Agent":"OSRS Hub/1.1 (equipment analytics)"}});if(!r.ok)return json({error:"Equipment slot data unavailable."},r.status);const d=await r.json();return json(d,200,{"Cache-Control":"public, max-age=21600"})}if(!Number.isInteger(id)||id<1)return json({error:"Valid item id required."},400);const r=await fetch(`https://www.osrsbox.com/osrsbox-db/items-json/${id}.json`,{headers:{"User-Agent":"OSRSHub/1.1 (equipment analytics)"}});if(!r.ok)return json({error:"Item data unavailable."},r.status);const d=await r.json();return json(d,200,{"Cache-Control":"public, max-age=86400"})}catch(e){return json({error:"Item data request failed."},502)}}
 
 async function auth(request,env){const url=new URL(request.url);if(!authConfigured(env)){return url.pathname==="/api/auth/me"?json({user:null,data:null,configured:false}):json({error:"Discord login is not configured yet."},503)}
  if(request.method==="GET"&&url.pathname==="/api/auth/discord"){const state=b64u(crypto.getRandomValues(new Uint8Array(24)));const u=new URL(`${DISCORD_API}/oauth2/authorize`);u.searchParams.set("client_id",env.DISCORD_CLIENT_ID);u.searchParams.set("redirect_uri",env.DISCORD_REDIRECT_URI);u.searchParams.set("response_type","code");u.searchParams.set("scope","identify");u.searchParams.set("state",state);return redirect(u.toString(),{"Set-Cookie":cookie(STATE_COOKIE,state,600)})}
@@ -50,37 +56,37 @@ async function discordIntegration(request,env){
  if(!botConfigured(env))return json({error:"Discord bot notifications are not configured on this Worker yet. Add DISCORD_BOT_TOKEN as a Worker secret."},503);
  if(request.method==="POST"&&new URL(request.url).pathname==="/api/discord/connect"){try{const data=await readUserData(env,user.id),body=await request.json().catch(()=>({})),frequency=["instant","5m","15m","30m","1h"].includes(body?.frequency)?body.frequency:"instant";const channelId=await sendDiscordDM(env,user.id,{content:`OSRS Hub Discord alerts are connected, ${user.global_name||user.username}. Your saved OSRS Hub price alerts can now notify you here. You can change notification frequency from the Alerts page.`});data.osrshubDiscord={connected:true,channelId,frequency,lastConnectedAt:Date.now(),nextAllowedAt:0,delivery:"dm"};await writeUserData(env,user.id,data);return json({ok:true,connected:true,frequency,delivery:"dm"})}catch(e){const msg=e?.message||"Could not open a Discord DM with this account.";return json({error:`${msg} If you have not installed OSRSHub to your Discord account yet, use the Add OSRSHub to Discord button first, then try Connect again.`},502)}}
  if(request.method==="POST"&&new URL(request.url).pathname==="/api/discord/test"){try{const data=await readUserData(env,user.id),d=data.osrshubDiscord;if(!d?.connected)return json({error:"Connect Discord alerts first."},400);await sendDiscordDM(env,user.id,{embeds:[{title:"OSRS Hub Discord alerts are working",description:"This is a test notification from your signed-in OSRS Hub account.",color:0x8b5cf6,footer:{text:"OSRS Hub · test notification"},timestamp:new Date().toISOString()}]});return json({ok:true})}catch(e){return json({error:e?.message||"Discord test failed."},502)}}
+ if(request.method==="POST"&&new URL(request.url).pathname==="/api/discord/check"){try{const data=await readUserData(env,user.id),rows=await latestPriceRows();const result=await evaluateDiscordUser(env,user.id,data,rows,{force:true,origin:env.PUBLIC_ORIGIN||new URL(request.url).origin});return json({ok:true,...result})}catch(e){return json({error:e?.message||"Alert check failed."},502)}}
  if(request.method==="POST"&&new URL(request.url).pathname==="/api/discord/settings"){const body=await request.json().catch(()=>({})),frequency=["instant","5m","15m","30m","1h"].includes(body?.frequency)?body.frequency:"instant";const data=await readUserData(env,user.id),d=data.osrshubDiscord||{};if(!d.connected)return json({error:"Connect Discord alerts first."},400);data.osrshubDiscord={...d,frequency};await writeUserData(env,user.id,data);return json({ok:true,frequency})}
  if(request.method==="POST"&&new URL(request.url).pathname==="/api/discord/disconnect"){const data=await readUserData(env,user.id);delete data.osrshubDiscord;await writeUserData(env,user.id,data);return json({ok:true})}
  return json({error:"Not found"},404)}
+async function latestPriceRows(){
+ const latestRes=await fetch(`${PRICES_API}/latest`,{cf:{cacheTtl:45,cacheEverything:true}});if(!latestRes.ok)throw new Error(`Prices API returned ${latestRes.status}`);const latest=await latestRes.json();return latest.data||{};
+}
+async function sendDiscordChannelMessage(env,channelId,payload){if(channelId)return discordBotRequest(env,`/channels/${channelId}/messages`,{method:"POST",body:JSON.stringify(payload)});throw new Error("No Discord alert channel is saved for this account.")}
+function alertPayload(a,origin){const itemUrl=`${origin||""}/?item=${encodeURIComponent(a.itemId)}`;return {embeds:[{title:`${a.name} alert triggered`,description:`**${a.metric}** ${a.metric==="roi"?"is":"reached"} **${a.metric==="roi"?Number(a.target).toFixed(2)+"%":Math.round(a.target).toLocaleString("en-GB")+" gp"}**`,color:0x8b5cf6,fields:[{name:"Current value",value:a.metric==="roi"?`${Number(a.value).toFixed(2)}%`:`${Math.round(a.value).toLocaleString("en-GB")} gp`,inline:true},{name:"Condition",value:`${a.direction||"threshold"}`,inline:true},{name:"Item",value:a.name,inline:true}],footer:{text:"OSRS Hub · live GE alert"},timestamp:new Date(a.at).toISOString(),url:itemUrl||undefined,thumbnail:{url:`https://prices.runescape.wiki/osrs/item/${a.itemId}/icon`}}]};}
+async function evaluateDiscordUser(env,userId,data,rows,{force=false,origin=""}={}){
+ const d=data?.osrshubDiscord;if(!d?.connected||!d.channelId)return {sent:0,checked:0,errors:["Discord alerts are not connected for this account."]};
+ const rules=Array.isArray(data["osrsflipit-rules"])?data["osrsflipit-rules"]:[];if(!rules.length)return {sent:0,checked:0,errors:["No alert rules are saved to this account."]};
+ const state={...(d.ruleState||{})};let stateChanged=false;let sent=0;const errors=[];const fresh=[];
+ for(const rule of rules){
+  const itemId=Number(rule.itemId||rule.id||0);const raw=rows[String(itemId)]||rows[itemId];if(!raw)continue;
+  const buy=Number(raw.high||0),sell=Number(raw.low||0),tax=Math.min(Math.floor(sell*.02),5000000),margin=buy>0&&sell>0?buy-sell-tax:0,roi=buy?margin/buy*100:0;
+  const value=rule.metric==="buy"?buy:rule.metric==="sell"?sell:rule.metric==="margin"?margin:roi;const target=Number(rule.value)||0;const hit=rule.direction==="above"?value>=target:value<=target;const armed=state[rule.id]?.armed!==false;
+  if(hit&&armed)fresh.push({id:crypto.randomUUID(),ruleId:rule.id,itemId,name:String(rule.name||"OSRS item"),metric:rule.metric,value,target,direction:rule.direction,at:Date.now()});
+  else if(!hit&&!armed){state[rule.id]={...state[rule.id],armed:true};stateChanged=true;}
+  else if(!hit&&armed&&force)state[rule.id]={armed:true,lastTriggered:state[rule.id]?.lastTriggered||0};
+ }
+ const cooldown={instant:0,"5m":300000,"15m":900000,"30m":1800000,"1h":3600000}[d.frequency||"instant"]||0;const now=Date.now();const allowed=force||Number(d.nextAllowedAt||0)<=now;
+ if(fresh.length&&allowed){
+  for(const a of fresh){try{await sendDiscordChannelMessage(env,d.channelId,alertPayload(a,origin));state[a.ruleId]={armed:false,lastTriggered:a.at};stateChanged=true;sent++;}catch(e){errors.push(`${a.name}: ${e?.message||"Discord delivery failed"}`);}}
+  if(sent&&cooldown)d.nextAllowedAt=now+cooldown;else if(sent)d.nextAllowedAt=0;
+ }
+ if(stateChanged){data.osrshubDiscord={...d,ruleState:state};await writeUserData(env,userId,data);}
+ return {sent,checked:rules.length,errors,blocked:fresh.length&&!allowed};
+}
 async function runDiscordAlertCron(env){
  if(!env.DB||!botConfigured(env))return;
- try{
-  const latestRes=await fetch(`${PRICES_API}/latest`,{cf:{cacheTtl:45,cacheEverything:true}});if(!latestRes.ok)return;
-  const latest=await latestRes.json(),rows=latest.data||{};
-  const users=await env.DB.prepare("SELECT user_id,data_json FROM user_data WHERE data_json LIKE '%osrshubDiscord%'").all();
-  for(const row of users.results||[]){
-   let data;try{data=JSON.parse(row.data_json)}catch{continue}
-   const d=data.osrshubDiscord;if(!d?.connected||!d.channelId)continue;
-   const rules=Array.isArray(data["osrshubflipit-rules"])?data["osrshubflipit-rules"]:[];if(!rules.length)continue;
-   const state={...(d.ruleState||{})};let stateChanged=false;const fresh=[];
-   for(const rule of rules){
-    const itemId=Number(rule.itemId||rule.id||0);const raw=rows[String(itemId)]||rows[itemId];if(!raw)continue;
-    const buy=Number(raw.high||0),sell=Number(raw.low||0),tax=Math.min(Math.floor(sell*.02),5000000),margin=buy>0&&sell>0?buy-sell-tax:0,roi=buy?margin/buy*100:0;
-    const value=rule.metric==="buy"?buy:rule.metric==="sell"?sell:rule.metric==="margin"?margin:roi;
-    const hit=rule.direction==="above"?value>=Number(rule.value):value<=Number(rule.value);
-    const armed=state[rule.id]?.armed!==false;
-    if(hit&&armed){fresh.push({id:crypto.randomUUID(),ruleId:rule.id,itemId:itemId,name:String(rule.name||"OSRS item"),metric:rule.metric,value,target:Number(rule.value),direction:rule.direction,at:Date.now()});state[rule.id]={armed:false,lastTriggered:Date.now()};stateChanged=true}
-    else if(!hit&&!armed){state[rule.id]={...state[rule.id],armed:true};stateChanged=true}
-   }
-   const cooldown={instant:0,"5m":300000,"15m":900000,"30m":1800000,"1h":3600000}[d.frequency||"instant"]||0;
-   const now=Date.now();
-   if(fresh.length && Number(d.nextAllowedAt||0)<=now){
-    for(const a of fresh){try{await sendDiscordDM(env,row.user_id,{embeds:[{title:`${a.name} alert triggered`,description:`**${a.metric}** ${a.metric==="roi"?"is":"reached"} **${a.metric==="roi"?Number(a.target).toFixed(2)+"%":Math.round(a.target).toLocaleString("en-GB")+" gp"}**`,color:0x8b5cf6,fields:[{name:"Current value",value:a.metric==="roi"?`${Number(a.value).toFixed(2)}%`:`${Math.round(a.value).toLocaleString("en-GB")} gp`,inline:true},{name:"Condition",value:`${a.direction||"threshold"}`,inline:true},{name:"Item",value:a.name,inline:true}],footer:{text:"OSRS Hub · live GE alert"},timestamp:new Date(a.at).toISOString()}]})}catch(e){console.warn("Discord DM failed",row.user_id,e?.message)}}
-    d.nextAllowedAt=cooldown?now+cooldown:0;
-   }
-   if(stateChanged||fresh.length){data.osrshubDiscord={...d,ruleState:state};await writeUserData(env,row.user_id,data)}
-  }
- }catch(e){console.warn("Discord alert cron failed",e?.message)}
+ try{const rows=await latestPriceRows();const users=await env.DB.prepare("SELECT user_id,data_json FROM user_data WHERE data_json LIKE '%osrshubDiscord%'").all();for(const row of users.results||[]){let data;try{data=JSON.parse(row.data_json)}catch{continue}try{await evaluateDiscordUser(env,row.user_id,data,rows,{origin:env.PUBLIC_ORIGIN||""});}catch(e){console.warn("Discord user alert check failed",row.user_id,e?.message)}}}catch(e){console.warn("Discord alert cron failed",e?.message)}
 }
 export default {async fetch(request,env){const url=new URL(request.url);if(url.pathname.startsWith("/api/auth/"))return auth(request,env);if(url.pathname.startsWith("/api/discord/"))return discordIntegration(request,env);if(request.method==="OPTIONS"&&url.pathname==="/api/hiscores")return new Response(null,{status:204,headers:{"Access-Control-Allow-Origin":"*","Access-Control-Allow-Methods":"GET, OPTIONS","Access-Control-Allow-Headers":"Content-Type"}});if(request.method==="GET"&&url.pathname==="/api/account")return accountSync(request,env);if(request.method==="GET"&&url.pathname==="/api/itemstats")return itemStats(request,env);if(request.method==="GET"&&url.pathname==="/api/hiscores")return hiscores(request);return env.ASSETS.fetch(request)},async scheduled(event,env,ctx){ctx.waitUntil(runDiscordAlertCron(env))}};
