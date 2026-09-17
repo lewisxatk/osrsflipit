@@ -1,3 +1,14 @@
+
+## V47.4 updates
+
+- **Watchlist ticker cleanup:** removed the large desktop/mobile watchlist label from the scrolling ticker. The ticker is now display-only and uses the full available width.
+- **True edge-to-edge ticker movement:** duplicated ticker content continues fully from right to left on desktop and mobile without leaving a permanent watchlist block on the left.
+- **High Alch Finder:** added to Cool Stuff as a live market lab. It calculates High Alch profit as `High Alch value - current instant-buy item cost - 1 Nature rune`, with Fire staff cost fixed at 0 gp.
+- High Alch filters include minimum profit, minimum 24h volume, minimum alch value, maximum item cost, sorting by profit/ROI/volume/discount, and a filter for items currently below their 24h average price.
+- Nature rune price is read live from the GE API; the finder refreshes every 5 minutes.
+- High Alch rows link directly into full Item Analytics.
+- Dark/Aurora surfaces are included for the new tool.
+
 # OSRS Hub V47.3 — Reliability, Market API & UX Fixes
 
 This build is based on the V47.1 project and focuses on the issues found on the live site rather than adding placeholder pages.
