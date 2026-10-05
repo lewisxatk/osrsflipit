@@ -1,3 +1,19 @@
+
+## V48.2 — Intelligence Suite + Loadout 2.0
+
+- Removed the large Home “Find the flip / Keep the profit” slogan and kept the Home feature layout/simple graph intact.
+- Added a universal dark/Aurora/Void surface lock so legacy white cards, inputs, tables and buttons inherit the active theme.
+- Added **Opportunity Feed**: ranked live trading signals using margin, ROI, liquidity and Flip Score.
+- Added **Flip Map**: interactive ROI × margin × liquidity market map; click any item for analytics.
+- Added **Finance 2.0**: 7d/30d P&L, win rate, average flip, GP per 1m capital and live capital-fit ideas.
+- Upgraded **Item DNA → DNA 2.0** with trading profile tags and clearer risk/capital/liquidity interpretation.
+- Upgraded **Alerts** with volume, Flip Score, risk score and potential-profit triggers in addition to price/margin/ROI.
+- Expanded the keyboard terminal: `Ctrl/Cmd+K`, `/`, `?`, plus quick page keys `H M S A W F L R`.
+- Rebuilt **Loadout Lab 2.0** with auto-build by combat style, melee/ranged/magic baselines, saved setups, stronger themed UI, larger equipment slots and improved responsive layout.
+- Kept existing Chart Replay 2.0, command palette, right-click item menu, collapsed Market Events, High Alch Finder, Discord/auth worker and Home/mobile structure.
+- Static validation: JSX TypeScript diagnostics 0; worker/vite syntax checks pass; CSS delimiter counts balanced.
+- Full dependency-backed Vite build was attempted but `npm install` timed out in the build environment, so a full `vite build` could not be honestly certified here.
+
 # OSRS Hub V48.1 — Visual Rebuild & UX Fix Pass
 
 ## Included
