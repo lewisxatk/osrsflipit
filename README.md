@@ -1,3 +1,18 @@
+## V48.0 — OSRS Hub visual + interaction overhaul
+
+- Preserved the existing Worker, D1 account system, Discord OAuth/DM alert integration, cron alert checks, prices proxy and Cloudflare deployment structure.
+- Added a new Obsidian-style dark visual system plus redesigned Aurora treatment and a new Void theme. Existing Light/Comfort themes remain available.
+- Added premium motion: page entrance transitions, interactive hover lifts, item icon micro-animation, live-style pulse treatments, responsive reduced-motion support and animated Aurora background.
+- Added **Market Pulse**, **Market Events**, **Market Constellation**, **Price Drop Radar**, **Item DNA**, and chart **Replay**.
+- Added a Ctrl/Cmd+K command palette and `/` / `?` quick-open shortcuts for items, pages and actions.
+- Improved alert creation so threshold editing keeps the modal open while selecting/highlighting/replacing values; thresholds are stored as editable text until saved.
+- Added safer alert preview UX and stronger pointer isolation around the modal.
+- Added current-vs-24h average price-drop context to radar signals using the existing 24h price feed.
+- Added chart replay animation without changing the existing history API or mobile chart gestures.
+- Kept the existing mobile navigation and horizontal/vertical behaviour intact rather than redesigning it away.
+- Added semantic theme tokens in a dedicated upgrade stylesheet so future theme work does not require hundreds of scattered overrides.
+- Existing High Alch Finder, watchlists, alerts, Finance, Loadout, Quest Pathway, XP planner, Screener, Item Analytics, Mini GE and other V47.4 features remain in place.
+
 
 ## V47.4 updates
 
