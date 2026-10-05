@@ -1,3 +1,26 @@
+# OSRS Hub V48.1 — Visual Rebuild & UX Fix Pass
+
+## Included
+- Fixed recipe detail modal rendering/blur issue with a centred, scrollable modal system.
+- Fixed alert creation modal so long forms remain scrollable and the Create Alert action stays reachable.
+- Fixed Screener filter/profile/column overlays so desktop dropdowns float over the market instead of exposing the page/table behind them.
+- Moved Item DNA below the price graph so charts remain the visual focus.
+- Expanded dark, Aurora and Void surface theming so cards, tiles, tables, forms and analytics panels consistently use the selected theme.
+- Rebuilt the desktop navigation around Home, Screener, Recipes, Money Makers and a consolidated Tools menu. Existing pages remain available.
+- Added a desktop theme picker dropdown instead of cycling themes blindly.
+- Collapsed Market Events on Home by default while keeping the live signals available on demand.
+- Added a real desktop item context menu via right-click with analytics, watchlist, alert, Mini GE, copy and OSRS Wiki actions.
+- Kept the Home feature set and simple Item Analytics graph experience intact.
+- Kept the existing mobile navigation/layout behaviour intact.
+- Preserved Worker, D1 and Discord integration/configuration from V47.4.
+
+## Validation
+- JSX transpilation: 0 diagnostics.
+- Worker syntax check: passed.
+- Vite config syntax check: passed.
+- Worker and wrangler configuration compared against V47.4: unchanged.
+- Full dependency-backed Vite build could not be completed in the isolated environment because `npm install --no-audit --no-fund` timed out.
+
 ## V48.0 — OSRS Hub visual + interaction overhaul
 
 - Preserved the existing Worker, D1 account system, Discord OAuth/DM alert integration, cron alert checks, prices proxy and Cloudflare deployment structure.
