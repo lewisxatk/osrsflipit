@@ -1,5 +1,6 @@
 import React, { startTransition, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
-import { createRoot, createPortal } from "react-dom/client";
+import { createRoot } from "react-dom/client";
+import { createPortal } from "react-dom";
 import {
   Search, Bell, Star, Calculator as CalculatorIcon, TrendingUp, TrendingDown, SlidersHorizontal, X,
   ArrowUpDown, ChevronRight, RefreshCw, Plus, Trash2, Save, Filter,
