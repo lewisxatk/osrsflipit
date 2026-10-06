@@ -269,7 +269,6 @@ class AppErrorBoundary extends React.Component {
 }
 
 const TAB_PATHS={market:"/",dashboard:"/dashboard",screener:"/screener",analysis:"/analysis",spotlight:"/analysis",loadout:"/loadout",recipes:"/recipes",finance:"/finance",calculations:"/calculations",money:"/money-makers",movers:"/analysis",watch:"/watchlist",alerts:"/alerts",cool:"/tools"};const PATH_TABS=Object.fromEntries(Object.entries(TAB_PATHS).map(([k,v])=>[v,k]));PATH_TABS["/calculators"]="calculations";PATH_TABS["/analysis"]="movers";PATH_TABS["/movers"]="movers";PATH_TABS["/spotlight"]="movers";PATH_TABS["/cool-stuff"]="cool";PATH_TABS["/tools"]="cool";
-const PATH_TABS=Object.fromEntries(Object.entries(TAB_PATHS).map(([k,v])=>[v,k]));PATH_TABS["/calculators"]="calculations";PATH_TABS["/analysis"]="movers";PATH_TABS["/cool-stuff"]="cool";PATH_TABS["/tools"]="cool";
 function tabFromPath(){const path=window.location.pathname.replace(/\/+$/,"")||"/";return PATH_TABS[path]||"market";}
 
 function App() {
