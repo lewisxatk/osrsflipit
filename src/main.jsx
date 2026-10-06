@@ -607,14 +607,109 @@ function HistoricalMarginStability({items,onSelect}){const [rows,setRows]=useSta
 function AnalysisCard({title,icon,rows,onSelect,tax,spread,roi,limit}){return <div className="analysisCard"><div className="analysisHead">{icon}<strong>{title}</strong><small>Live</small></div>{rows.map(x=><button key={x.id} onClick={()=>onSelect(x)}><img className="itemIcon" src={iconUrl(x.icon)}/><span><strong>{x.name}</strong><small>{money(x.buy)} → {money(x.sell)}</small></span><b className={tax?"":x.margin>=0?"green":"redtxt"}>{tax?money(x.tax):spread?money(x.sell-x.buy):roi?pct(x.roi):limit?money(x.limitProfit):money(x.margin)}</b></button>)}</div>}
 
 function recipeItemId(items,name){const exact=items.find(x=>x.name.toLowerCase()===name.toLowerCase());if(exact)return exact;return fuzzyItems(items,name,1)[0]}
-function Recipes({items,tick}){
- const [category,setCategory]=useState("All"),[sort,setSort]=useState("hour"),[fav,setFav]=useState(()=>safeRead("osrsflipit-recipe-favs",[])),[selected,setSelected]=useState(null);
- const deferredItems=useDeferredValue(items);
- useEffect(()=>localStorage.setItem("osrsflipit-recipe-favs",JSON.stringify(fav)),[fav]);
- const itemIndex=useMemo(()=>{const m=new Map();for(const x of deferredItems)m.set(x.name.toLowerCase(),x);return m},[deferredItems]);
- const recipes=useMemo(()=>RECIPE_SEEDS.map((r,i)=>{const input=r[2],out=r[3],inNames=input.split(" + ").map(s=>s.trim());const inputItems=inNames.map(n=>itemIndex.get(n.toLowerCase())||fuzzyItems(deferredItems,n,1)[0]);const outItem=itemIndex.get(out.toLowerCase())||fuzzyItems(deferredItems,out,1)[0];let cost=inputItems.reduce((sum,x)=>sum+(x?.buy||0),0);let revenue=outItem?.sell||0;if(r[0]==="Herblore"&&r[1]==="Cleaning"&&inputItems[0]){cost=inputItems[0].buy;revenue=outItem?.sell||inputItems[0].sell||0}const profit=revenue-cost-taxFor(revenue),xp=r[4]||0,actions=r[5]||1;const rates={Cleaning:3000,Food:1800,Darts:2500,Bolts:2500,Bows:1000,Jewellery:1200,Enchanting:1200,"Unfinished potions":1800,Potions:1600,Bars:1000,Alchemy:1200};const hourly=profit*(rates[r[1]]||1200);return{id:i,skill:r[0],category:r[1],input,output:out,level:r[4],actions,inputs:inputItems.map((x,j)=>({name:inNames[j],price:x?.buy||0,icon:x?.icon})),outputPrice:revenue,cost,profit,hourly,xp,updated:tick}}),[itemIndex,tick]);
- const cats=["All",...new Set(recipes.map(r=>r.skill))];const visible=recipes.filter(r=>category==="All"||r.skill===category).sort((a,b)=>(sort==="profit"?b.profit-a.profit:b.hourly-a.hourly));
- return <section className="recipesPage"><div className="sectionhead"><div><div className="eyebrow">RECIPES & SKILLING</div><h2>Make money per action.</h2></div><p>Live GE prices · tax-aware · recalculated every 10 minutes.</p></div><div className="recipeFilters"><select value={category} onChange={e=>setCategory(e.target.value)}>{cats.map(c=><option key={c}>{c}</option>)}</select><select value={sort} onChange={e=>setSort(e.target.value)}><option value="hour">Highest GP/hour</option><option value="profit">Highest GP/action</option></select></div><div className="recipeGrid">{visible.map(r=><div role="button" tabIndex={0} className="recipeCard" key={r.id} onClick={()=>setSelected(r)} onKeyDown={e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();setSelected(r)}}}><span className="recipeTop"><b>{r.skill}</b><span>{r.level>0?`${r.level}+`:'Any'}</span></span><small className="recipeRequirement">Requirement: {r.level>0?`${r.level} ${r.skill}`:"No fixed skill requirement"}</small><strong>{r.category}: {r.output}</strong><span className="recipeFormula">{r.skill==="Herblore"&&r.category==="Cleaning"?`${r.input} → ${r.output} + Vial of water`:r.input+" → "+r.output}</span><span className={r.profit>=0?"green":"redtxt"}>{money(r.profit)} per {r.category==="Cleaning"?"clean":"action"}</span><small>≈ {money(r.hourly)} / hour · updated {new Date(r.updated).toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"})}</small><button type="button" className="recipeStar" onClick={e=>{e.stopPropagation();setFav(f=>f.includes(r.id)?f.filter(x=>x!==r.id):[...f,r.id])}}><Star size={16} fill={fav.includes(r.id)?"currentColor":"none"}/></button></div>)}{selected&&<RecipeModal recipe={selected} close={()=>setSelected(null)}/>}</section>}
+function Recipes({items,tick}) {
+  const [category,setCategory]=useState("All");
+  const [sort,setSort]=useState("hour");
+  const [fav,setFav]=useState(()=>safeRead("osrsflipit-recipe-favs",[]));
+  const [selected,setSelected]=useState(null);
+  const deferredItems=useDeferredValue(items);
+
+  useEffect(()=>localStorage.setItem("osrsflipit-recipe-favs",JSON.stringify(fav)),[fav]);
+
+  const itemIndex=useMemo(()=>{
+    const m=new Map();
+    for(const x of deferredItems) m.set(x.name.toLowerCase(),x);
+    return m;
+  },[deferredItems]);
+
+  const recipes=useMemo(()=>RECIPE_SEEDS.map((r,i)=>{
+    const input=r[2];
+    const out=r[3];
+    const inNames=input.split(" + ").map(s=>s.trim());
+    const inputItems=inNames.map(n=>itemIndex.get(n.toLowerCase())||fuzzyItems(deferredItems,n,1)[0]);
+    const outItem=itemIndex.get(out.toLowerCase())||fuzzyItems(deferredItems,out,1)[0];
+    let cost=inputItems.reduce((sum,x)=>sum+(x?.buy||0),0);
+    let revenue=outItem?.sell||0;
+    if(r[0]==="Herblore"&&r[1]==="Cleaning"&&inputItems[0]){
+      cost=inputItems[0].buy;
+      revenue=outItem?.sell||inputItems[0].sell||0;
+    }
+    const profit=revenue-cost-taxFor(revenue);
+    const xp=r[4]||0;
+    const actions=r[5]||1;
+    const rates={Cleaning:3000,Food:1800,Darts:2500,Bolts:2500,Bows:1000,Jewellery:1200,Enchanting:1200,"Unfinished potions":1800,Potions:1600,Bars:1000,Alchemy:1200};
+    const hourly=profit*(rates[r[1]]||1200);
+    return {
+      id:i,skill:r[0],category:r[1],input,output:out,level:r[4],actions,
+      inputs:inputItems.map((x,j)=>({name:inNames[j],price:x?.buy||0,icon:x?.icon})),
+      outputPrice:revenue,cost,profit,hourly,xp,updated:tick
+    };
+  }),[itemIndex,tick,deferredItems]);
+
+  const cats=["All",...new Set(recipes.map(r=>r.skill))];
+  const visible=recipes
+    .filter(r=>category==="All"||r.skill===category)
+    .sort((a,b)=>sort==="profit"?b.profit-a.profit:b.hourly-a.hourly);
+
+  return (
+    <section className="recipesPage">
+      <div className="sectionhead">
+        <div>
+          <div className="eyebrow">RECIPES & SKILLING</div>
+          <h2>Make money per action.</h2>
+        </div>
+        <p>Live GE prices · tax-aware · recalculated every 10 minutes.</p>
+      </div>
+
+      <div className="recipeFilters">
+        <select value={category} onChange={e=>setCategory(e.target.value)}>
+          {cats.map(c=><option key={c}>{c}</option>)}
+        </select>
+        <select value={sort} onChange={e=>setSort(e.target.value)}>
+          <option value="hour">Highest GP/hour</option>
+          <option value="profit">Highest GP/action</option>
+        </select>
+      </div>
+
+      <div className="recipeGrid">
+        {visible.map(r=>(
+          <div
+            role="button"
+            tabIndex={0}
+            className="recipeCard"
+            key={r.id}
+            onClick={()=>setSelected(r)}
+            onKeyDown={e=>{
+              if(e.key==="Enter"||e.key===" "){
+                e.preventDefault();
+                setSelected(r);
+              }
+            }}
+          >
+            <span className="recipeTop"><b>{r.skill}</b><span>{r.level>0?`${r.level}+`:'Any'}</span></span>
+            <small className="recipeRequirement">Requirement: {r.level>0?`${r.level} ${r.skill}`:"No fixed skill requirement"}</small>
+            <strong>{r.category}: {r.output}</strong>
+            <span className="recipeFormula">{r.skill==="Herblore"&&r.category==="Cleaning"?`${r.input} → ${r.output} + Vial of water`:r.input+" → "+r.output}</span>
+            <span className={r.profit>=0?"green":"redtxt"}>{money(r.profit)} per {r.category==="Cleaning"?"clean":"action"}</span>
+            <small>≈ {money(r.hourly)} / hour · updated {new Date(r.updated).toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"})}</small>
+            <button
+              type="button"
+              className="recipeStar"
+              onClick={e=>{
+                e.stopPropagation();
+                setFav(f=>f.includes(r.id)?f.filter(x=>x!==r.id):[...f,r.id]);
+              }}
+            >
+              <Star size={16} fill={fav.includes(r.id)?"currentColor":"none"}/>
+            </button>
+          </div>
+        ))}
+      </div>
+
+      {selected&&<RecipeModal recipe={selected} close={()=>setSelected(null)}/>} 
+    </section>
+  );
+}
 
 function RecipeModal({recipe,close}){closeOnEscape(close);return <div className="modalback" onClick={close}><div className="modal recipeModal" onClick={e=>e.stopPropagation()}><button className="close" onClick={close}><X/></button><div className="eyebrow">RECIPE BREAKDOWN</div><h2>{recipe.output}</h2><p className="recipeLead">{recipe.skill} · {recipe.category} · {recipe.level>0?`${recipe.level}+ requirement`:"No fixed skill requirement"}</p><div className="recipeBreak"><div><span>Inputs</span>{recipe.inputs.map((x,i)=><div className="ingredient" key={i}>{x.icon&&<img src={iconUrl(x.icon)}/>}<strong>{x.name}</strong><b>{money(x.price)}</b></div>)}</div><div className="formulaArrow">→</div><div className="finalIngredient"><span>Final outcome</span><strong>{recipe.output}</strong><b>{money(recipe.outputPrice)}</b></div></div><div className="panelstats"><Stat label="Cost" value={money(recipe.cost)}/><Stat label="Outcome" value={money(recipe.outputPrice)}/><Stat label="Profit/action" value={money(recipe.profit)}/><Stat label="Est. GP/hour" value={money(recipe.hourly)}/></div><p className="chartNote">GE prices move constantly. These are live estimates, not guaranteed profit. Your actual GP/hour depends on fills, banking and your action speed.</p></div></div>}
 
