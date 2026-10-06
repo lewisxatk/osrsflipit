@@ -1,3 +1,11 @@
+# V48.4.1 — Production Build Syntax Hotfix
+
+- Fixed the Recipes JSX syntax error in the recipe card map.
+- The V48.4 build failed at `src/main.jsx:617` because the recipe card closing `</div>` was missing before the `.map()` close.
+- Preserved the V48.4 mobile/theme/Tools changes.
+- Media folder intentionally excluded from this source ZIP.
+- Discord/auth/worker configuration preserved.
+
 # V48.4 — Mobile / Theme / Tools / Stability Fixes
 
 - Fixed watchlist star interactions and persisted watchlist mutations.
