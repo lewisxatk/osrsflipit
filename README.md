@@ -1,3 +1,15 @@
+# V48.4 — Mobile / Theme / Tools / Stability Fixes
+
+- Fixed watchlist star interactions and persisted watchlist mutations.
+- Renamed Cool Stuff UI to Tools while preserving the old /cool-stuff route.
+- Fixed expanded Flip Map / Market Constellation viewport behaviour.
+- Fixed recipe cards/modal interaction and dark-theme recipe surfaces.
+- Fixed dark/aurora/void chart tooltip contrast.
+- Hardened dark-theme market/screener metrics, profiles and columns controls.
+- Improved mobile screener controls and interactive card semantics.
+- Hardened Loadout picker inputs and added live-market search fallback while OSRSBox slot data loads.
+- Kept Discord OAuth/alerts/backend intact.
+
 # OSRS Hub — V48.3 Mobile + Theme + UX Pass
 
 ## What changed
