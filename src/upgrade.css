@@ -161,3 +161,92 @@ html[data-theme="void"] .overnightSummary,html[data-theme="dark"] .overnightSumm
   .overnightSummary{grid-template-columns:1fr 1fr!important}.overnightSummary>div:nth-child(3){grid-column:1/-1}.overnightSummary>button{grid-column:1/-1;width:100%}.overnightControls{grid-template-columns:1fr 1fr!important}
   .mapActions .mapLegend,.constActions .constLegend{display:none}.mapExpanded .mapPlot{height:calc(100dvh - 205px)!important;min-height:300px!important}.constExpanded .constCanvas{height:calc(100dvh - 190px)!important;min-height:300px!important}
 }
+
+
+/* V48.4 final theme + interaction hardening */
+html[data-theme="dark"],html[data-theme="aurora"],html[data-theme="void"]{
+  --surface:var(--oh-surface);--surface2:var(--oh-surface2);--line:var(--oh-line);--text:var(--oh-text);--muted:var(--oh-muted)
+}
+html[data-theme="dark"] .app *,html[data-theme="aurora"] .app *,html[data-theme="void"] .app *{scrollbar-color:var(--oh-line) var(--oh-surface)}
+html[data-theme="dark"] .app .hero,html[data-theme="aurora"] .app .hero,html[data-theme="void"] .app .hero,
+html[data-theme="dark"] .app .pageIntro,html[data-theme="aurora"] .app .pageIntro,html[data-theme="void"] .app .pageIntro{color:var(--oh-text)}
+html[data-theme="dark"] .app .toolbar,html[data-theme="aurora"] .app .toolbar,html[data-theme="void"] .app .toolbar,
+html[data-theme="dark"] .app .filterbar,html[data-theme="aurora"] .app .filterbar,html[data-theme="void"] .app .filterbar,
+html[data-theme="dark"] .app .stats,html[data-theme="aurora"] .app .stats,html[data-theme="void"] .app .stats,
+html[data-theme="dark"] .app .screenerWide,html[data-theme="aurora"] .app .screenerWide,html[data-theme="void"] .app .screenerWide{color:var(--oh-text)}
+html[data-theme="dark"] .app td,html[data-theme="aurora"] .app td,html[data-theme="void"] .app td,
+html[data-theme="dark"] .app td span,html[data-theme="aurora"] .app td span,html[data-theme="void"] .app td span,
+html[data-theme="dark"] .app td strong,html[data-theme="aurora"] .app td strong,html[data-theme="void"] .app td strong,
+html[data-theme="dark"] .app .mobilePriceRow b,html[data-theme="aurora"] .app .mobilePriceRow b,html[data-theme="void"] .app .mobilePriceRow b,
+html[data-theme="dark"] .app .mobileMeta b,html[data-theme="aurora"] .app .mobileMeta b,html[data-theme="void"] .app .mobileMeta b{color:var(--oh-text)}
+html[data-theme="dark"] .app .mobilePriceRow small,html[data-theme="aurora"] .app .mobilePriceRow small,html[data-theme="void"] .app .mobilePriceRow small,
+html[data-theme="dark"] .app .mobileMeta span,html[data-theme="aurora"] .app .mobileMeta span,html[data-theme="void"] .app .mobileMeta span,
+html[data-theme="dark"] .app .instantLabel,html[data-theme="aurora"] .app .instantLabel,html[data-theme="void"] .app .instantLabel{color:var(--oh-muted)!important}
+html[data-theme="dark"] .app .profileMenu,html[data-theme="aurora"] .app .profileMenu,html[data-theme="void"] .app .profileMenu,
+html[data-theme="dark"] .app .columnMenu,html[data-theme="aurora"] .app .columnMenu,html[data-theme="void"] .app .columnMenu,
+html[data-theme="dark"] .app .mobileProfilePanel,html[data-theme="aurora"] .app .mobileProfilePanel,html[data-theme="void"] .app .mobileProfilePanel,
+html[data-theme="dark"] .app .mobileColumnsPanel,html[data-theme="aurora"] .app .mobileColumnsPanel,html[data-theme="void"] .app .mobileColumnsPanel{background:var(--oh-surface)!important;color:var(--oh-text)!important;border-color:var(--oh-line)!important}
+html[data-theme="dark"] .app .profileRow>button,html[data-theme="aurora"] .app .profileRow>button,html[data-theme="void"] .app .profileRow>button,
+html[data-theme="dark"] .app .mobileColumnRow button,html[data-theme="aurora"] .app .mobileColumnRow button,html[data-theme="void"] .app .mobileColumnRow button{background:var(--oh-surface2)!important;color:var(--oh-text)!important;border-color:var(--oh-line)!important}
+html[data-theme="dark"] .app .profileRow>button:hover,html[data-theme="aurora"] .app .profileRow>button:hover,html[data-theme="void"] .app .profileRow>button:hover{background:color-mix(in srgb,var(--oh-accent) 10%,var(--oh-surface2))!important}
+html[data-theme="dark"] .app .chartTooltip,html[data-theme="aurora"] .app .chartTooltip,html[data-theme="void"] .app .chartTooltip{background:var(--oh-surface)!important;color:var(--oh-text)!important;border:1px solid var(--oh-line)!important;box-shadow:0 18px 50px rgba(0,0,0,.4)!important}
+html[data-theme="dark"] .app .chartTooltip strong,html[data-theme="aurora"] .app .chartTooltip strong,html[data-theme="void"] .app .chartTooltip strong,
+html[data-theme="dark"] .app .chartTooltip b,html[data-theme="aurora"] .app .chartTooltip b,html[data-theme="void"] .app .chartTooltip b{color:var(--oh-text)!important}
+html[data-theme="dark"] .app .recipeModal,html[data-theme="aurora"] .app .recipeModal,html[data-theme="void"] .app .recipeModal{background:var(--oh-surface)!important;color:var(--oh-text)!important;border:1px solid var(--oh-line)!important;z-index:10001!important}
+html[data-theme="dark"] .app .recipeModal .ingredient,html[data-theme="aurora"] .app .recipeModal .ingredient,html[data-theme="void"] .app .recipeModal .ingredient,
+html[data-theme="dark"] .app .recipeModal .finalIngredient,html[data-theme="aurora"] .app .recipeModal .finalIngredient,html[data-theme="void"] .app .recipeModal .finalIngredient{background:var(--oh-surface2)!important;border-color:var(--oh-line)!important;color:var(--oh-text)!important}
+html[data-theme="dark"] .app .recipeModal .recipeLead,html[data-theme="aurora"] .app .recipeModal .recipeLead,html[data-theme="void"] .app .recipeModal .recipeLead,
+html[data-theme="dark"] .app .recipeModal .chartNote,html[data-theme="aurora"] .app .recipeModal .chartNote,html[data-theme="void"] .app .recipeModal .chartNote{color:var(--oh-muted)!important}
+html[data-theme="dark"] .app .recipeCard,html[data-theme="aurora"] .app .recipeCard,html[data-theme="void"] .app .recipeCard{background:var(--oh-surface)!important;color:var(--oh-text)!important;border-color:var(--oh-line)!important}
+html[data-theme="dark"] .app .recipeCard:hover,html[data-theme="aurora"] .app .recipeCard:hover,html[data-theme="void"] .app .recipeCard:hover{background:color-mix(in srgb,var(--oh-accent) 7%,var(--oh-surface))!important}
+html[data-theme="dark"] .app .recipeCard small,html[data-theme="aurora"] .app .recipeCard small,html[data-theme="void"] .app .recipeCard small,
+html[data-theme="dark"] .app .recipeFormula,html[data-theme="aurora"] .app .recipeFormula,html[data-theme="void"] .app .recipeFormula{color:var(--oh-muted)!important}
+html[data-theme="dark"] .app .mobileNav,html[data-theme="aurora"] .app .mobileNav,html[data-theme="void"] .app .mobileNav{background:color-mix(in srgb,var(--oh-surface) 96%,transparent)!important;color:var(--oh-text)!important;border-color:var(--oh-line)!important}
+html[data-theme="dark"] .app .mobileMore,html[data-theme="aurora"] .app .mobileMore,html[data-theme="void"] .app .mobileMore{background:var(--oh-surface)!important;color:var(--oh-text)!important;border-color:var(--oh-line)!important}
+html[data-theme="dark"] .app .mobileMore button:hover,html[data-theme="aurora"] .app .mobileMore button:hover,html[data-theme="void"] .app .mobileMore button:hover{background:color-mix(in srgb,var(--oh-accent) 10%,var(--oh-surface2))!important}
+
+/* Expanded maps must not inherit the animated transform on main's children. */
+.app main > .mapExpanded,.app main > .constExpanded{animation:none!important;transform:none!important;position:fixed!important;z-index:18000!important;inset:12px!important;height:calc(100dvh - 24px)!important;max-height:none!important;overflow:auto!important;margin:0!important;background:var(--oh-surface)!important;color:var(--oh-text)!important;border:1px solid var(--oh-line)!important;border-radius:18px!important;box-shadow:0 30px 100px rgba(0,0,0,.55)!important}
+.app main > .mapExpanded .mapPlot{height:calc(100dvh - 165px)!important;min-height:360px!important}
+.app main > .constExpanded .constCanvas{height:calc(100dvh - 165px)!important;min-height:360px!important}
+
+/* Prevent mobile graph gestures from scrolling the page. */
+.chartTouch,.fullDetail .chartTouch{touch-action:none!important;overscroll-behavior:none!important;user-select:none!important;-webkit-user-select:none!important;-webkit-touch-callout:none!important}
+
+/* Loadout picker: always interactive and useful even if a slot endpoint is slow. */
+.loadoutPicker{z-index:10002!important;background:var(--oh-surface)!important;color:var(--oh-text)!important;border-color:var(--oh-line)!important}
+.loadoutPicker input{pointer-events:auto!important;position:relative!important;z-index:3!important;background:var(--oh-surface2)!important;color:var(--oh-text)!important;border-color:var(--oh-line)!important}
+.loadoutSuggestions{pointer-events:auto!important;position:relative;z-index:2}
+.loadoutSuggestions button{pointer-events:auto!important;color:var(--oh-text)!important;background:transparent!important}
+.loadoutSuggestions button:hover{background:color-mix(in srgb,var(--oh-accent) 9%,var(--oh-surface2))!important}
+.recipeCard{appearance:none;-webkit-appearance:none;color:inherit}
+.recipeStar{appearance:none;-webkit-appearance:none;border:0!important;background:transparent!important;color:var(--oh-muted);cursor:pointer;z-index:2}
+.recipeModal{max-height:calc(100dvh - 28px);overflow:auto;z-index:10001!important}
+
+/* V48.4 mobile dropdowns: Profiles / Columns behave like proper popovers, not page blocks. */
+@media (max-width:700px) and (orientation:portrait){
+  .filterbar{overflow:visible!important;z-index:5000!important}
+  .mobileQuickTools{position:relative!important;z-index:6000!important}
+  .mobileColumnsPanel,.mobileProfilePanel{position:absolute!important;top:calc(100% + 7px)!important;right:0!important;left:auto!important;width:min(360px,calc(100vw - 24px))!important;max-height:58dvh!important;overflow:auto!important;margin:0!important;z-index:12000!important;background:var(--oh-surface)!important;color:var(--oh-text)!important;border:1px solid var(--oh-line)!important;border-radius:14px!important;box-shadow:0 22px 60px rgba(0,0,0,.28)!important}
+  .mobileProfilePanel{padding:10px!important}
+  .mobileColumnsPanel{padding:10px!important}
+  .mobilePanelHead{background:var(--oh-surface)!important;color:var(--oh-text)!important}
+}
+
+/* Broad dark-surface catch-all for legacy white utility tiles that slipped through the theme pass. */
+html[data-theme="dark"] .app .analysisCard,html[data-theme="aurora"] .app .analysisCard,html[data-theme="void"] .app .analysisCard,
+html[data-theme="dark"] .app .moneyTable,html[data-theme="aurora"] .app .moneyTable,html[data-theme="void"] .app .moneyTable,
+html[data-theme="dark"] .app .movecol,html[data-theme="aurora"] .app .movecol,html[data-theme="void"] .app .movecol,
+html[data-theme="dark"] .app .moverow,html[data-theme="aurora"] .app .moverow,html[data-theme="void"] .app .moverow,
+html[data-theme="dark"] .app .watchcard,html[data-theme="aurora"] .app .watchcard,html[data-theme="void"] .app .watchcard,
+html[data-theme="dark"] .app .spotlightCard,html[data-theme="aurora"] .app .spotlightCard,html[data-theme="void"] .app .spotlightCard,
+html[data-theme="dark"] .app .questTrainingPath,html[data-theme="aurora"] .app .questTrainingPath,html[data-theme="void"] .app .questTrainingPath,
+html[data-theme="dark"] .app .emptybox,html[data-theme="aurora"] .app .emptybox,html[data-theme="void"] .app .emptybox,
+html[data-theme="dark"] .app .reqBlock,html[data-theme="aurora"] .app .reqBlock,html[data-theme="void"] .app .reqBlock{
+  background:var(--oh-surface)!important;color:var(--oh-text)!important;border-color:var(--oh-line)!important
+}
+html[data-theme="dark"] .app .moneyTable>button,html[data-theme="aurora"] .app .moneyTable>button,html[data-theme="void"] .app .moneyTable>button,
+html[data-theme="dark"] .app .moverow,html[data-theme="aurora"] .app .moverow,html[data-theme="void"] .app .moverow,
+html[data-theme="dark"] .app .analysisCard>button,html[data-theme="aurora"] .app .analysisCard>button,html[data-theme="void"] .app .analysisCard>button,
+html[data-theme="dark"] .app .watchcard,html[data-theme="aurora"] .app .watchcard,html[data-theme="void"] .app .watchcard{background:var(--oh-surface)!important;color:var(--oh-text)!important;border-color:var(--oh-line)!important}
+html[data-theme="dark"] .app .moneyHead,html[data-theme="aurora"] .app .moneyHead,html[data-theme="void"] .app .moneyHead{background:var(--oh-surface2)!important;color:var(--oh-muted)!important;border-color:var(--oh-line)!important}
