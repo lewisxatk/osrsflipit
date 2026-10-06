@@ -1,3 +1,18 @@
+# V49.0 — Clean Production Rebuild
+
+V49.0 is a clean, flat source rebuild from the V48.4.1 line. It keeps the existing OSRS Hub functionality, authentication/Discord backend, mobile/theme work and Tools consolidation while fixing the Recipes JSX parser failure with a fully reformatted `Recipes` component.
+
+## V49.0 build integrity
+- `src/main.jsx` passes the TypeScript JSX parser check.
+- Recipes card JSX is explicitly structured with balanced elements and a safe `.map()` callback.
+- Root archive contains only the project source; no nested `fix484/` or other staging folder.
+- Optional `media/` folder is intentionally excluded from this update ZIP.
+- Discord/auth worker code and D1 migration are preserved.
+- No secrets are added to the repository.
+
+## Deployment
+Use the files at the repository root. Cloudflare Pages/Workers should run `npm run build`. The repository's Cloudflare environment can continue using Bun for dependency installation.
+
 # V48.4.1 — Production Build Syntax Hotfix
 
 - Fixed the Recipes JSX syntax error in the recipe card map.
