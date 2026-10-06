@@ -1,3 +1,89 @@
+# V50.0 — Watchlist Intelligence + Analysis Consolidation
+
+V50 is a focused production hardening pass built from the clean V49 source.
+
+## V50 fixes and upgrades
+- Fixed watchlist star interaction so it does not submit/navigate/refresh the page and reliably toggles the selected watchlist.
+- Watchlist metadata now records when an item was added plus its entry buy/sell snapshot.
+- Watchlist 2.0 adds: time since added, current buy/sell, GP and percentage change since added, current margin, ROI, 24h volume, Flip Score, risk and GE limit.
+- Added `osrshub-watch-meta` to the cloud/local settings whitelist so Watchlist 2.0 survives signed-in sync.
+- Consolidated Market Analysis + Market Spotlight into the single Analysis workspace. `/spotlight` and `/movers` remain compatibility aliases and open Analysis; there is no separate Spotlight page/menu item.
+- Theme selection is written to both legacy and Hub theme keys on every change, keeping the selected theme through refreshes and ready for account sync.
+- Hardened Void theme surfaces, buttons, chart tooltip, Money Makers modal and secondary controls against legacy white/light leaks.
+- Fixed mobile ticker/search stacking so the scrolling watchlist cannot sit over the vertical Market search field.
+- Hardened Loadout picker rendering: asynchronous slot loading, bounded equipment caches, bounded suggestion rendering, constrained mobile modal/list heights and reduced layout pressure.
+- Dashboard now exposes a visible Sign in action on mobile and desktop when signed out; signed-in state is shown directly in the Dashboard.
+- Removed the duplicated “Why this score?” block; Item DNA remains the single intelligence explanation surface.
+- Hardened Money Makers and existing Recipe modal/card interactions with explicit modal sizing, overflow and theme surfaces.
+- Discord/OAuth/D1 Worker code remains intact.
+
+## V50 future pathway
+### V50.1 — Watchlist Intelligence
+- Per-watchlist “added vs now” sparklines.
+- Best/worst performer since added.
+- Biggest mover today vs since-added baseline.
+- Watchlist health score: liquidity, margin quality, volatility and capital concentration.
+- “Still worth holding?” signal with transparent reasons.
+
+### V50.5 — OSRS Data Engine
+Build a first-party normalized OSRS data layer rather than repeatedly querying unrelated pages from UI components. Store source records, timestamps, provenance, versioning and normalized entities in one internal model.
+
+Planned domains:
+- GE prices, volumes, limits, tax and historical time series.
+- Items, equipment bonuses, requirements and slots.
+- Monsters, bosses, combat stats, mechanics, weaknesses and loot tables.
+- Skills, XP tables, training methods and output rates.
+- Quests, requirements, rewards and progression routes.
+- Activities, locations, travel assumptions and banking routes.
+- Money-making methods with inputs, outputs, costs, cycle time and confidence.
+- RuneLite/account imports and user-specific stats/loadouts.
+
+### V51 — Combat + GP/hour engine
+A real combat model should calculate DPS and kills/hour from account stats + equipment + target + mechanics, then join that to live loot/supply prices to produce a transparent GP/hour range.
+
+The target pipeline is:
+`Account → Loadout → Combat formulas → DPS → Kill time → Loot model → Supply cost → GP/hour → Confidence range`
+
+This should support boss/monster presets, custom targets, different weapons/styles, special attacks, food/prayer usage and loot assumptions instead of relying on static GP/hour numbers.
+
+### V52 — OSRS Hub as the data source
+Once normalized data is stable, the UI should stop being a collection of external-page readers. Source adapters update the Hub data layer, while every feature reads the same normalized records. This gives consistent numbers across Screener, Analysis, Loadout, Money Makers, Calculations and Finance.
+
+## Unique future ideas
+- **Market Regime:** Calm / trending / volatile / spread-compressed market states.
+- **Flip DNA:** learn which item characteristics match a user's successful flips.
+- **Fill Probability:** estimate how realistic a quoted margin is based on volume, spread and recent price movement.
+- **Opportunity Decay:** show how quickly a flip has been disappearing since detection.
+- **Capital Heatmap:** show where every 1m of bankroll would currently work hardest.
+- **Flip Replay:** replay the exact market conditions around a historical opportunity.
+- **Boss Profit Simulator:** choose boss, gear, kill speed and loot assumptions to model expected GP/hour and variance.
+- **Session Planner:** “I have 20m and 60 minutes” → allocate flips, bossing or skilling methods.
+- **Explain Everything:** every major number gets a compact “inputs → formula → result” explanation.
+- **Confidence bands:** GP/hour and flip estimates display expected / conservative / optimistic ranges rather than one misleading number.
+
+## Animation direction
+Animations should remain useful rather than decorative:
+- Watchlist star: short orbit/pop animation when an item is saved.
+- Price changes: subtle number roll + directional pulse, not full-card flashing.
+- Analysis signal cards: tiny live pulse on newly detected opportunities.
+- Market Map: dots gently breathe when their score changes; selected item locks with a halo.
+- Loadout: equipment slot swap animation with a quick stat-delta reveal.
+- Dashboard: P&L counters roll into place when the period changes.
+- Watchlist 2.0: since-added gain/loss bar grows from zero on first view.
+- Theme changes: short crossfade instead of a hard visual snap.
+
+## Validation
+- TypeScript JSX parser: PASS.
+- Worker JavaScript syntax check: PASS.
+- Parenthesis/brace/bracket balance: PASS.
+- Media folder: intentionally excluded from the source ZIP.
+- Full local Vite build: not claimed; dependency installation timed out in this environment. Cloudflare/Bun remains the target build environment.
+
+
+---
+
+## Historical build notes
+
 # V49.0 — Clean Production Rebuild
 
 V49.0 is a clean, flat source rebuild from the V48.4.1 line. It keeps the existing OSRS Hub functionality, authentication/Discord backend, mobile/theme work and Tools consolidation while fixing the Recipes JSX parser failure with a fully reformatted `Recipes` component.
@@ -56,4 +142,5 @@ Use the files at the repository root. Cloudflare Pages/Workers should run `npm r
 
 ## ZIP packaging
 The V48.3 source ZIP intentionally omits the optional `media/` folder to keep repeated source archives smaller. The build system still copies `media/` into `site/` when it exists, so a normal GitHub checkout containing the media folder keeps the branding assets.
+
 
