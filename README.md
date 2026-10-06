@@ -1,4 +1,12 @@
 
+## V48.2.1 — Startup UI Error Hotfix
+- Restored the V48.1 `MarketEvents`, `MarketConstellation` and `Alerts` components accidentally dropped during the V48.2 intelligence merge.
+- Restored the `ColumnResizeEffect` helper from V47.4 so the screener resize path cannot reference a missing component.
+- Fixed a High Alch Finder state setter typo (`setRows24` → `setRows24h`) that would throw when the Cool Stuff page mounted.
+- Added a static component-reference scan: no unresolved React component tags remain in `src/main.jsx`.
+- JSX/TypeScript parse check passes; Worker/config syntax checks pass.
+- Full dependency-backed Vite build could not be completed in the build environment because `npm install` timed out; this is intentionally not reported as a passing production build.
+
 ## V48.2 — Intelligence Suite + Loadout 2.0
 
 - Removed the large Home “Find the flip / Keep the profit” slogan and kept the Home feature layout/simple graph intact.
