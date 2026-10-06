@@ -250,3 +250,39 @@ html[data-theme="dark"] .app .moverow,html[data-theme="aurora"] .app .moverow,ht
 html[data-theme="dark"] .app .analysisCard>button,html[data-theme="aurora"] .app .analysisCard>button,html[data-theme="void"] .app .analysisCard>button,
 html[data-theme="dark"] .app .watchcard,html[data-theme="aurora"] .app .watchcard,html[data-theme="void"] .app .watchcard{background:var(--oh-surface)!important;color:var(--oh-text)!important;border-color:var(--oh-line)!important}
 html[data-theme="dark"] .app .moneyHead,html[data-theme="aurora"] .app .moneyHead,html[data-theme="void"] .app .moneyHead{background:var(--oh-surface2)!important;color:var(--oh-muted)!important;border-color:var(--oh-line)!important}
+
+/* V50 — interaction + theme hardening */
+html[data-theme="void"] .app button,
+html[data-theme="void"] .app .secondary,
+html[data-theme="void"] .app .filterButton,
+html[data-theme="void"] .app .iconbtn,
+html[data-theme="void"] .app .loadMore,
+html[data-theme="void"] .app .mobileToolBtn,
+html[data-theme="void"] .app .primary{color:var(--oh-text)!important;border-color:var(--oh-line)!important}
+html[data-theme="void"] .app .secondary,
+html[data-theme="void"] .app .filterButton,
+html[data-theme="void"] .app .iconbtn,
+html[data-theme="void"] .app .loadMore,
+html[data-theme="void"] .app .mobileToolBtn{background:var(--oh-surface2)!important}
+html[data-theme="void"] .app .primary{background:linear-gradient(135deg,#7f45c7,#b477ff)!important;color:#fff!important;border-color:transparent!important}
+html[data-theme="void"] .app .chartTooltip{background:var(--oh-surface)!important;color:var(--oh-text)!important;border-color:var(--oh-line)!important}
+html[data-theme="void"] .app .chartTooltip *{color:var(--oh-text)!important}
+html[data-theme="void"] .app .makerModal,
+html[data-theme="void"] .app .moneyTable,
+html[data-theme="void"] .app .moneyTable>button,
+html[data-theme="void"] .app .makerModal .reqBlock,
+html[data-theme="void"] .app .makerModal .alertintro{background:var(--oh-surface)!important;color:var(--oh-text)!important;border-color:var(--oh-line)!important}
+html[data-theme="void"] .app .makerModal p,
+html[data-theme="void"] .app .makerModal small{color:var(--oh-muted)!important}
+.watchcard2{min-height:132px}.watchcard2>div{min-width:0}.watchcard2 small{line-height:1.35}.watchcard2 .watchRemove{flex:0 0 auto;cursor:pointer}.dashboardSignedIn{height:40px;padding:0 11px;border:1px solid color-mix(in srgb,var(--oh-positive) 35%,var(--oh-line));border-radius:10px;display:inline-flex;align-items:center;gap:6px;color:var(--oh-positive);font-size:11px;font-weight:700}
+.loadoutSuggestions{max-height:420px!important;overflow:auto!important;overscroll-behavior:contain!important}.loadoutPicker{width:min(650px,calc(100vw - 28px))!important}.loadoutSuggestions button{min-height:52px!important}.gearGrid{contain:layout paint}.loadoutPage{overflow-x:hidden}
+@media(max-width:700px){
+  .ticker{position:relative!important;top:0!important;z-index:10!important}
+  main{padding-top:18px!important}
+  .toolbar{position:relative!important;z-index:20!important}
+  .search{position:relative!important;z-index:21!important}
+  .searchWithSuggestions .itemSearchSuggestions{z-index:100!important}
+  .watchcard2{display:grid;grid-template-columns:38px 1fr auto;gap:9px;align-items:start;min-height:0;padding:12px}.watchcard2>div{grid-column:2/-1}.watchcard2>b{grid-column:3;grid-row:1;font-size:11px}.watchcard2 .watchRemove{grid-column:3;grid-row:2}.dashboardActions{display:grid!important;grid-template-columns:1fr 1fr;gap:7px}.dashboardSignedIn{justify-content:center}
+  .loadoutPage .loadoutGrid{grid-template-columns:1fr!important}.loadoutPage .gearGrid{grid-template-columns:repeat(2,minmax(0,1fr))!important}.loadoutPage .loadoutBuildBar,.loadoutPage .loadoutBuildSaved{display:grid!important;grid-template-columns:1fr 1fr!important}.loadoutPage .loadoutBuildBar>*{min-width:0}.loadoutPicker{width:calc(100vw - 20px)!important}.loadoutSuggestions{max-height:52dvh!important}.loadoutSuggestions button{grid-template-columns:34px 1fr 14px!important}.makerModal{width:calc(100vw - 20px)!important}
+}
+@media(max-width:430px){.loadoutPage .gearGrid{grid-template-columns:1fr 1fr!important}.loadoutPage .loadoutStatInputs{grid-template-columns:repeat(2,1fr)!important}.watchcard2 small{font-size:9px}}
