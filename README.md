@@ -1,3 +1,28 @@
+# V51 Experimental Mega Build
+
+This is an isolated experimental rebuild of OSRS Hub V50. It keeps the existing Discord/OAuth/D1 Worker integration intact and adds a large client-side intelligence and motion layer for testing.
+
+## V51 experimental feature set
+- Merged Analysis + Market Spotlight workspace; `/analysis` is canonical and legacy Spotlight/Movers paths resolve there.
+- Watchlist intelligence: added-at age, price change since added, margin/ROI/volume, risk, GE limit, fill confidence and capital-efficiency context.
+- Fixed watchlist star ID normalisation so numeric/string item IDs cannot silently prevent adds/removals.
+- Quick-find market search rail beneath the live market header.
+- OSRS Hub Intelligence Brain with Market Weather, Opportunity Lifecycle, Fill Probability, Opportunity Decay, True Flip Value, Capital Turnover, Profit/1m, GE-slot allocation, Personal Flip Brain, For You, Session Planner, What-Should-I-Do, Daily Report, Overnight Intelligence and Smart Notification definitions.
+- Real GP/hour scenario engine with conservative/balanced/aggressive modes.
+- Boss Profit Simulator with editable loot, kills/hour and supply costs plus presets.
+- What-if account/economic planner, upgrade ROI view and training/economic planning layer.
+- Volume Surge, Liquidity Freeze and Anomaly Detector views.
+- Hub Score, achievements, personal presets, Market Missions and benchmark/leaderboard concepts.
+- Data Platform coverage panel for GE, history, account, loadout, recipes, PVM and local trade data.
+- New restrained floating/bubbly motion system, breathing surfaces, tactile controls and mobile responsive intelligence cards.
+- `prefers-reduced-motion` support.
+
+## Discord safety
+`worker.js`, Discord OAuth routes, Discord alert routes, cron handling, D1 bindings and Discord-related Worker configuration are intentionally preserved from the supplied V50 ZIP. This experimental build does not modify the Discord backend.
+
+## Build note
+The sandbox successfully parser-checked `src/main.jsx` with TypeScript's JSX parser. A full Vite build could not be completed locally because dependency installation timed out; the normal `npm install` + `npm run build` should still be run in GitHub/Cloudflare before deployment.
+
 # V50.0 — Watchlist Intelligence + Analysis Consolidation
 
 V50 is a focused production hardening pass built from the clean V49 source.
