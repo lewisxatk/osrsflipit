@@ -130,65 +130,131 @@ async function runDiscordAlertCron(env){
 }
 
 // V51 data platform. Existing Discord/auth handlers remain above this block unchanged.
-const DATA_SOURCE="RuneLite-fed GE market data via prices.runescape.wiki", DATA_SYNC_MS=300000, OSRSBOX_API="https://api.osrsbox.com", WIKI_API="https://oldschool.runescape.wiki/api.php";
+const DATA_SOURCE="RuneLite-fed GE market data via prices.runescape.wiki", DATA_SYNC_MS=600000, MARKET_CURRENT_LIMIT=45, SNAPSHOT_INTERVAL_MS=3600000, D1_SOFT_WRITE_LIMIT=12000, OSRSBOX_API="https://api.osrsbox.com", WIKI_API="https://oldschool.runescape.wiki/api.php";
 function ukHour(ts){try{return Number(new Intl.DateTimeFormat("en-GB",{timeZone:"Europe/London",hour:"2-digit",hour12:false}).format(new Date(ts)))}catch{return new Date(ts).getUTCHours()}}
+function utcDayKey(ts=Date.now()){return new Date(ts).toISOString().slice(0,10)}
+async function d1Reserve(env,estimated,label="db") {
+  if(!env.DB||estimated<=0)return true;
+  try{
+    const now=Date.now(),day=utcDayKey(now),row=await env.DB.prepare("SELECT value FROM data_meta WHERE key='d1_write_budget'").first();
+    let state={day,writes:0};try{state=row?.value?JSON.parse(row.value):state}catch{}
+    if(state.day!==day)state={day,writes:0};
+    if(Number(state.writes||0)+estimated>D1_SOFT_WRITE_LIMIT){console.warn(`D1 write governor blocked ${label}: ${state.writes||0}+${estimated} > ${D1_SOFT_WRITE_LIMIT}`);return false;}
+    state.writes=Number(state.writes||0)+estimated;
+    await env.DB.prepare("INSERT INTO data_meta(key,value,updated_at) VALUES('d1_write_budget',?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value,updated_at=excluded.updated_at").bind(JSON.stringify(state),now).run();
+    return true;
+  }catch(e){console.warn("D1 write governor unavailable",e?.message);return false;}
+}
+async function d1WriteMeta(env,key,value){try{await env.DB.prepare("INSERT INTO data_meta(key,value,updated_at) VALUES(?,?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value,updated_at=excluded.updated_at").bind(key,String(value),Date.now()).run()}catch{}}
 async function snapshotSignals(env,now,latestData,map){
-  if(!env.DB)return;
+  if(!env.DB)return {events:0,hourly:0};
   let previous=null,previousAt=0;
   try{const row=await env.DB.prepare("SELECT captured_at,payload_json FROM market_snapshots ORDER BY captured_at DESC LIMIT 1").first();if(row?.payload_json){previous=JSON.parse(row.payload_json);previousAt=Number(row.captured_at||0)}}catch{}
   const hourRow=await env.DB.prepare("SELECT captured_at,payload_json FROM market_snapshots WHERE captured_at<=?1 ORDER BY captured_at DESC LIMIT 1").bind(now-55*60*1000).first().catch(()=>null);
   let hourly=null;try{hourly=hourRow?.payload_json?JSON.parse(hourRow.payload_json):null}catch{}
   const hour=ukHour(now),events=[],hourlyUpdates=[];
   const rows=Object.entries(latestData||{}).map(([id,r])=>({id:+id,r,m:map.get(+id)||{}})).filter(x=>x.r&&(Number(x.r.avgHighPrice||x.r.high||0)>0||Number(x.r.avgLowPrice||x.r.low||0)>0));
-  // Keep event ingestion bounded: only liquid/meaningful items can create intelligence events.
+  // Events are the useful history: do not archive every market tick. Only liquid, material moves become rows.
   for(const x of rows){
-    const id=x.id, current=Number(x.r.avgLowPrice||x.r.low||0), volume=Number(x.r.highPriceVolume||0)+Number(x.r.lowPriceVolume||0);
-    if(!current||volume<100)continue;
+    const id=x.id,current=Number(x.r.avgLowPrice||x.r.low||0),volume=Number(x.r.highPriceVolume||0)+Number(x.r.lowPriceVolume||0);
+    if(!current||volume<250)continue;
     const prev=Number(previous?.[String(id)]?.avgLowPrice||previous?.[String(id)]?.low||0);
-    if(prev>0){const pct=(current-prev)/prev*100;const abs=Math.abs(current-prev);
-      if(pct<=-8&&abs>=100){events.push([now,id,"sudden_drop",current,prev,pct,volume,hour,JSON.stringify({name:x.m.name||null})]);}
-    }
+    if(prev>0){const pct=(current-prev)/prev*100,abs=Math.abs(current-prev);if(pct<=-8&&abs>=250)events.push([now,id,"sudden_drop",current,prev,pct,volume,hour,JSON.stringify({name:x.m.name||null})]);}
     const hp=Number(hourly?.[String(id)]?.avgLowPrice||hourly?.[String(id)]?.low||0);
-    if(hp>0){const pct=(current-hp)/hp*100;const abs=Math.abs(current-hp);if(pct<=-6&&abs>=100){events.push([now,id,"hourly_crash",current,hp,pct,volume,hour,JSON.stringify({name:x.m.name||null,comparedAt:hourRow?.captured_at||null})]);}
-      if(volume>=250){hourlyUpdates.push([id,hour,pct,now]);}
+    if(hp>0){const pct=(current-hp)/hp*100,abs=Math.abs(current-hp);if(pct<=-6&&abs>=250)events.push([now,id,"hourly_crash",current,hp,pct,volume,hour,JSON.stringify({name:x.m.name||null,comparedAt:hourRow?.captured_at||null})]);if(volume>=1000)hourlyUpdates.push([id,hour,pct,now]);}
+  }
+  const eventRows=events.slice(0,25),hourlyRows=hourlyUpdates.slice(0,50);
+  let eventWritten=0,hourlyWritten=0;
+  if(eventRows.length&&await d1Reserve(env,eventRows.length,"market events")){
+    const q=eventRows.map(e=>env.DB.prepare("INSERT INTO market_events(captured_at,item_id,event_type,current_price,previous_price,change_pct,volume,local_hour,source,details_json) VALUES(?,?,?,?,?,?,?,?,?,?)").bind(...e));
+    for(let i=0;i<q.length;i+=80)await env.DB.batch(q.slice(i,i+80));eventWritten=eventRows.length;
+  }
+  // Hourly behaviour is written once per hour, and only for a small liquid sample.
+  const bucket=Math.floor(now/3600000),lastBucket=await env.DB.prepare("SELECT value FROM data_meta WHERE key='hourly_bucket'").first().catch(()=>null);
+  if(Number(lastBucket?.value||-1)!==bucket&&hourlyRows.length&&await d1Reserve(env,hourlyRows.length+1,"hourly intelligence")){
+    const q=hourlyRows.map(([id,h,pct,ts])=>env.DB.prepare("INSERT INTO market_hourly_stats(item_id,local_hour,samples,avg_change_pct,negative_samples,positive_samples,last_seen) VALUES(?,?,1,?,?,?,?) ON CONFLICT(item_id,local_hour) DO UPDATE SET samples=samples+1,avg_change_pct=((avg_change_pct*samples)+excluded.avg_change_pct)/(samples+1),negative_samples=negative_samples+CASE WHEN excluded.avg_change_pct<0 THEN 1 ELSE 0 END,positive_samples=positive_samples+CASE WHEN excluded.avg_change_pct>0 THEN 1 ELSE 0 END,last_seen=excluded.last_seen").bind(id,h,pct,pct<0?1:0,pct>0?1:0,ts));
+    for(let i=0;i<q.length;i+=80)await env.DB.batch(q.slice(i,i+80));await d1WriteMeta(env,"hourly_bucket",bucket);hourlyWritten=hourlyRows.length;
+  }
+  return {previousAt,events:eventWritten,hourly:hourlyWritten};
+}
+async function syncOsrsMarket(env){
+  if(!env.DB)return;
+  const now=Date.now(),m=await env.DB.prepare("SELECT updated_at FROM data_meta WHERE key='market_sync'").first();
+  if(m&&now-Number(m.updated_at)<DATA_SYNC_MS)return;
+  const h={"User-Agent":"OSRSHub/2.2 market platform"};
+  const [a,b]=await Promise.all([fetch(`${PRICES_API}/latest`,{headers:h}),fetch(`${PRICES_API}/mapping`,{headers:h})]);
+  if(!a.ok||!b.ok)throw new Error(`GE data unavailable (${a.status}/${b.status})`);
+  const latest=await a.json(),mapping=await b.json(),map=new Map((Array.isArray(mapping)?mapping:[]).map(x=>[Number(x.id),x])),rows=Object.entries(latest.data||{});
+  const signal=await snapshotSignals(env,now,latest.data||{},map);
+  const snapshotRow=await env.DB.prepare("SELECT captured_at FROM market_snapshots ORDER BY captured_at DESC LIMIT 1").first().catch(()=>null);
+  if(!snapshotRow||now-Number(snapshotRow.captured_at||0)>=SNAPSHOT_INTERVAL_MS){
+    if(await d1Reserve(env,1,"market snapshot"))await env.DB.prepare("INSERT INTO market_snapshots(captured_at,source,payload_json) VALUES(?1,?2,?3)").bind(now,DATA_SOURCE,JSON.stringify(latest.data||{})).run();
+  }
+  // The frontend reads live prices directly from the price proxy. D1 only needs a small liquid intelligence cache.
+  const priority=rows.map(([id,r])=>{const x=map.get(+id)||{},buy=Number(r.avgLowPrice||r.low||0),sell=Number(r.avgHighPrice||r.high||0),volume=Number(r.highPriceVolume||0)+Number(r.lowPriceVolume||0),margin=sell-buy-Math.min(Math.floor(sell*.02),5000000);return {id:+id,r,x,buy,sell,volume,score:volume*Math.max(1,Math.abs(margin))}}).filter(x=>x.buy>0||x.sell>0).sort((a,b)=>b.volume-a.volume).slice(0,MARKET_CURRENT_LIMIT);
+  if(await d1Reserve(env,priority.length,"market current")){
+    const q=priority.map(({id,r,x})=>env.DB.prepare("INSERT INTO market_current(item_id,high,low,high_time,low_time,high_volume,low_volume,avg_high,avg_low,limit_qty,name,examine,members,tradeable,icon,value,alch,last_seen) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ON CONFLICT(item_id) DO UPDATE SET high=excluded.high,low=excluded.low,high_time=excluded.high_time,low_time=excluded.low_time,high_volume=excluded.high_volume,low_volume=excluded.low_volume,avg_high=excluded.avg_high,avg_low=excluded.avg_low,limit_qty=excluded.limit_qty,name=excluded.name,examine=excluded.examine,members=excluded.members,tradeable=excluded.tradeable,icon=excluded.icon,value=excluded.value,alch=excluded.alch,last_seen=excluded.last_seen").bind(+id,+r.high||0,+r.low||0,+r.highTime||0,+r.lowTime||0,+r.highPriceVolume||0,+r.lowPriceVolume||0,+r.avgHighPrice||0,+r.avgLowPrice||0,+x.limit||0,x.name||null,x.examine||null,x.members?1:0,x.tradeable_on_ge?1:0,x.icon||null,+x.value||0,+x.highalch||0,now));
+    for(let i=0;i<q.length;i+=80)await env.DB.batch(q.slice(i,i+80));
+  }
+  // Mapping/item metadata is static enough to update incrementally. Never rewrite the entire item catalogue every price tick.
+  const mapCursorRow=await env.DB.prepare("SELECT value FROM data_meta WHERE key='mapping_cursor'").first().catch(()=>null);
+  const mapCursor=Math.max(0,Number(mapCursorRow?.value||0));
+  const mapEntries=Array.from(map.entries());
+  if(mapEntries.length){
+    const chunk=mapEntries.slice(mapCursor,mapCursor+2500),nextCursor=(mapCursor+chunk.length)%mapEntries.length;
+    if(chunk.length&&await d1Reserve(env,chunk.length,"incremental item mapping")){
+      const itemQ=chunk.map(([id,x])=>env.DB.prepare("INSERT INTO osrs_items(item_id,name,examine,members,tradeable,icon,value,high_alch,ge_limit,stackable,noted,linked_id,data_json,updated_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?) ON CONFLICT(item_id) DO UPDATE SET name=excluded.name,examine=excluded.examine,members=excluded.members,tradeable=excluded.tradeable,icon=excluded.icon,value=excluded.value,high_alch=excluded.high_alch,ge_limit=excluded.ge_limit,stackable=excluded.stackable,noted=excluded.noted,linked_id=excluded.linked_id,data_json=excluded.data_json,updated_at=excluded.updated_at").bind(id,x.name||null,x.examine||null,x.members?1:0,x.tradeable_on_ge?1:0,x.icon||null,+x.value||0,+x.highalch||0,+x.limit||0,x.stackable?1:0,x.noted?1:0,+x.linked_id||null,JSON.stringify(x),now));
+      for(let i=0;i<itemQ.length;i+=80)await env.DB.batch(itemQ.slice(i,i+80));await d1WriteMeta(env,"mapping_cursor",nextCursor);
     }
   }
-  if(events.length){const q=events.slice(0,1500).map(e=>env.DB.prepare("INSERT INTO market_events(captured_at,item_id,event_type,current_price,previous_price,change_pct,volume,local_hour,source,details_json) VALUES(?,?,?,?,?,?,?,?,?,?)").bind(...e));for(let i=0;i<q.length;i+=80)await env.DB.batch(q.slice(i,i+80));}
-  // Hourly behaviour is sampled only from liquid items to avoid turning D1 into a raw tick archive.
-  const agg=hourlyUpdates.slice(0,3000).map(([id,h,pct,ts])=>env.DB.prepare("INSERT INTO market_hourly_stats(item_id,local_hour,samples,avg_change_pct,negative_samples,positive_samples,last_seen) VALUES(?,?,1,?,?,?,?) ON CONFLICT(item_id,local_hour) DO UPDATE SET samples=samples+1,avg_change_pct=((avg_change_pct*samples)+excluded.avg_change_pct)/(samples+1),negative_samples=negative_samples+CASE WHEN excluded.avg_change_pct<0 THEN 1 ELSE 0 END,positive_samples=positive_samples+CASE WHEN excluded.avg_change_pct>0 THEN 1 ELSE 0 END,last_seen=excluded.last_seen").bind(id,h,pct,pct<0?1:0,pct>0?1:0,ts));
-  for(let i=0;i<agg.length;i+=80)await env.DB.batch(agg.slice(i,i+80));
-  return {previousAt,events:events.length};
+  await d1WriteMeta(env,"market_sync","ok");
+  // Retention cleanup is infrequent so DELETEs cannot silently consume the daily write budget every five minutes.
+  const cleanupDay=await env.DB.prepare("SELECT value FROM data_meta WHERE key='cleanup_day'").first().catch(()=>null);
+  if(cleanupDay?.value!==day&&await d1Reserve(env,2,"retention cleanup")){await env.DB.prepare("DELETE FROM market_snapshots WHERE captured_at<?1").bind(now-45*86400000).run().catch(()=>{});await env.DB.prepare("DELETE FROM market_events WHERE captured_at<?1").bind(now-120*86400000).run().catch(()=>{});await d1WriteMeta(env,"cleanup_day",day);}
+  console.log("OSRS market sync",JSON.stringify(signal));
 }
-async function syncOsrsMarket(env){if(!env.DB)return;const now=Date.now(),m=await env.DB.prepare("SELECT updated_at FROM data_meta WHERE key='market_sync'").first();if(m&&now-Number(m.updated_at)<DATA_SYNC_MS)return;const h={"User-Agent":"OSRSHub/2.1 market platform"};const [a,b]=await Promise.all([fetch(`${PRICES_API}/latest`,{headers:h}),fetch(`${PRICES_API}/mapping`,{headers:h})]);if(!a.ok||!b.ok)throw new Error(`GE data unavailable (${a.status}/${b.status})`);const latest=await a.json(),mapping=await b.json(),map=new Map((Array.isArray(mapping)?mapping:[]).map(x=>[Number(x.id),x])),rows=Object.entries(latest.data||{});await snapshotSignals(env,now,latest.data||{},map);await env.DB.prepare("INSERT INTO market_snapshots(captured_at,source,payload_json) VALUES(?1,?2,?3)").bind(now,DATA_SOURCE,JSON.stringify(latest.data||{})).run();const q=rows.map(([id,r])=>{const x=map.get(+id)||{};return env.DB.prepare("INSERT INTO market_current(item_id,high,low,high_time,low_time,high_volume,low_volume,avg_high,avg_low,limit_qty,name,examine,members,tradeable,icon,value,alch,last_seen) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ON CONFLICT(item_id) DO UPDATE SET high=excluded.high,low=excluded.low,high_time=excluded.high_time,low_time=excluded.low_time,high_volume=excluded.high_volume,low_volume=excluded.low_volume,avg_high=excluded.avg_high,avg_low=excluded.avg_low,limit_qty=excluded.limit_qty,name=excluded.name,examine=excluded.examine,members=excluded.members,tradeable=excluded.tradeable,icon=excluded.icon,value=excluded.value,alch=excluded.alch,last_seen=excluded.last_seen").bind(+id,+r.high||0,+r.low||0,+r.highTime||0,+r.lowTime||0,+r.highPriceVolume||0,+r.lowPriceVolume||0,+r.avgHighPrice||0,+r.avgLowPrice||0,+x.limit||0,x.name||null,x.examine||null,x.members?1:0,x.tradeable_on_ge?1:0,x.icon||null,+x.value||0,+x.highalch||0,now)});for(let i=0;i<q.length;i+=80)await env.DB.batch(q.slice(i,i+80));await env.DB.prepare("INSERT INTO data_meta(key,value,updated_at) VALUES('market_sync','ok',?) ON CONFLICT(key) DO UPDATE SET value='ok',updated_at=excluded.updated_at").bind(now).run();await env.DB.prepare("DELETE FROM market_snapshots WHERE captured_at<?1").bind(now-45*86400000).run().catch(()=>{});await env.DB.prepare("DELETE FROM market_events WHERE captured_at<?1").bind(now-120*86400000).run().catch(()=>{});}
 const SKILLS=["Attack","Strength","Defence","Ranged","Prayer","Magic","Runecraft","Hitpoints","Crafting","Mining","Smithing","Fishing","Cooking","Firemaking","Woodcutting","Agility","Herblore","Thieving","Fletching","Slayer","Farming","Construction","Hunter","Sailing"];
 async function seedCatalog(env){for(let i=0;i<SKILLS.length;i++)await env.DB.prepare("INSERT OR IGNORE INTO osrs_skills(id,name,max_level,members) VALUES(?,?,99,?)").bind(i+1,SKILLS[i],i>4?1:0).run();}
 async function syncOsrsBox(env,dataset){
  const key=`osrsbox_${dataset}_page`,m=await env.DB.prepare("SELECT value FROM data_meta WHERE key=?").bind(key).first();let page=Math.max(1,+m?.value||1),all=[];
- for(let i=0;i<10;i++,page++){
+ for(let i=0;i<1;i++,page++){
   const r=await fetch(`${OSRSBOX_API}/${dataset}?page=${page}`,{headers:{"User-Agent":"OSRSHub/2.1 data ingestion"}});if(!r.ok)throw new Error(`${dataset} ${page}: ${r.status}`);
   const j=await r.json(),docs=Array.isArray(j)?j:(j.data||j.results||[]);if(!docs.length){page=1;await env.DB.prepare("INSERT INTO data_meta(key,value,updated_at) VALUES(?, 'complete', ?) ON CONFLICT(key) DO UPDATE SET value='complete',updated_at=excluded.updated_at").bind(`${key}_state`,Date.now()).run();break}all.push(...docs);if(docs.length<25){page=1;await env.DB.prepare("INSERT INTO data_meta(key,value,updated_at) VALUES(?, 'complete', ?) ON CONFLICT(key) DO UPDATE SET value='complete',updated_at=excluded.updated_at").bind(`${key}_state`,Date.now()).run();break}
  }
  const table=dataset==='items'?'osrs_item_data':dataset==='monsters'?'osrs_monster_data':'osrs_prayer_data',idcol=dataset==='items'?'item_id':dataset==='monsters'?'monster_id':'prayer_id',now=Date.now();
  const q=all.filter(x=>x&&x.id!=null).map(x=>env.DB.prepare(`INSERT INTO ${table}(${idcol},name,data_json,updated_at) VALUES(?,?,?,?) ON CONFLICT(${idcol}) DO UPDATE SET name=excluded.name,data_json=excluded.data_json,updated_at=excluded.updated_at`).bind(+x.id,x.name||null,JSON.stringify(x),now));
  const c=all.filter(x=>x&&x.id!=null).map(x=>env.DB.prepare("INSERT INTO osrs_catalog(entity_type,entity_id,name,members,searchable,data_json,updated_at) VALUES(?,?,?,?,1,?,?) ON CONFLICT(entity_type,entity_id) DO UPDATE SET name=excluded.name,members=excluded.members,data_json=excluded.data_json,updated_at=excluded.updated_at").bind(dataset,+x.id,x.name||null,x.members?1:0,JSON.stringify(x),now));
- for(let i=0;i<q.length;i+=80)await env.DB.batch(q.slice(i,i+80));for(let i=0;i<c.length;i+=80)await env.DB.batch(c.slice(i,i+80));
+ const baseWrites=q.length+c.length;
+ if(baseWrites&&await d1Reserve(env,baseWrites,`OSRSBox ${dataset}`)){for(let i=0;i<q.length;i+=80)await env.DB.batch(q.slice(i,i+80));for(let i=0;i<c.length;i+=80)await env.DB.batch(c.slice(i,i+80));}else{return;}
+ if(dataset==='monsters'){const nq=all.filter(x=>x&&x.id!=null).map(x=>{const levels=x.stats||x.levels||{};return env.DB.prepare("INSERT INTO osrs_npcs(npc_id,name,combat_level,hitpoints,attack_level,strength_level,defence_level,ranged_level,magic_level,attributes_json,data_json,updated_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?) ON CONFLICT(npc_id) DO UPDATE SET name=excluded.name,combat_level=excluded.combat_level,hitpoints=excluded.hitpoints,attack_level=excluded.attack_level,strength_level=excluded.strength_level,defence_level=excluded.defence_level,ranged_level=excluded.ranged_level,magic_level=excluded.magic_level,attributes_json=excluded.attributes_json,data_json=excluded.data_json,updated_at=excluded.updated_at").bind(+x.id,x.name||null,+x.combat_level||+x.combat||0,+x.hitpoints||+x.hp||0,+levels.attack||x.attack||0,+levels.strength||x.strength||0,+levels.defence||x.defence||0,+levels.ranged||x.ranged||0,+levels.magic||x.magic||0,JSON.stringify(x.attributes||x.attribute||[]),JSON.stringify(x),now)});if(nq.length&&await d1Reserve(env,nq.length,`OSRSBox NPC ${dataset}`)){for(let i=0;i<nq.length;i+=80)await env.DB.batch(nq.slice(i,i+80));}}
+
  if(dataset==='items'){
   const eq=all.filter(x=>x.equipment||x.equipment_slot||x.slot).map(x=>{const e=x.equipment||{};const slot=e.slot||x.equipment_slot||x.slot||null;const req=e.requirements||x.requirements||{};return env.DB.prepare("INSERT INTO osrs_equipment_catalog(item_id,slot,equipable,weapon,two_handed,attack_speed,requirements_json,bonuses_json,updated_at) VALUES(?,?,?,?,?,?,?,?,?) ON CONFLICT(item_id) DO UPDATE SET slot=excluded.slot,equipable=excluded.equipable,weapon=excluded.weapon,two_handed=excluded.two_handed,attack_speed=excluded.attack_speed,requirements_json=excluded.requirements_json,bonuses_json=excluded.bonuses_json,updated_at=excluded.updated_at").bind(+x.id,slot,1,e.weapon?1:0,e.two_handed?1:0,Number(e.attack_speed||x.attack_speed||0),JSON.stringify(req),JSON.stringify(e),now)});
-  for(let i=0;i<eq.length;i+=80)await env.DB.batch(eq.slice(i,i+80));
+  if(eq.length&&await d1Reserve(env,eq.length,`OSRSBox equipment ${dataset}`)){for(let i=0;i<eq.length;i+=80)await env.DB.batch(eq.slice(i,i+80));}
  }
  await env.DB.prepare("INSERT INTO data_meta(key,value,updated_at) VALUES(?,?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value,updated_at=excluded.updated_at").bind(key,String(page),now).run();
 }
 const WIKI_CONTENT_PAGES=[
- ["skills","Skills"],["quests","Quests"],["monsters","Monsters"],["bosses","Boss"],["equipment","Equipment"],["weapons","Weapons"],["armour","Armour"],["spells","Spells"],["prayers","Prayer"],["activities","Activities"],["minigames","Minigames"],["diaries","Achievement Diaries"],["clues","Clue Scrolls"],["slayer","Slayer"],["combat","Combat"],["raids","Raids"],["skilling","Skilling"],["money_making","Money making guide"],["drop_tables","Drop table"],["locations","Locations"],["food","Food"],["potions","Potions"],["runecraft","Runecraft"],["herblore","Herblore"],["farming","Farming"],["construction","Construction"],["agility","Agility"],["thieving","Thieving"],["fishing","Fishing"],["mining","Mining"],["smithing","Smithing"],["fletching","Fletching"],["woodcutting","Woodcutting"],["firemaking","Firemaking"]
+ ["skills","Skills"],["quests","Quests"],["monsters","Monsters"],["npcs","Non-player character"],["bosses","Boss"],["equipment","Equipment"],["weapons","Weapons"],["armour","Armour"],["spells","Spells"],["prayers","Prayer"],["activities","Activities"],["minigames","Minigames"],["diaries","Achievement Diaries"],["clues","Clue Scrolls"],["slayer","Slayer"],["combat","Combat"],["raids","Raids"],["skilling","Skilling"],["money_making","Money making guide"],["drop_tables","Drop table"],["npc_drops","Drop table"],["locations","Locations"],["teleports","Teleportation"],["food","Food"],["potions","Potions"],["items","Item"],["amulets","Amulet"],["rings","Rings"],["weapons","Weapons"],["runecraft","Runecraft"],["herblore","Herblore"],["farming","Farming"],["construction","Construction"],["agility","Agility"],["thieving","Thieving"],["fishing","Fishing"],["mining","Mining"],["smithing","Smithing"],["fletching","Fletching"],["woodcutting","Woodcutting"],["firemaking","Firemaking"]
 ];
-async function syncWikiContent(env){if(!env.DB)return;try{const row=await env.DB.prepare("SELECT value FROM data_meta WHERE key='wiki_content_cursor'").first();let cursor=Math.max(0,Number(row?.value||0));const [type,page]=WIKI_CONTENT_PAGES[cursor%WIKI_CONTENT_PAGES.length];const u=new URL(WIKI_API);u.searchParams.set('action','parse');u.searchParams.set('page',page);u.searchParams.set('prop','wikitext');u.searchParams.set('format','json');u.searchParams.set('formatversion','2');const r=await fetch(u,{headers:{"User-Agent":"OSRSHub/2.1 OSRS data platform"}});if(!r.ok)return;const j=await r.json();const text=String(j?.parse?.wikitext||j?.parse?.wikitext?.['*']||'').slice(0,180000);if(text){await env.DB.prepare("INSERT INTO osrs_content_catalog(content_type,name,data_json,updated_at) VALUES(?,?,?,?) ON CONFLICT(content_type,name) DO UPDATE SET data_json=excluded.data_json,updated_at=excluded.updated_at").bind(type,page,JSON.stringify({page,type,wikitext:text,source:'Old School RuneScape Wiki',capturedAt:Date.now()}),Date.now()).run()}await env.DB.prepare("INSERT INTO data_meta(key,value,updated_at) VALUES('wiki_content_cursor',?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value,updated_at=excluded.updated_at").bind(String((cursor+1)%WIKI_CONTENT_PAGES.length),Date.now()).run()}catch(e){console.warn('Wiki content sync',e?.message)}}
-async function syncRichData(env){for(const d of ['items','monsters','prayers']){const done=await env.DB.prepare("SELECT value FROM data_meta WHERE key=?").bind(`osrsbox_${d}_state`).first();if(done?.value==='complete')continue;try{await syncOsrsBox(env,d)}catch(e){console.warn('OSRSBox sync',d,e?.message)}break}}
+async function syncWikiContent(env){if(!env.DB)return;try{const gate=await env.DB.prepare("SELECT value FROM data_meta WHERE key='wiki_content_gate'").first().catch(()=>null),now=Date.now();if(gate&&now-Number(gate.value||0)<30*60*1000)return;const row=await env.DB.prepare("SELECT value FROM data_meta WHERE key='wiki_content_cursor'").first();let cursor=Math.max(0,Number(row?.value||0));const [type,page]=WIKI_CONTENT_PAGES[cursor%WIKI_CONTENT_PAGES.length];const u=new URL(WIKI_API);u.searchParams.set('action','parse');u.searchParams.set('page',page);u.searchParams.set('prop','wikitext');u.searchParams.set('format','json');u.searchParams.set('formatversion','2');const r=await fetch(u,{headers:{"User-Agent":"OSRSHub/2.1 OSRS data platform"}});if(!r.ok)return;const j=await r.json();const text=String(j?.parse?.wikitext||j?.parse?.wikitext?.['*']||'').slice(0,180000);if(text&&await d1Reserve(env,2,"Wiki content")){await env.DB.prepare("INSERT INTO osrs_content_catalog(content_type,name,data_json,updated_at) VALUES(?,?,?,?) ON CONFLICT(content_type,name) DO UPDATE SET data_json=excluded.data_json,updated_at=excluded.updated_at").bind(type,page,JSON.stringify({page,type,wikitext:text,source:'Old School RuneScape Wiki',capturedAt:Date.now()}),Date.now()).run();await d1WriteMeta(env,'wiki_content_cursor',String((cursor+1)%WIKI_CONTENT_PAGES.length));await d1WriteMeta(env,'wiki_content_gate',now)}}catch(e){console.warn('Wiki content sync',e?.message)}}
+async function syncRichData(env){
+  if(!env.DB)return;
+  const gate=await env.DB.prepare("SELECT value FROM data_meta WHERE key='rich_sync_gate'").first().catch(()=>null),now=Date.now();
+  if(gate&&now-Number(gate.value||0)<15*60*1000)return;
+  for(const d of ['items','monsters','prayers']){
+    const done=await env.DB.prepare("SELECT value FROM data_meta WHERE key=?").bind(`osrsbox_${d}_state`).first();
+    if(done?.value==='complete')continue;
+    try{await syncOsrsBox(env,d);await d1WriteMeta(env,'rich_sync_gate',now)}catch(e){console.warn('OSRSBox sync',d,e?.message)}
+    break;
+  }
+}
 async function dataApi(request,env){
  const u=new URL(request.url);
  if(u.pathname==='/api/data/health'){
-  const names=['market_current','market_snapshots','market_events','market_hourly_stats','osrs_item_data','osrs_monster_data','osrs_prayer_data','osrs_catalog','osrs_equipment_catalog','osrs_drop_tables','osrs_content_catalog'];
+  const names=['market_current','market_snapshots','market_events','market_hourly_stats','osrs_item_data','osrs_monster_data','osrs_prayer_data','osrs_items','osrs_npcs','osrs_catalog','osrs_equipment_catalog','osrs_drop_tables','osrs_content_catalog'];
   const r=await env.DB.batch(names.map(t=>env.DB.prepare(`SELECT COUNT(*) c FROM ${t}`)));
-  const out={ok:true,source:DATA_SOURCE};names.forEach((n,i)=>out[n.replaceAll('_','')]=+(r[i]?.results?.[0]?.c||0));out.marketItems=out.marketcurrent||0;out.snapshots=out.marketsnapshots||0;out.items=out.osrsitemdata||0;out.monsters=out.osrsmonsterdata||0;out.prayers=out.osrsprayerdata||0;return json(out)
+  const out={ok:true,source:DATA_SOURCE};names.forEach((n,i)=>out[n.replaceAll('_','')]=+(r[i]?.results?.[0]?.c||0));const budgetRow=await env.DB.prepare("SELECT value FROM data_meta WHERE key='d1_write_budget'").first().catch(()=>null);let budget={day:utcDayKey(),writes:0};try{if(budgetRow?.value)budget=JSON.parse(budgetRow.value)}catch{}out.d1Writer={day:budget.day,writes:Number(budget.writes||0),softLimit:D1_SOFT_WRITE_LIMIT,remaining:Math.max(0,D1_SOFT_WRITE_LIMIT-Number(budget.writes||0)),percent:Math.min(100,Math.round(Number(budget.writes||0)/D1_SOFT_WRITE_LIMIT*100))};out.marketItems=out.marketcurrent||0;out.snapshots=out.marketsnapshots||0;out.items=out.osrsitemdata||0;out.monsters=out.osrsmonsterdata||0;out.prayers=out.osrsprayerdata||0;out.itemsDatabase=out.osrsitems||0;out.npcs=out.osrsnpcs||0;return json(out)
  }
  if(u.pathname==='/api/data/signals'){
   const minVol=Math.max(0,Number(u.searchParams.get('minVolume')||250)),minDrop=Math.max(1,Number(u.searchParams.get('minDropPct')||8)),minGp=Math.max(0,Number(u.searchParams.get('minDropGp')||100)),minPrice=Math.max(0,Number(u.searchParams.get('minPrice')||100)),crash=Math.max(1,Number(u.searchParams.get('crashHourPct')||6));
@@ -201,4 +267,4 @@ async function dataApi(request,env){
  if(u.pathname==='/api/data/catalog'&&request.method==='GET'){const type=String(u.searchParams.get('type')||'').slice(0,40),q=String(u.searchParams.get('q')||'').trim().slice(0,80),limit=Math.min(100,Math.max(1,Number(u.searchParams.get('limit')||50)));let sql='SELECT entity_type,entity_id,name,members,data_json,updated_at FROM osrs_catalog WHERE 1=1',args=[];if(type){sql+=' AND entity_type=?';args.push(type)}if(q){sql+=' AND name LIKE ?';args.push(`%${q}%`)}sql+=' ORDER BY name LIMIT ?';args.push(limit);const r=await env.DB.prepare(sql).bind(...args).all();return json({results:r.results||[]})}
  return json({error:'Not found'},404)
 }
-export default {async fetch(request,env){const url=new URL(request.url);if(url.pathname.startsWith("/api/auth/"))return auth(request,env);if(url.pathname.startsWith("/api/discord/"))return discordIntegration(request,env);if(request.method==="OPTIONS"&&url.pathname==="/api/hiscores")return new Response(null,{status:204,headers:{"Access-Control-Allow-Origin":"*","Access-Control-Allow-Methods":"GET, OPTIONS","Access-Control-Allow-Headers":"Content-Type"}});if(request.method==="GET"&&url.pathname.startsWith("/api/prices/"))return priceProxy(request);if(request.method==="GET"&&url.pathname==="/api/quest")return questDetails(request);if(request.method==="GET"&&url.pathname==="/api/account")return accountSync(request,env);if(url.pathname.startsWith("/api/data/"))return dataApi(request,env);if(request.method==="GET"&&url.pathname==="/api/itemstats")return itemStats(request,env);if(request.method==="GET"&&url.pathname==="/api/hiscores")return hiscores(request);return env.ASSETS.fetch(request)},async scheduled(event,env,ctx){ctx.waitUntil(runDiscordAlertCron(env));ctx.waitUntil(seedCatalog(env).then(()=>syncOsrsMarket(env)).catch(e=>console.warn("OSRS market sync",e?.message)));ctx.waitUntil(syncRichData(env).catch(e=>console.warn("OSRS rich data sync",e?.message)))}};
+export default {async fetch(request,env){const url=new URL(request.url);if(url.pathname.startsWith("/api/auth/"))return auth(request,env);if(url.pathname.startsWith("/api/discord/"))return discordIntegration(request,env);if(request.method==="OPTIONS"&&url.pathname==="/api/hiscores")return new Response(null,{status:204,headers:{"Access-Control-Allow-Origin":"*","Access-Control-Allow-Methods":"GET, OPTIONS","Access-Control-Allow-Headers":"Content-Type"}});if(request.method==="GET"&&url.pathname.startsWith("/api/prices/"))return priceProxy(request);if(request.method==="GET"&&url.pathname==="/api/quest")return questDetails(request);if(request.method==="GET"&&url.pathname==="/api/account")return accountSync(request,env);if(url.pathname.startsWith("/api/data/"))return dataApi(request,env);if(request.method==="GET"&&url.pathname==="/api/itemstats")return itemStats(request,env);if(request.method==="GET"&&url.pathname==="/api/hiscores")return hiscores(request);return env.ASSETS.fetch(request)},async scheduled(event,env,ctx){ctx.waitUntil(runDiscordAlertCron(env));ctx.waitUntil(seedCatalog(env).then(()=>syncOsrsMarket(env)).catch(e=>console.warn("OSRS market sync",e?.message)));ctx.waitUntil(syncRichData(env).catch(e=>console.warn("OSRS rich data sync",e?.message)));ctx.waitUntil(syncWikiContent(env).catch(e=>console.warn("OSRS Wiki content sync",e?.message)))}};
