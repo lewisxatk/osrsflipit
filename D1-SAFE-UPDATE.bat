@@ -1,67 +1,32 @@
 @echo off
 setlocal EnableExtensions
 cd /d "%~dp0"
-
 echo ================================================
-echo OSRS Hub - ONE CLICK SAFE D1 + SITE UPDATE
+echo OSRS HUB V56 - SAFE DATABASE + BUILD + DEPLOY
 echo ================================================
-echo.
-
-where node >nul 2>nul
-if errorlevel 1 (
-  echo ERROR: Node.js is not installed or not on PATH.
-  echo Install Node.js LTS, restart Windows, then run this file again.
-  pause
-  exit /b 1
-)
-where npm >nul 2>nul
-if errorlevel 1 (
-  echo ERROR: npm is not available. Restart Windows after installing Node.js LTS.
-  pause
-  exit /b 1
-)
-
-if not exist package.json (
-  echo ERROR: package.json was not found. Run this BAT from the OSRS Hub project folder.
-  pause
-  exit /b 1
-)
-
-echo [1/4] Installing/checking dependencies...
+where node >nul 2>nul || (echo ERROR: Install Node.js LTS first.& pause & exit /b 1)
+where npm >nul 2>nul || (echo ERROR: npm is missing. Reopen this window after installing Node.js.& pause & exit /b 1)
+if not exist package.json (echo ERROR: package.json missing. Extract this BAT into the project root.& pause & exit /b 1)
+echo [1/5] Installing dependencies...
 npm install
-if errorlevel 1 goto :fail
-
-echo.
-echo [2/4] Applying any pending D1 migrations...
+if errorlevel 1 goto fail
+echo [2/5] Applying pending D1 migrations to the remote database...
 npx wrangler d1 migrations apply osrshub-accounts --remote
-if errorlevel 1 goto :fail
-
-echo.
-echo [3/4] Building the production site...
+if errorlevel 1 goto fail
+echo [3/5] Building frontend...
 npm run build
-if errorlevel 1 goto :fail
-
-echo.
-echo [4/4] Deploying the Worker and site assets...
+if errorlevel 1 goto fail
+echo [4/5] Deploying Worker and site assets...
 npx wrangler deploy --config wrangler.jsonc
-if errorlevel 1 goto :fail
-
+if errorlevel 1 goto fail
+echo [5/5] Reading internal D1 writer status...
+npx wrangler d1 execute osrshub-accounts --remote --command "SELECT key,value,updated_at FROM data_meta WHERE key IN ('d1_write_budget','data_ingestion_paused','market_sync','mapping_cursor');"
 echo.
-echo ================================================
-echo SAFE UPDATE COMPLETE
-echo ================================================
-echo.
-echo D1 writer protection is now active in the deployed Worker.
-echo The live market continues to use the price API; D1 history is throttled.
-echo.
+echo SUCCESS. Check Cloudflare Dashboard - D1 - osrshub-accounts - Metrics for actual rows_written.
 pause
 exit /b 0
-
 :fail
 echo.
-echo ================================================
-echo UPDATE FAILED
-echo ================================================
-echo Read the error above. Nothing else was changed by this BAT after the failing step.
+echo UPDATE STOPPED. Read the error above and fix that step before retrying.
 pause
 exit /b 1

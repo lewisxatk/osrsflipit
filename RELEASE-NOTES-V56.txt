@@ -1,0 +1,26 @@
+OSRS HUB V56.0 — RELIABILITY PATCH
+
+PRIMARY FIXES
+- Theme persistence now reads both legacy raw values and JSON values from localStorage. This addresses the raw-string-vs-JSON parsing mismatch that could force the Paper/white theme after refresh.
+- Routed item analytics no longer receives the fixed drawer overlay class or its global overflow lock. This was a key cause of the mobile full-page freeze.
+- Mouse wheel over chart surface is captured at document level (non-passive), default page scroll is prevented, and wheel zoom is applied to the chart. Wheel outside a chart remains normal page scroll.
+- Chart options closes on pointer interaction outside the menu/button.
+- Item DNA panel uses an opaque surface, with Void-specific contrast.
+- Void search results and Historical Margin Scanner are explicitly themed.
+- Recommended flip lists use consistent compact rows.
+- Market Weather percent and label layout is separated.
+- /api/data/health includes table counts, ingestion pause state, last sync age, metadata and internal writer budget.
+- Added visible, numbered stop/resume/health BAT files. Health script pauses before closing and checks live API plus remote D1.
+
+D1 / PRICE POLICY
+Live prices continue to come from the prices API. D1 remains the slower, shared site-wide intelligence/history store. Scheduled collection is 15-minute-gated, with incremental small batches. Market sync stores up to 25 current-market items and maps 25 catalogue entries per pass; event and hourly intelligence batches are capped at 8 and 30 records, respectively. The 7,000/day internal governor is an estimate; Cloudflare D1 Metrics is authoritative. Emergency stop pauses site-wide OSRS ingestion/manual sync only; account writes and Discord alert cron remain enabled.
+
+HOW TO USE
+1. Extract the ZIP.
+2. To stop collection: 00-EMERGENCY-STOP-DATA.bat.
+3. To diagnose: 02-CHECK-D1-HEALTH.bat.
+4. To resume: 01-RESUME-DATA.bat.
+5. For manual deploy only: D1-SAFE-UPDATE.bat. Do not duplicate an automatic Cloudflare Git deployment.
+
+BUILD CHECKS
+Worker syntax, JSX parser validation and ZIP integrity are checked for this package. Full Vite/React build and browser/device testing still need to be run in the user's dependency-enabled environment; no claim is made that a live deployment was tested here.

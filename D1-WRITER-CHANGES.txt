@@ -1,11 +1,13 @@
-D1 WRITER CHANGE SUMMARY (V54)
+D1 WRITER CHANGE SUMMARY — V56
 
-- Browser live price rendering remains based on the RuneScape Wiki price API proxy. Market rows in D1 are not the source used to render the live prices.
-- Scheduled market sync now runs at most hourly instead of every 10 minutes.
-- D1 current-market cache is limited to 30 high-activity items instead of 45.
-- Mapping ingestion writes a maximum of 150 candidate item records per scheduled pass, instead of 2,500.
-- Item metadata upserts include a WHERE-different check, so unchanged item records do not get updated just to refresh updated_at.
-- The internal writer estimate stops market/history/catalog ingestion at 7,000 estimated rows per UTC day, leaving headroom against the 100,000-row Free limit. This is a conservative application-level governor, not Cloudflare's official usage counter.
-- Authenticated cloud sync compares the serialized saved data to the existing row and returns unchanged without issuing a D1 write when identical.
-- D1 migrations 0001-0004 remain intact; 0005 inserts default writer configuration metadata idempotently. No tables are dropped and no saved data is deleted.
-- Discord integration function remains byte-for-byte identical to the V53 base. Existing Discord alert events may still update user_data when their alert state actually changes.
+- Browser live price rendering remains on the RuneScape Wiki prices API proxy. D1 does not replace live prices.
+- The Worker cron wakes every minute for alert processing, but site-wide data jobs now check the market_sync timestamp first and return early until the 15-minute sync window is due.
+- D1 current-market cache is limited to 25 liquid items per pass.
+- Item mapping ingestion advances 25 records per pass, with conditional metadata upserts that avoid rewriting unchanged items.
+- Event detection is capped at 8 meaningful price-drop/crash rows per pass; hourly behavioural rows are capped at 30 liquid records per pass.
+- Rich OSRSBox and OSRS Wiki content syncs are gated to longer intervals.
+- Internal ingestion governor remains 7,000 estimated rows per UTC day. It is an application-side safety estimate, not Cloudflare's official usage metric.
+- Authenticated cloud sync skips unchanged saved data.
+- `/api/data/health` reports D1 table counts, the pause flag, last market-sync timestamp/age, metadata and the internal writer estimate.
+- Emergency stop affects scheduled OSRS site-wide data ingestion and manual `/api/data/sync`; it does not stop live price API reads, user/account writes or Discord alert cron.
+- Migrations 0001–0005 are retained; no tables are dropped and no saved data is deleted.

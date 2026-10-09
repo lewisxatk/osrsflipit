@@ -1,0 +1,51 @@
+OSRS HUB — 40 HIGH-VALUE NEXT IDEAS
+
+PRIORITY 1 — TRUST, RELIABILITY AND USABILITY
+1. Automated desktop/mobile browser smoke tests for every main route.
+2. A visible system-health panel: prices API, D1, mapping freshness, history freshness and paused state.
+3. A release checklist that refuses to package when the React build fails.
+4. Screenshot regression checks for Paper, Comfort, Obsidian, Aurora and Void themes.
+5. Accessibility pass: keyboard focus, contrast, reduced motion and screen-reader labels.
+6. One canonical theme storage key with migration from legacy keys and a pre-paint theme bootstrap to prevent white flashes.
+7. A chart interaction test proving wheel zoom prevents page scrolling only when the pointer is over a graph.
+8. A single design-system row/card component for all recommended flip lists.
+9. Better empty/loading/error states that tell users what failed and what to try.
+10. A compact in-app diagnostic export with version, browser, route and API statuses (never secrets).
+
+PRIORITY 2 — GE TRADING INTELLIGENCE
+11. Fill-probability estimates from spread, volume, price movement and order duration, labelled as estimates.
+12. Buy/sell order suggestions with conservative, balanced and aggressive price offsets.
+13. Realised flip log: entry, exit, quantity, tax, fees, time held and net profit.
+14. Paper-trading mode that records hypothetical orders without placing them.
+15. A live spread-vs-history percentile so unusually wide spreads stand out.
+16. Volume anomaly detector that compares current activity with item-specific baselines.
+17. Margin stability score based on variance, sample count and recency—not only current margin.
+18. Item-specific GE limit reset countdowns and capital-lock estimates.
+19. Bankroll allocation with correlated-item concentration limits and reserved cash.
+20. Opportunity ranking that penalises stale quotes, low liquidity, high volatility and insufficient sample sizes.
+
+PRIORITY 3 — HISTORICAL DATA AND D1 EFFICIENCY
+21. Track actual Cloudflare rows_written from dashboard exports alongside the internal estimate.
+22. Store only meaningful price changes instead of rewriting unchanged item metadata.
+23. Keep a rolling retention policy by table with a preview of rows saved before deletion.
+24. Add a per-job write ledger so market snapshots, event detection, wiki sync and catalog sync are separately attributable.
+25. Add ingestion heartbeats and last-success / last-error fields for every source.
+26. Use a queue/cursor for large catalogue imports with resumable progress and bounded batches.
+27. Add deduplication keys for events to prevent duplicate sudden-drop records.
+28. Add source provenance, capture time, licence/attribution and confidence to every knowledge record.
+29. Schedule low-frequency static knowledge sync separately from time-sensitive market sync.
+30. Add a read-only data export for item history and source metadata.
+
+PRIORITY 4 — OSRS KNOWLEDGE BRAIN
+31. Structured item graph: equipment slot, requirements, bonuses, quests, uses, GE limit, alch values and sources.
+32. Combat-style calculator with OSRS attack rolls, defence rolls, max-hit formulas, prayers, potions, stance and attack speed.
+33. Boss profile cards with defence stats, immunities, attack styles, mechanics, gear recommendations and verified sources.
+34. Slayer task planner linking monster requirements, task weighting, gear, cannon/slayer boosts and expected loot.
+35. Quest dependency graph with prerequisites, skill checks, items needed and estimated route time.
+36. Drop-table ingestion with drop rates, quantity ranges, unique-item value and uncertainty-aware expected value.
+37. Spellbook/prayer database including unlocks, runes, levels, effects and combat formula impacts.
+38. Activity/diary/achievement metadata with unlock requirements and reward links.
+39. Separate verified facts from estimates and community strategies; every answer should expose citations and data age.
+40. A knowledge coverage dashboard showing which skills, monsters, bosses, items, quests and activities have complete, partial or missing records.
+
+Implementation rule: do not call a feature “accurate” until it has a source, known limitations, deterministic unit tests and at least one real-world comparison. Do not scrape sources in ways that violate their terms. Keep live prices on the existing API path; use D1 for shared history and sourced reference data.

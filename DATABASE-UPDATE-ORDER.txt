@@ -1,27 +1,29 @@
-OSRS HUB V54 UPDATE ORDER
+OSRS HUB V56 UPDATE ORDER
 
-IMPORTANT: Live market prices shown across the site are fetched from the RuneScape Wiki price API through the Worker proxy. D1 stores history, market signals, account saves and OSRS data ingestion; it is not the live price source.
+IMPORTANT: Live prices across the site are fetched from the RuneScape Wiki price API through the Worker proxy. D1 stores shared history, market signals and OSRS reference data; it is not the source of live GE prices.
 
-A) IF CLOUDFLARE AUTO-DEPLOYS FROM GITHUB (recommended if that is how your project is configured)
-1. Download and extract the V54 ZIP.
-2. In your existing GitHub repository, replace the old project files with the files from the ZIP. Upload src/ and migrations/ as folders and replace worker.js, package.json, vite.config.js, wrangler.jsonc, index.html, README.md, DATA_PLATFORM.md, and the BAT/TXT files. Include migrations/0005_d1_safe_writer.sql. Keep an existing package-lock.json if your repository already has one.
-3. Do NOT upload node_modules/, .wrangler/, .git/, .env or local secrets. Do not delete src/ or migrations/. Do not upload the ZIP itself. The Vite build generates ./site; Cloudflare's configured build should generate it during the build.
-4. Commit/push to GitHub and let the Cloudflare build start.
-5. Double-click 01-APPLY-DATABASE.bat from the extracted project root. It installs dependencies and applies only pending remote D1 migrations; it does not deploy the Worker a second time. If your Cloudflare pipeline is not automatic, use the manual route below.
-6. Wait for Cloudflare's build to complete, then double-click 02-CHECK-D1-USAGE.bat.
+A) IF CLOUDFLARE AUTO-DEPLOYS FROM GITHUB
+1. Extract the V56 ZIP locally.
+2. Replace the existing source/config/docs with the matching files from this ZIP. Upload src/ and migrations/ as folders and replace worker.js, package.json, vite.config.js, wrangler.jsonc, index.html, README.md, DATA_PLATFORM.md, and the BAT/TXT utilities.
+3. Keep an existing package-lock.json if the repository already has one. Do not upload node_modules/, .wrangler/, .git/, .env files, tokens or secrets. Do not delete src/ or migrations/. Do not upload the ZIP itself.
+4. Commit and push; wait for the Cloudflare build to complete.
+5. Run 02-CHECK-D1-HEALTH.bat to verify the deployed API and remote database. Run 03-LOCAL-BUILD-CHECK.bat before pushing if you want a local build check.
+6. Do not run D1-SAFE-UPDATE.bat as well unless you intentionally choose a separate manual deployment; avoid deploying the same commit twice.
 
 B) IF YOU DEPLOY MANUALLY FROM YOUR PC
-1. Upload/commit the V54 source to GitHub as above.
-2. Double-click D1-SAFE-UPDATE.bat. It installs dependencies, applies pending D1 migrations, builds, and deploys Worker + site in one process.
-3. Double-click 02-CHECK-D1-USAGE.bat after it succeeds.
+1. Upload/commit the V56 source to GitHub as above.
+2. From the extracted project root, run D1-SAFE-UPDATE.bat. It installs dependencies, applies pending remote migrations, builds the frontend and deploys the Worker/site.
+3. Run 02-CHECK-D1-HEALTH.bat after the deployment completes.
 
-Never run both manual deploy and an automatic deploy just to do the same release; choose the deployment route that matches your Cloudflare setup. Do not paste secrets into GitHub.
+EMERGENCY SWITCHES
+- 00-EMERGENCY-STOP-DATA.bat pauses site-wide OSRS data ingestion and manual /api/data/sync.
+- 01-RESUME-DATA.bat re-enables it.
+- 02-CHECK-D1-HEALTH.bat reports the pause state, table counts, last market sync age and internal writer estimate.
+- These switches do not pause live price API reads, user/account writes or the Discord alert cron.
 
-D1 WRITER CHANGES
-- Scheduled market sync now runs at most hourly rather than every 10 minutes.
-- D1 market cache limited to 30 liquid items; item mapping processes at most 150 records per hourly pass.
-- Item metadata upserts skip unchanged records.
-- Internal ingestion governor is 7,000 estimated rows per UTC day, deliberately leaving headroom below the Free-tier cap. It is an application estimate, not Cloudflare's billing metric.
-- Cloud sync skips writes when saved JSON is unchanged.
-- Migration 0005 inserts governor configuration idempotently; migrations 0001-0004 remain intact. No tables are dropped and no saved data is deleted.
-- Discord integration function remains byte-for-byte identical to the V53 base.
+D1 AND UPDATE EXPECTATIONS
+- The scheduled Worker wakes every minute to support the Discord alert cron, but site-wide OSRS ingestion now checks its 15-minute gate before running data jobs. This avoids repeatedly invoking catalogue/rich/wiki jobs on every cron wake.
+- The current market cache is capped at 25 high-activity items per market sync; mapping advances by 25 items per successful pass.
+- Event detection is capped at 8 records and hourly behaviour at 30 records per pass; rich OSRSBox and wiki knowledge sources have longer gates. The main market/history pass is therefore designed around a bounded sample of fewer than 100 reserved data rows in a busy 15-minute pass; typical passes write less.
+- The internal writer budget is 7,000 estimated rows per UTC day. It is not the official Cloudflare usage figure. Use Cloudflare Dashboard → D1 → osrshub-accounts → Metrics for authoritative rows_written.
+- No migration drops tables or clears account data.

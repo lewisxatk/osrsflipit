@@ -1,0 +1,15 @@
+OSRS HUB V56 BUILD CHECK REPORT
+
+Checks run in the packaging environment:
+- PASS: `node --check worker.js`.
+- PASS: TypeScript's JSX parser accepted `src/main.jsx` with zero syntax diagnostics.
+- PASS: targeted static assertions for theme persistence, routed item-page scrolling, chart wheel capture, click-outside chart menu, health route and stop/resume controls.
+- PASS: original V55 Discord/auth handler prefix (worker.js lines 1–130) is unchanged; edits are in the data-platform section and scheduled data-job gate.
+- PASS: ZIP integrity.
+- PASS: source package excludes node_modules, .wrangler, .git, dist and generated site assets.
+
+Not verified here:
+- A full Vite production build could not be run because Vite/esbuild are not installed in this environment. `npm install --ignore-scripts --no-audit --no-fund` timed out before installing dependencies.
+- No live Cloudflare deployment, remote D1 credentials, browser session or physical mobile device was available for end-to-end testing.
+
+Run `03-LOCAL-BUILD-CHECK.bat` on the project PC or run `npm install` and `npm run build` in the existing GitHub/Cloudflare build environment. Run `02-CHECK-D1-HEALTH.bat` after deployment. Do not treat syntax checks as proof of a production build or live deployment.
