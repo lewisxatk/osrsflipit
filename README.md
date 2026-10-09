@@ -41,13 +41,3 @@ Live UI prices continue to come from the existing price API. D1 is the durable i
 
 ### One-click update
 Use `D1-SAFE-UPDATE.bat` to install dependencies, apply pending D1 migrations, build the site and deploy the Worker. No manual command sequence is required.
-
-
-## V54: D1-safe writer + Intelligence improvements
-- Live prices remain Wiki API-fed; D1 is for history and intelligence only.
-- Scheduled D1 sync is limited to hourly, with a small incremental item-mapping batch and conditional item-metadata upserts.
-- Internal D1 writer governor is set to 7,000 estimated rows/day to leave headroom below the Free-tier cap; it is an internal estimate, not Cloudflare billing telemetry.
-- User cloud sync skips writes when the serialized saved profile has not changed.
-- Intelligence adds a configurable live 1-hour volume-surge screener; overnight finder falls back to clearly-labelled current-margin candidates when history is unavailable.
-- Loadout auto-build now filters gear by available equipment slot and level requirements, avoids duplicate items, and reports failures rather than silently returning an empty setup.
-- Run `01-UPDATE-AND-DEPLOY.bat` after updating GitHub; see `DATABASE-UPDATE-ORDER.txt`.
