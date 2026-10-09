@@ -1,18 +1,19 @@
-OSRS HUB V56 UPDATE ORDER
+OSRS HUB V57 UPDATE ORDER
 
 IMPORTANT: Live prices across the site are fetched from the RuneScape Wiki price API through the Worker proxy. D1 stores shared history, market signals and OSRS reference data; it is not the source of live GE prices.
 
 A) IF CLOUDFLARE AUTO-DEPLOYS FROM GITHUB
-1. Extract the V56 ZIP locally.
-2. Replace the existing source/config/docs with the matching files from this ZIP. Upload src/ and migrations/ as folders and replace worker.js, package.json, vite.config.js, wrangler.jsonc, index.html, README.md, DATA_PLATFORM.md, and the BAT/TXT utilities.
+1. Extract the V57 ZIP locally.
+2. Replace the existing source/config/docs with the matching files from this ZIP. Upload src/ and migrations/ as folders and replace worker.js, package.json, vite.config.js, wrangler.jsonc, index.html, README.md, DATA_PLATFORM.md, and the BAT/TXT utilities. Ensure migrations/0006_overnight_price_history.sql is included.
 3. Keep an existing package-lock.json if the repository already has one. Do not upload node_modules/, .wrangler/, .git/, .env files, tokens or secrets. Do not delete src/ or migrations/. Do not upload the ZIP itself.
 4. Commit and push; wait for the Cloudflare build to complete.
-5. Run 02-CHECK-D1-HEALTH.bat to verify the deployed API and remote database. Run 03-LOCAL-BUILD-CHECK.bat before pushing if you want a local build check.
-6. Do not run D1-SAFE-UPDATE.bat as well unless you intentionally choose a separate manual deployment; avoid deploying the same commit twice.
+5. Apply pending remote migrations once from your project folder: `npx wrangler d1 migrations apply osrshub-accounts --remote`. This creates the new hourly price-history table.
+6. Run 02-CHECK-D1-HEALTH.bat to verify the deployed API and remote database. Run 03-LOCAL-BUILD-CHECK.bat before pushing if you want a local build check.
+7. Do not run D1-SAFE-UPDATE.bat as well unless you intentionally choose a separate manual deployment; avoid deploying the same commit twice.
 
 B) IF YOU DEPLOY MANUALLY FROM YOUR PC
-1. Upload/commit the V56 source to GitHub as above.
-2. From the extracted project root, run D1-SAFE-UPDATE.bat. It installs dependencies, applies pending remote migrations, builds the frontend and deploys the Worker/site.
+1. Upload/commit the V57 source to GitHub as above.
+2. From the extracted project root, run D1-SAFE-UPDATE.bat. It installs dependencies, applies pending remote migrations (including 0006), builds the frontend and deploys the Worker/site.
 3. Run 02-CHECK-D1-HEALTH.bat after the deployment completes.
 
 EMERGENCY SWITCHES
@@ -23,7 +24,7 @@ EMERGENCY SWITCHES
 
 D1 AND UPDATE EXPECTATIONS
 - The scheduled Worker wakes every minute to support the Discord alert cron, but site-wide OSRS ingestion now checks its 15-minute gate before running data jobs. This avoids repeatedly invoking catalogue/rich/wiki jobs on every cron wake.
-- The current market cache is capped at 25 high-activity items per market sync; mapping advances by 25 items per successful pass.
-- Event detection is capped at 8 records and hourly behaviour at 30 records per pass; rich OSRSBox and wiki knowledge sources have longer gates. The main market/history pass is therefore designed around a bounded sample of fewer than 100 reserved data rows in a busy 15-minute pass; typical passes write less.
-- The internal writer budget is 7,000 estimated rows per UTC day. It is not the official Cloudflare usage figure. Use Cloudflare Dashboard → D1 → osrshub-accounts → Metrics for authoritative rows_written.
+- The current market cache is capped at 150 high-activity items per market sync; mapping advances by 100 items per successful pass.
+- Event detection is capped at 8 records per pass and hourly behaviour/history covers up to 100 high-volume items per UK-local hour; rich OSRSBox and wiki knowledge sources have longer gates. A busy pass may reserve around 250 rows when a new hour starts, before occasional reference-data work.
+- The internal writer budget is 50,000 estimated rows per UTC day. It is not the official Cloudflare usage figure. Use Cloudflare Dashboard → D1 → osrshub-accounts → Metrics for authoritative rows_written.
 - No migration drops tables or clears account data.

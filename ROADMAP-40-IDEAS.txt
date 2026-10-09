@@ -49,3 +49,12 @@ PRIORITY 4 — OSRS KNOWLEDGE BRAIN
 40. A knowledge coverage dashboard showing which skills, monsters, bosses, items, quests and activities have complete, partial or missing records.
 
 Implementation rule: do not call a feature “accurate” until it has a source, known limitations, deterministic unit tests and at least one real-world comparison. Do not scrape sources in ways that violate their terms. Keep live prices on the existing API path; use D1 for shared history and sourced reference data.
+
+
+V57 DELIVERY STATUS — READ BEFORE TREATING THIS ROADMAP AS COMPLETE
+
+This list remains the full roadmap, not a claim that all 40 features are shipped. V57 delivers targeted work on theme bootstrap (idea 6), consistent recommendation rows (idea 8), better retry/error handling (idea 9, partial), incremental metadata updates and retention (ideas 22–23), resumable mapping cursors (idea 26), and more explicit health/coverage counts (idea 40, partial). The hourly price-history table also improves the historical foundation for overnight trading.
+
+Still not complete in V57: automated browser/screenshot regression suites (1, 4, 7); a release packager that blocks on a failed production build (3); a full diagnostic export (10); conservative/balanced/aggressive order-offset suggestions (12); paper trading (14); GE-limit reset countdowns (18); imported Cloudflare rows_written telemetry and per-job write ledger (21, 24); event-level deduplication keys (27); a user-triggered history/provenance export (30); a complete Slayer planner (34); full structured source-verified OSRS content coverage (31, 33–39); and a deterministic, tick-accurate combat engine (32). Existing Brain, combat, PvM, quest and market tools are present, but their existence does not mean every roadmap capability is complete or verified.
+
+Do not describe an estimate as accurate unless its sources, limitations, deterministic tests and real-world comparisons have been added.

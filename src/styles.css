@@ -49,7 +49,7 @@ html[data-theme="dark"] .dropdownPanel{background:#202631;border-color:#3b4555;c
 .filterPanel select,.filterPanel input,.filterPanel button{position:relative;z-index:252}
 .drawerback{background:rgba(5,8,14,.84)!important;backdrop-filter:blur(10px)}
 .drawer{background:#1b2029!important;color:#eef2f7;border-color:#374151!important;box-shadow:0 0 80px rgba(139,92,246,.15),0 30px 90px rgba(0,0,0,.5)!important}
-html:not([data-theme="dark"]) .drawer{background:#262b34!important;color:#f4f6f8}
+html[data-theme="dark"] .drawer{background:#171c24!important;color:#f3f5f8}
 .drawer .chartbox,.drawer .detailgrid>div{background:#151a21!important;border-color:#343d4b!important;color:#eef2f7}
 .drawer .charthead small,.drawer .chartNote,.drawer .itemtitle p,.drawer .detailgrid span{color:#9da7b5}
 .drawer .rangeButtons button{background:#222936!important;color:#e9edf3;border-color:#3b4555!important}
@@ -1824,3 +1824,52 @@ html[data-theme="void"] .recommendLarge>button,html[data-theme="void"] .recommen
 html[data-theme="void"] .chartOptionsMenu,html[data-theme="void"] .chartOptionsMenu button,html[data-theme="void"] .chartOptionsMenu label{background:#101018!important;color:#f0f0fa!important;border-color:#343448!important}
 .chartOptionsMenu{max-height:min(70vh,520px)!important;overflow:auto!important;overscroll-behavior:contain!important}
 @media(max-width:800px) and (orientation:landscape){.fullDetail .chartTouch{height:190px!important;min-height:190px!important}.fullDetail .chartTouch .recharts-wrapper,.fullDetail .chartTouch .recharts-surface{height:190px!important;min-height:190px!important}.fullDetail .itemDNA{margin-top:10px!important}.fullDetail .itemFullHero h2{font-size:22px!important}}
+
+
+/* V57: targeted fixes from the annotated screenshots and functional audit. */
+html[data-theme="light"] .drawer,html:not([data-theme]) .drawer{background:#f7f8fa!important;color:#171b22!important;border-color:#dfe3ea!important}
+html[data-theme="comfort"] .drawer{background:#fbfaf7!important;color:#3f3b35!important;border-color:#ded8ce!important}
+html[data-theme="dark"] .drawer,html[data-theme="dark"] .fullDetail{background:#171c24!important;color:#f3f5f8!important;border-color:#343d4b!important}
+html[data-theme="aurora"] .drawer,html[data-theme="aurora"] .fullDetail{background:#121a25!important;color:#edf7ff!important;border-color:#334456!important}
+html[data-theme="void"] .drawer,html[data-theme="void"] .fullDetail{background:#0c0c12!important;color:#ededf8!important;border-color:#2d2d3d!important}
+html[data-theme="comfort"] .drawer .chartbox,html[data-theme="comfort"] .drawer .detailTileControls,html[data-theme="comfort"] .drawer .panelstats .stat{background:#fbfaf7!important;color:#3f3b35!important;border-color:#ded8ce!important}
+html[data-theme="dark"] .drawer .chartbox,html[data-theme="dark"] .drawer .detailTileControls,html[data-theme="dark"] .drawer .panelstats .stat{background:#171c24!important;color:#f3f5f8!important;border-color:#343d4b!important}
+html[data-theme="void"] .drawer .chartbox,html[data-theme="void"] .drawer .detailTileControls,html[data-theme="void"] .drawer .panelstats .stat,html[data-theme="void"] .drawer .itemtitle{background:#11111a!important;color:#ededf8!important;border-color:#303044!important}
+html[data-theme="void"] .quickCalcResult>div{background:#15151f!important;color:#ededf8!important;border-color:#343448!important}
+html[data-theme="void"] .quickCalcResult span,html[data-theme="void"] .quickCalcResult small{color:#b9b9cc!important}
+html[data-theme="void"] .quickCalcResultWide{background:#1a1830!important;border-color:#50447c!important}
+html[data-theme="comfort"] .quickCalcResult>div{background:#f8f5ef!important;color:#3f3b35!important;border-color:#ded8ce!important}
+html[data-theme="comfort"] .quickCalcResultWide{background:#eee8fb!important;border-color:#d4c8f1!important}
+html[data-theme="dark"] .quickCalcResult>div{background:#222935!important;color:#f3f5f8!important;border-color:#343d4b!important}
+html[data-theme="dark"] .quickCalcResultWide{background:#29243c!important;border-color:#6557a8!important}
+html[data-theme="aurora"] .quickCalcResult>div{background:#101f33!important;color:#edf7ff!important;border-color:#304a66!important}
+html[data-theme="aurora"] .quickCalcResultWide{background:#172842!important;border-color:#435c88!important}
+.brainCard .recommendRows{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:0!important;min-width:0!important;overflow:hidden!important;border:1px solid var(--line,#e2e5ea)!important;border-radius:10px!important;background:var(--surface,#fff)!important}
+.brainCard .recommendRows>button:not(.expandSignal){display:grid!important;grid-template-columns:28px minmax(0,1fr) 34px!important;align-items:center!important;gap:8px!important;width:100%!important;min-width:0!important;min-height:51px!important;padding:7px 9px!important;border:0!important;border-bottom:1px solid var(--line,#e2e5ea)!important;border-radius:0!important;background:transparent!important;color:inherit!important;text-align:left!important;box-shadow:none!important}
+.brainCard .recommendRows>button img{width:26px!important;height:26px!important;object-fit:contain!important}
+.brainCard .recommendRows>button span{display:block!important;min-width:0!important;overflow:hidden!important}
+.brainCard .recommendRows>button strong{display:block!important;font-size:11px!important;line-height:1.35!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+.brainCard .recommendRows>button small{display:block!important;margin-top:3px!important;color:var(--muted,#747b87)!important;font-size:9px!important;line-height:1.4!important;white-space:normal!important;overflow-wrap:anywhere!important}
+.brainCard .recommendRows>button b{font-size:10px!important;text-align:right!important;white-space:nowrap!important}
+.brainCard .recommendRows>button.expandSignal{display:flex!important;align-items:center!important;justify-content:center!important;gap:6px!important;min-height:36px!important;width:100%!important;padding:8px!important;border:0!important;background:var(--soft,#f5f6f8)!important;color:inherit!important;font-size:10px!important;font-weight:750!important}
+html[data-theme="void"] .brainCard .recommendRows{background:#11151d!important;border-color:#252d39!important}
+html[data-theme="void"] .brainCard .recommendRows>button:not(.expandSignal){background:transparent!important;color:#f2f5f9!important;border-color:#293342!important}
+html[data-theme="void"] .brainCard .recommendRows>button.expandSignal{background:#191c27!important;color:#f2f5f9!important}
+.weatherStats>span small{display:block!important;color:var(--muted,#747b87)!important;font-size:10px!important;font-weight:600!important;line-height:1.4!important;opacity:1!important}
+html[data-theme="void"] .weatherStats>span small{color:#d8d9e8!important}
+html[data-theme="void"] .brainCard .calcDisclaimer{color:#d8d9e8!important}
+/* The full-detail drawer must be opaque, above the page, and theme-consistent. */
+.fullDetailBack{z-index:1000!important;isolation:isolate!important}
+.fullDetailBack .fullDetail{isolation:isolate!important;position:relative!important;z-index:1001!important;background:var(--surface,#fff)!important;color:inherit!important;overflow-y:auto!important;overscroll-behavior:contain!important}
+html[data-theme="void"] .fullDetailBack{background:rgba(4,4,8,.78)!important}
+html[data-theme="dark"] .fullDetailBack{background:rgba(4,6,10,.82)!important}
+html[data-theme="comfort"] .fullDetailBack{background:rgba(50,44,35,.25)!important}
+html[data-theme="void"] .fullDetailBack .fullDetail{background:#0c0c12!important;color:#ededf8!important}
+html[data-theme="dark"] .fullDetailBack .fullDetail{background:#171c24!important;color:#f3f5f8!important}
+html[data-theme="comfort"] .fullDetailBack .fullDetail{background:#fbfaf7!important;color:#3f3b35!important}
+@media(max-width:700px){.brainCard .recommendRows>button:not(.expandSignal){grid-template-columns:26px minmax(0,1fr) 32px!important;padding:7px!important}.brainCard .recommendRows>button small{font-size:8px!important}.weatherStats{gap:8px!important}.weatherStats>span b{font-size:19px!important}}
+html:not([data-theme]) .drawerback,html[data-theme="light"] .drawerback{background:rgba(25,30,40,.24)!important;backdrop-filter:blur(5px)}
+html[data-theme="comfort"] .drawerback{background:rgba(50,44,35,.22)!important;backdrop-filter:blur(5px)}
+html[data-theme="dark"] .drawerback{background:rgba(4,6,10,.82)!important;backdrop-filter:blur(4px)}
+html[data-theme="aurora"] .drawerback{background:rgba(3,9,17,.82)!important;backdrop-filter:blur(4px)}
+html[data-theme="void"] .drawerback{background:rgba(4,4,8,.82)!important;backdrop-filter:blur(4px)}

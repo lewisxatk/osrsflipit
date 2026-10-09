@@ -1,13 +1,14 @@
-D1 WRITER CHANGE SUMMARY — V56
+D1 WRITER CHANGE SUMMARY — V57
 
-- Browser live price rendering remains on the RuneScape Wiki prices API proxy. D1 does not replace live prices.
-- The Worker cron wakes every minute for alert processing, but site-wide data jobs now check the market_sync timestamp first and return early until the 15-minute sync window is due.
-- D1 current-market cache is limited to 25 liquid items per pass.
-- Item mapping ingestion advances 25 records per pass, with conditional metadata upserts that avoid rewriting unchanged items.
-- Event detection is capped at 8 meaningful price-drop/crash rows per pass; hourly behavioural rows are capped at 30 liquid records per pass.
-- Rich OSRSBox and OSRS Wiki content syncs are gated to longer intervals.
-- Internal ingestion governor remains 7,000 estimated rows per UTC day. It is an application-side safety estimate, not Cloudflare's official usage metric.
-- Authenticated cloud sync skips unchanged saved data.
-- `/api/data/health` reports D1 table counts, the pause flag, last market-sync timestamp/age, metadata and the internal writer estimate.
-- Emergency stop affects scheduled OSRS site-wide data ingestion and manual `/api/data/sync`; it does not stop live price API reads, user/account writes or Discord alert cron.
-- Migrations 0001–0005 are retained; no tables are dropped and no saved data is deleted.
+- Live prices remain on the existing RuneScape Wiki price API proxy. D1 stores shared history and reference data; it does not replace live prices.
+- The Worker cron wakes every minute for Discord alert processing, but site-wide OSRS data jobs are gated to one market pass every 15 minutes.
+- The current-market intelligence cache now covers up to 150 high-volume items per successful pass (previously 25).
+- Item mapping advances by up to 100 records per pass (previously 25), with conditional metadata upserts that avoid rewriting unchanged item metadata.
+- Event detection remains capped at 8 price-drop/crash events per pass.
+- Hourly behaviour and overnight price history cover up to 100 high-volume items per UK-local hour. A new `market_price_history` table stores the hourly price and volume observations needed for buy-at-one-hour / sell-at-a-later-hour comparisons.
+- New migration: `migrations/0006_overnight_price_history.sql`. Apply it after the Worker is deployed; GitHub/Cloudflare asset deployment does not itself apply D1 migrations.
+- The internal ingestion governor is now 50,000 estimated rows per UTC day (previously 7,000). It remains a guardrail estimate, not Cloudflare's authoritative `rows_written` figure. Check Cloudflare Dashboard → D1 → `osrshub-accounts` → Metrics for actual usage.
+- `market_price_history` is retained for 30 days. The overnight monitor uses a 14-day lookback and needs at least two samples for each hour and coverage across six of eight UK overnight hours; expect at least two days of collection before useful results appear.
+- `/api/data/health` reports D1 table counts, pause state, last market-sync timestamp/age and the internal writer estimate, including the new hourly price-history count.
+- Emergency stop affects scheduled OSRS site-wide data ingestion and manual `/api/data/sync`; it does not stop live price API reads, user/account writes or the Discord alert cron.
+- Migrations 0001–0005 are retained; 0006 adds a table and indexes only. No existing table is dropped or cleared.

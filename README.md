@@ -1,6 +1,6 @@
-# OSRS Hub V56.0 — reliability, theme, analytics and D1 diagnostics
+# OSRS Hub V57.0 — market coverage, overnight history and functional fixes
 
-This is a clean source ZIP for the OSRS Hub Worker + Vite React app. Discord/OAuth handler logic has not intentionally been changed; the V56 changes are focused on UI interaction, theme persistence, and site-wide data health diagnostics.
+This is a clean source ZIP for the OSRS Hub Worker + Vite React app. Discord/OAuth handler logic has not intentionally been changed; V57 builds on V56 with historical movement fixes, retryable Loadout feeds, theme-safe panels and a dedicated hourly price-history dataset for overnight analysis.
 
 ## First: important files
 
@@ -37,10 +37,10 @@ The ZIP intentionally excludes `node_modules/`, `.wrangler/`, `.git/`, `dist/`, 
 
 - Live GE prices remain fed by the existing prices API and frontend cache; D1 is for durable market history, shared site intelligence and OSRS reference data.
 - Scheduled market sync is gated to every 15 minutes even though the Worker cron wakes every minute. It incrementally updates a small liquid market sample and a small mapping chunk; richer catalogue sources are gated to a longer interval.
-- The internal writer governor is set to 7,000 estimated rows/day as a conservative app-side brake. It is not Cloudflare billing telemetry and its count can differ from real rows written.
+- The internal writer governor is set to 50,000 estimated rows/day as a conservative app-side brake. It is not Cloudflare billing telemetry and its count can differ from real rows written.
 - D1 stores shared site-wide data. Account/auth state remains a separate purpose; the ingestion emergency stop does not disable account writes.
 
-## V56 fixes
+## V56 foundation
 
 - Fixed theme loading to accept both legacy raw-string localStorage values and JSON-encoded theme values; theme choice is saved locally under both known keys.
 - Fixed the routed full item page from inheriting the fixed modal overlay / body scroll lock classes, which caused the mobile freeze and graph clipping.
@@ -56,3 +56,8 @@ The ZIP intentionally excludes `node_modules/`, `.wrangler/`, `.git/`, `dist/`, 
 ## Honest limitations
 
 A successful ZIP/Worker syntax check is not the same as a full frontend build or browser test. This package must still pass `npm install` and `npm run build` in your Cloudflare/GitHub environment, followed by a real desktop/mobile smoke test. Loadout is still a bonus/requirements-based gear helper and a transparent approximate combat model; it is **not** a complete tick-accurate OSRS DPS simulator. “Knows everything” requires a staged, sourced knowledge ingestion plan rather than claiming one build contains all OSRS mechanics.
+
+
+## V57 update and overnight monitor
+
+Read `TUTORIAL-V57-OVERNIGHT-DATA.md` before deploying V57. It explains the new D1 migration, expected overnight-data warm-up, and the difference between the internal write estimate and Cloudflare Metrics.
