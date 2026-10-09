@@ -1,0 +1,11 @@
+D1 WRITER CHANGE SUMMARY (V54)
+
+- Browser live price rendering remains based on the RuneScape Wiki price API proxy. Market rows in D1 are not the source used to render the live prices.
+- Scheduled market sync now runs at most hourly instead of every 10 minutes.
+- D1 current-market cache is limited to 30 high-activity items instead of 45.
+- Mapping ingestion writes a maximum of 150 candidate item records per scheduled pass, instead of 2,500.
+- Item metadata upserts include a WHERE-different check, so unchanged item records do not get updated just to refresh updated_at.
+- The internal writer estimate stops market/history/catalog ingestion at 7,000 estimated rows per UTC day, leaving headroom against the 100,000-row Free limit. This is a conservative application-level governor, not Cloudflare's official usage counter.
+- Authenticated cloud sync compares the serialized saved data to the existing row and returns unchanged without issuing a D1 write when identical.
+- D1 migrations 0001-0004 remain intact; 0005 inserts default writer configuration metadata idempotently. No tables are dropped and no saved data is deleted.
+- Discord integration function remains byte-for-byte identical to the V53 base. Existing Discord alert events may still update user_data when their alert state actually changes.

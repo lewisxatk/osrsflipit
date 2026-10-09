@@ -1,0 +1,27 @@
+OSRS HUB V54 UPDATE ORDER
+
+IMPORTANT: Live market prices shown across the site are fetched from the RuneScape Wiki price API through the Worker proxy. D1 stores history, market signals, account saves and OSRS data ingestion; it is not the live price source.
+
+A) IF CLOUDFLARE AUTO-DEPLOYS FROM GITHUB (recommended if that is how your project is configured)
+1. Download and extract the V54 ZIP.
+2. In your existing GitHub repository, replace the old project files with the files from the ZIP. Upload src/ and migrations/ as folders and replace worker.js, package.json, vite.config.js, wrangler.jsonc, index.html, README.md, DATA_PLATFORM.md, and the BAT/TXT files. Include migrations/0005_d1_safe_writer.sql. Keep an existing package-lock.json if your repository already has one.
+3. Do NOT upload node_modules/, .wrangler/, .git/, .env or local secrets. Do not delete src/ or migrations/. Do not upload the ZIP itself. The Vite build generates ./site; Cloudflare's configured build should generate it during the build.
+4. Commit/push to GitHub and let the Cloudflare build start.
+5. Double-click 01-APPLY-DATABASE.bat from the extracted project root. It installs dependencies and applies only pending remote D1 migrations; it does not deploy the Worker a second time. If your Cloudflare pipeline is not automatic, use the manual route below.
+6. Wait for Cloudflare's build to complete, then double-click 02-CHECK-D1-USAGE.bat.
+
+B) IF YOU DEPLOY MANUALLY FROM YOUR PC
+1. Upload/commit the V54 source to GitHub as above.
+2. Double-click D1-SAFE-UPDATE.bat. It installs dependencies, applies pending D1 migrations, builds, and deploys Worker + site in one process.
+3. Double-click 02-CHECK-D1-USAGE.bat after it succeeds.
+
+Never run both manual deploy and an automatic deploy just to do the same release; choose the deployment route that matches your Cloudflare setup. Do not paste secrets into GitHub.
+
+D1 WRITER CHANGES
+- Scheduled market sync now runs at most hourly rather than every 10 minutes.
+- D1 market cache limited to 30 liquid items; item mapping processes at most 150 records per hourly pass.
+- Item metadata upserts skip unchanged records.
+- Internal ingestion governor is 7,000 estimated rows per UTC day, deliberately leaving headroom below the Free-tier cap. It is an application estimate, not Cloudflare's billing metric.
+- Cloud sync skips writes when saved JSON is unchanged.
+- Migration 0005 inserts governor configuration idempotently; migrations 0001-0004 remain intact. No tables are dropped and no saved data is deleted.
+- Discord integration function remains byte-for-byte identical to the V53 base.

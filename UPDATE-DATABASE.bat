@@ -1,5 +1,3 @@
 @echo off
-setlocal
-cd /d "%~dp0"
-call "%~dp0D1-SAFE-UPDATE.bat"
+call "%~dp0\01-UPDATE-AND-DEPLOY.bat"
 exit /b %errorlevel%
