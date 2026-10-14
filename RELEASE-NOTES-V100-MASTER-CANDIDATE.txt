@@ -1,0 +1,17 @@
+OSRS Hub V100 — master release candidate (based on V57)
+
+This is a safe, separate source candidate, not a claim that all 390 roadmap items are complete.
+
+Code change in this pass:
+- Added a conditional WHERE clause to the market_current upsert. Existing rows are only updated when one of the market/static fields actually changes; unchanged rows are no longer written merely to refresh last_seen.
+- Preserved the V57 market cadence (15 minutes), 150-item current cache and 50,000/day internal estimated-write limit. This keeps the prior approximately 14,400/day attempted-cache-write budget rather than lowering it and sacrificing data coverage.
+- No schema migration added.
+- Discord/auth code and existing build-check scripts were not edited by this pass.
+
+Checks:
+- node --check worker.js: PASS
+- Full Vite production build: NOT VERIFIED; npm dependency installation timed out in the working environment.
+- ZIP integrity: checked after packaging.
+- Live Worker, browser/mobile, and D1 metrics: NOT RUN.
+
+Read MASTER-RELEASE-TRACKER-V100.md and TUTORIAL-V100-MASTER-CANDIDATE.md before testing.

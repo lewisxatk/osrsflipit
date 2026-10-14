@@ -1,4 +1,6 @@
-# OSRS Hub V57.0 — market coverage, overnight history and functional fixes
+# OSRS Hub V100 — master release candidate (V57 baseline)
+
+This is a separate master-release candidate based on V57.0, not a claim that all 390 roadmap points are implemented. See `MASTER-RELEASE-TRACKER-V100.md` for verified changes and open test gates. The original 390-item list was not present in the V57 source ZIP, which includes a 40-item roadmap; the tracker records that gap rather than inventing item descriptions.
 
 This is a clean source ZIP for the OSRS Hub Worker + Vite React app. Discord/OAuth handler logic has not intentionally been changed; V57 builds on V56 with historical movement fixes, retryable Loadout feeds, theme-safe panels and a dedicated hourly price-history dataset for overnight analysis.
 
