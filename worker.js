@@ -260,7 +260,41 @@ async function dataApi(request,env){
  if(u.pathname==='/api/data/health'){
   const names=['market_current','market_snapshots','market_events','market_hourly_stats','market_price_history','osrs_item_data','osrs_monster_data','osrs_prayer_data','osrs_items','osrs_npcs','osrs_catalog','osrs_equipment_catalog','osrs_drop_tables','osrs_content_catalog'];
   const r=await env.DB.batch(names.map(t=>env.DB.prepare(`SELECT COUNT(*) c FROM ${t}`)));
-  const out={ok:true,source:DATA_SOURCE};names.forEach((n,i)=>out[n.replaceAll('_','')]=+(r[i]?.results?.[0]?.c||0));const budgetRow=await env.DB.prepare("SELECT value FROM data_meta WHERE key='d1_write_budget'").first().catch(()=>null);let budget={day:utcDayKey(),writes:0};try{if(budgetRow?.value)budget=JSON.parse(budgetRow.value)}catch{}out.d1Writer={day:budget.day,writes:Number(budget.writes||0),softLimit:D1_SOFT_WRITE_LIMIT,remaining:Math.max(0,D1_SOFT_WRITE_LIMIT-Number(budget.writes||0)),percent:Math.min(100,Math.round(Number(budget.writes||0)/D1_SOFT_WRITE_LIMIT*100))};const metaRows=await env.DB.prepare("SELECT key,value,updated_at FROM data_meta WHERE key IN ('data_ingestion_paused','market_sync','mapping_cursor','wiki_content_gate','rich_sync_gate','d1_write_budget')").all().catch(()=>({results:[]}));out.ingestionPaused=(metaRows.results||[]).some(x=>x.key==='data_ingestion_paused'&&String(x.value)==='1');out.dataMeta=Object.fromEntries((metaRows.results||[]).map(x=>[x.key,{value:x.value,updatedAt:Number(x.updated_at||0)}]));out.lastMarketSyncAt=Number(out.dataMeta.market_sync?.updatedAt||0)||null;out.marketSyncAgeMinutes=out.lastMarketSyncAt?Math.round((Date.now()-out.lastMarketSyncAt)/60000):null;out.marketItems=out.marketcurrent||0;out.snapshots=out.marketsnapshots||0;out.items=out.osrsitemdata||0;out.monsters=out.osrsmonsterdata||0;out.prayers=out.osrsprayerdata||0;out.itemsDatabase=out.osrsitems||0;out.npcs=out.osrsnpcs||0;out.checks={databaseConnected:true,marketCachePresent:(out.marketcurrent||0)>0,marketSyncSeen:!!out.lastMarketSyncAt,ingestionPaused:out.ingestionPaused,writerBudgetUnderSoftLimit:Number(budget.writes||0)<=D1_SOFT_WRITE_LIMIT};return json(out)
+  const out={ok:true,source:DATA_SOURCE};names.forEach((n,i)=>out[n.replaceAll('_','')]=+(r[i]?.results?.[0]?.c||0));const budgetRow=await env.DB.prepare("SELECT value FROM data_meta WHERE key='d1_write_budget'").first().catch(()=>null);let budget={day:utcDayKey(),writes:0};try{if(budgetRow?.value)budget=JSON.parse(budgetRow.value)}catch{}out.d1Writer={day:budget.day,writes:Number(budget.writes||0),softLimit:D1_SOFT_WRITE_LIMIT,remaining:Math.max(0,D1_SOFT_WRITE_LIMIT-Number(budget.writes||0)),percent:Math.min(100,Math.round(Number(budget.writes||0)/D1_SOFT_WRITE_LIMIT*100)),kind:'internal-estimate',authoritative:false,note:'Compare with Cloudflare D1 Rows written; this counter estimates attempted row operations and is not the platform billing metric.'};const metaRows=await env.DB.prepare("SELECT key,value,updated_at FROM data_meta WHERE key IN ('data_ingestion_paused','market_sync','mapping_cursor','wiki_content_gate','rich_sync_gate','d1_write_budget')").all().catch(()=>({results:[]}));out.ingestionPaused=(metaRows.results||[]).some(x=>x.key==='data_ingestion_paused'&&String(x.value)==='1');out.dataMeta=Object.fromEntries((metaRows.results||[]).map(x=>[x.key,{value:x.value,updatedAt:Number(x.updated_at||0)}]));out.lastMarketSyncAt=Number(out.dataMeta.market_sync?.updatedAt||0)||null;out.marketSyncAgeMinutes=out.lastMarketSyncAt?Math.round((Date.now()-out.lastMarketSyncAt)/60000):null;out.marketItems=out.marketcurrent||0;out.snapshots=out.marketsnapshots||0;out.items=out.osrsitemdata||0;out.monsters=out.osrsmonsterdata||0;out.prayers=out.osrsprayerdata||0;out.itemsDatabase=out.osrsitems||0;out.npcs=out.osrsnpcs||0;out.checks={databaseConnected:true,marketCachePresent:(out.marketcurrent||0)>0,marketSyncSeen:!!out.lastMarketSyncAt,ingestionPaused:out.ingestionPaused,writerBudgetUnderSoftLimit:Number(budget.writes||0)<=D1_SOFT_WRITE_LIMIT};return json(out)
+ }
+ if(u.pathname==='/api/data/movement'){
+  // Read-only movement analysis from the compact hourly history already collected by the market sync.
+  // This endpoint performs no writes and deliberately reports coverage so sparse histories are not presented as reliable trends.
+  const windowKey=String(u.searchParams.get('window')||'24h');
+  const windowMs=windowKey==='7d'?7*86400000:24*3600000;
+  const now=Date.now(),start=now-windowMs,expected=Math.max(2,Math.floor(windowMs/3600000));
+  const result=await env.DB.prepare(`WITH ranked AS (
+    SELECT item_id,price,volume,captured_at,
+      ROW_NUMBER() OVER (PARTITION BY item_id ORDER BY captured_at ASC) AS rn_first,
+      ROW_NUMBER() OVER (PARTITION BY item_id ORDER BY captured_at DESC) AS rn_last,
+      COUNT(*) OVER (PARTITION BY item_id) AS sample_count
+    FROM market_price_history
+    WHERE captured_at>=?1 AND captured_at<=?2
+  )
+  SELECT r.item_id,
+    MAX(CASE WHEN r.rn_first=1 THEN r.price END) AS start_price,
+    MAX(CASE WHEN r.rn_last=1 THEN r.price END) AS end_price,
+    MAX(CASE WHEN r.rn_first=1 THEN r.captured_at END) AS start_at,
+    MAX(CASE WHEN r.rn_last=1 THEN r.captured_at END) AS end_at,
+    MAX(r.sample_count) AS sample_count,
+    AVG(r.volume) AS avg_volume,
+    m.name,m.icon
+  FROM ranked r LEFT JOIN market_current m ON m.item_id=r.item_id
+  GROUP BY r.item_id,m.name,m.icon
+  HAVING MAX(r.sample_count)>=2
+  ORDER BY ABS((MAX(CASE WHEN r.rn_last=1 THEN r.price END)-MAX(CASE WHEN r.rn_first=1 THEN r.price END))*1.0/NULLIF(MAX(CASE WHEN r.rn_first=1 THEN r.price END),0)) DESC
+  LIMIT 300`).bind(start,now).all().catch(()=>({results:[]}));
+  const rows=(result.results||[]).map(x=>{
+    const first=Number(x.start_price||0),last=Number(x.end_price||0),samples=Number(x.sample_count||0),elapsed=Math.max(0,(Number(x.end_at||0)-Number(x.start_at||0))/3600000);
+    const completeness=Math.max(0,Math.min(100,Math.round(samples/expected*100)));
+    return {itemId:Number(x.item_id),name:x.name||String(x.item_id),icon:x.icon||null,startPrice:first,endPrice:last,startAt:Number(x.start_at||0),endAt:Number(x.end_at||0),samples,averageVolume:Math.round(Number(x.avg_volume||0)),changeGp:last-first,changePct:first?(last-first)/first*100:0,elapsedHours:Math.round(elapsed*10)/10,expectedSamples:expected,completeness,quality:completeness>=75?'good':completeness>=35?'partial':'sparse'};
+  }).filter(x=>x.startPrice>0&&x.endPrice>0);
+  return json({ok:true,window:windowKey,source:'OSRS Hub stored hourly market observations',generatedAt:now,historyRows:rows.length,results:rows,notice:'Movement compares the earliest and latest stored observations in the selected window. Coverage is not a fill guarantee; sparse histories are labelled.'},200,{'Cache-Control':'public, max-age=60'});
  }
  if(u.pathname==='/api/data/signals'){
   const minVol=Math.max(0,Number(u.searchParams.get('minVolume')||250)),minDrop=Math.max(1,Number(u.searchParams.get('minDropPct')||8)),minGp=Math.max(0,Number(u.searchParams.get('minDropGp')||100)),minPrice=Math.max(0,Number(u.searchParams.get('minPrice')||100)),crash=Math.max(1,Number(u.searchParams.get('crashHourPct')||6));

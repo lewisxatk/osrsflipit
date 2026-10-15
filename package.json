@@ -8,7 +8,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "deploy": "npm run build && npx wrangler deploy --config wrangler.jsonc",
-    "db:migrate": "wrangler d1 migrations apply osrshub-accounts --remote"
+    "db:migrate": "wrangler d1 migrations apply osrshub-accounts --remote",
+    "test:worker": "node --test tests/*.test.mjs"
   },
   "dependencies": {
     "lucide-react": "^0.468.0",
