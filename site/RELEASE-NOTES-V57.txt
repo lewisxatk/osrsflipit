@@ -1,0 +1,24 @@
+OSRS HUB V57 — SCREENSHOT, LOADOUT, HISTORICAL MOVEMENT AND OVERNIGHT DATA
+
+Based on V56.0. Existing Discord integration and existing build-check utilities are unchanged.
+
+FRONTEND
+- Item analytics drawer and full-detail surfaces are explicitly themed across Paper, Comfort, Obsidian, Aurora and Void; Void no longer inherits the generic non-dark white drawer override.
+- Quick Profit Calculator result tiles now use theme-aware colours instead of white tiles in Void.
+- Recommended Flips rows have a consistent grid, bounded text and readable metadata.
+- Market Weather percentages and their labels are separated into distinct text elements with readable contrast.
+- 24h Rising/Falling now uses the historical timeseries endpoint, like the longer ranges; it no longer ranks the current buy/sell spread as daily movement. The view still depends on the history returned by the external price API.
+- Loadout equipment normalization accepts arrays and keyed/nested payloads. Failed slot requests are retryable, and Auto-build retries empty/failed feeds instead of treating them as successfully loaded.
+
+DATA PLATFORM
+- Current high-volume cache: 25 → 150 items per market sync.
+- Item mapping batch: 25 → 100 records per successful sync.
+- Hourly behaviour/price samples: up to 100 high-volume items per UK-local hour, selected by volume.
+- Added migrations/0006_overnight_price_history.sql and market_price_history table. The Overnight Monitor compares averaged observed prices at an earlier overnight hour and a later hour, subtracts the current 2% tax model, and reports estimated net GP/item and percentage.
+- New history is prospective only; allow at least two days of samples before expecting useful overnight candidates. Retention is 30 days.
+- Internal estimated-write governor: 7,000 → 50,000 rows/day. This is a safety ceiling, not Cloudflare's authoritative rows_written count. Check Cloudflare D1 Metrics.
+
+IMPORTANT LIMITATIONS
+- The overnight signal compares averages across historical days; it is not proof that a buy and sell order would have filled at those prices.
+- Loadout DPS remains a simplified estimate, not a tick-accurate combat simulator.
+- This package was not tested against the live Cloudflare account or a real browser in this environment. Run the existing local build check and verify D1 health after deployment.

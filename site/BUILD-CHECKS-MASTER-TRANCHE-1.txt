@@ -1,0 +1,10 @@
+OSRS Hub master roadmap tranche 1 — build checks
+
+PASS: `node --check worker.js`
+PASS: ZIP/source files present at packaging time
+PASS: Discord/auth block before the data-platform marker is byte-identical to V57
+PASS: Existing V57 build-check and D1 safety BAT scripts are byte-identical
+NOT VERIFIED: `npm run build` — npm install timed out in this environment, no node_modules were available
+NOT VERIFIED: live D1 execution of `/api/data/movement`, production deployment, browser/mobile regression, and authoritative Cloudflare Rows written
+
+Run `05-MASTER-TRANCHE-CHECKS.bat` on a machine with Node.js and working npm network access before deployment.

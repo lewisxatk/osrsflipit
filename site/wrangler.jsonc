@@ -1,0 +1,26 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "osrsflipit",
+  "main": "worker.js",
+  "compatibility_date": "2026-09-15",
+  "keep_vars": true,
+  "vars": {
+    "DISCORD_CLIENT_ID": "1549203891449626748",
+    "DISCORD_REDIRECT_URI": "https://osrsflipit.prices-app.workers.dev/api/auth/callback",
+    "PUBLIC_ORIGIN": "https://osrsflipit.prices-app.workers.dev"
+  },
+  "triggers": { "crons": ["* * * * *"] },
+  "assets": {
+    "directory": "./site",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*"]
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "osrshub-accounts",
+      "database_id": "fa4e3c64-2267-4e2e-a378-11dc0011be3c"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+OSRS Hub master roadmap — tranche 1
+
+Added:
+- GET /api/data/movement?window=24h|7d, using stored hourly history and returning earliest/latest price, timestamps, sample count, elapsed hours, coverage and quality labels.
+- Explicit internal-estimate metadata on /api/data/health d1Writer output. It now warns that Cloudflare's actual Rows written metric is authoritative.
+- Master 390-point tracker, setup tutorial and build-check report.
+
+Not changed:
+- Discord integration/auth handler block.
+- Existing build-check BAT scripts.
+- Database schema (no migration required).
+- Existing Movers UI; new endpoint is not wired into it until it can be validated against real D1 history.
+
+Validation:
+- Worker syntax check: run `node --check worker.js`.
+- Full Vite build: not yet verified in this environment; npm dependency install timed out.
+- Live D1 endpoint query and real Cloudflare daily rows-written metric: not verified.
+
+This is a first implementation tranche, not the completed 390-point roadmap.
