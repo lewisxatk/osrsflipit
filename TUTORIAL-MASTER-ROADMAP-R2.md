@@ -9,7 +9,7 @@ This package advances the 390-point roadmap but is **not yet the final completed
 - If the stored-history endpoint is unavailable or returns no rows, Movers falls back to the existing public timeseries approach.
 - The endpoint remains read-only. Its output describes observed prices and does not guarantee trade fills.
 - Added two Node built-in tests for movement calculation, 7-day request handling, and no writes.
-- The health endpoint marks the app's write counter as an internal estimate, not Cloudflare's authoritative Rows written metric.
+- The health endpoint marks the app's write counter as an internal estimate, not Cloudflare's authoritative Rows written metric. The Worker-enforced estimate ceiling is now 25,000/day; this is a guardrail, not a promise of exact Cloudflare usage. Site-wide market collection is gated to once per 30 minutes (live prices still use the existing price API) to reserve budget for hourly history.
 
 ## Local checks
 1. Extract this ZIP to a new folder, separate from the current known-good V100 copy.
@@ -25,7 +25,7 @@ If `npm install` fails due to network access, the full Vite build has not been v
 - Verify `/api/data/movement?window=24h` and `/api/data/movement?window=7d` against the deployed D1 database.
 - Confirm Movers shows sample counts and coverage for stored-history rows and falls back cleanly if no history exists.
 - Check Cloudflare D1 Rows written before and after deployment. The internal app counter is not authoritative.
-- Verify daily rows written remains under 50,000; target the usual ~14,000/day where practical.
+- Verify daily rows written remains under the 25,000 internal estimate ceiling; aim for the existing ~14,000/day where practical.
 - Run the existing Discord smoke tests as regression checks; Discord code was not intentionally changed.
 - Check desktop and iPhone layouts and the existing major pages.
 

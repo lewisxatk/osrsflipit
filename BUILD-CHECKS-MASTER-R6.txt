@@ -1,0 +1,18 @@
+OSRS Hub R6 working candidate — build checks
+Date: 2026-10-15
+
+PASS
+- `node --check worker.js`
+- `node --check tests/roadmap-next-stages.test.mjs`
+- TypeScript transpile parser on `src/main.jsx` with JSX enabled: no syntax diagnostics. This is a parser check, not a Vite build.
+- `npm run test:worker`: 9 tests passed, 0 failed (includes 8 existing Worker tests and 1 source-level UI guard).
+- No database migration was added.
+- `worker.js` and existing `.bat` scripts were not edited in this tranche.
+
+NOT VERIFIED
+- `npm run build`: dependency installation (`npm install --no-save --package-lock=false --ignore-scripts --no-audit --no-fund`) timed out; `vite` is not available in this environment.
+- Browser visual testing on desktop / iPhone, including route refresh, chart interactions and mobile landscape.
+- Cloudflare preview deployment, external-link availability, live API history and actual D1 Rows written metrics.
+- Discord test notification and real item-alert regression. Discord integration was intentionally left untouched and must be tested separately after deployment.
+
+Release status: WORKING CANDIDATE ONLY. Do not treat this as production-approved or as completion of all 390 roadmap points.

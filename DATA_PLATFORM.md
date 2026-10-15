@@ -24,9 +24,9 @@ Numeric OSRS item IDs are canonical across market, analytics, watchlists, alerts
 - `osrs_intelligence_events` — cross-domain signal foundation.
 
 ## Ingestion and write budget
-The Worker cron wakes every minute to support alert processing, but site-wide OSRS data jobs check the market sync timestamp and run at most once every 15 minutes. A V57 market pass updates up to 150 current-market rows and advances 100 item-mapping records. Event rows are capped at 8 per pass; hourly behaviour and price history cover up to 100 high-volume items once per UK-local hour. Snapshots are hourly. Rich OSRSBox and wiki syncs are gated to longer intervals.
+The Worker cron wakes every minute to support alert processing, but site-wide OSRS data jobs check the market sync timestamp and run at most once every 30 minutes. A V57 market pass updates up to 150 current-market rows and advances 100 item-mapping records. Event rows are capped at 8 per pass; hourly behaviour and price history cover up to 100 high-volume items once per UK-local hour. Snapshots are hourly. Rich OSRSBox and wiki syncs are gated to longer intervals.
 
-The internal D1 write governor is 50,000 estimated rows per UTC day. It is a conservative app-side brake, not Cloudflare billing telemetry. The check script reads internal metadata and the live health API; Cloudflare Dashboard → D1 → `osrshub-accounts` → Metrics is authoritative for actual `rows_written`.
+The internal D1 write governor is 25,000 estimated rows per UTC day. It is a conservative app-side brake, not Cloudflare billing telemetry. The check script reads internal metadata and the live health API; Cloudflare Dashboard → D1 → `osrshub-accounts` → Metrics is authoritative for actual `rows_written`.
 
 ## Emergency controls
 - `00-EMERGENCY-STOP-DATA.bat` sets `data_ingestion_paused=1`.
@@ -40,8 +40,8 @@ The UI keeps its live price feed separate from D1. D1 provides history, intellig
 
 ## V57 market coverage and overnight history
 
-- The live GE API remains the live-price source. D1 now keeps a bounded cache of the top 150 items by observed 24-hour volume and advances the static item mapping by 100 records per successful 15-minute pass.
+- The live GE API remains the live-price source. D1 now keeps a bounded cache of the top 150 items by observed 24-hour volume and advances the static item mapping by 100 records per successful 30-minute pass.
 - Hourly behaviour sampling covers up to 100 high-volume items per UK-local hour. This creates a dedicated `market_price_history` record for each sampled item/hour, with price, volume, source, timestamp and UK local hour.
 - The Overnight Monitor now compares average observed prices at an earlier overnight hour with average observed prices at a later overnight hour, then subtracts the existing 2% GE tax model. It requires at least two observations for each hour and coverage across six of the eight overnight hours in the last 14 days. It is a historical pattern signal, not a guarantee that an order will fill.
 - New table: `market_price_history`, added by migration `0006_overnight_price_history.sql`. Rows are retained for 30 days. Apply pending D1 migrations after deploying V57; until this migration is applied, the new history endpoint cannot populate.
-- The internal daily write governor is now set to 50,000 estimated rows. This is a safety ceiling, not the Cloudflare quota or an exact report of rows written. Verify actual usage under Cloudflare Dashboard → D1 → `osrshub-accounts` → Metrics.
+- The internal daily write governor is now set to 25,000 estimated rows. This is a safety ceiling, not the Cloudflare quota or an exact report of rows written. Verify actual usage under Cloudflare Dashboard → D1 → `osrshub-accounts` → Metrics.

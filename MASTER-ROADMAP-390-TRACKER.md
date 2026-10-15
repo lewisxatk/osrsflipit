@@ -2,7 +2,7 @@
 
 Last updated: 2026-10-14
 Baseline: V100 candidate (derived from V57 source)
-Working build: R2 movement + multi-graph comparison (not the completed 390-point release)
+Working build: R2 + R3–R5 implementation tranche (not the completed 390-point release)
 
 This tracker is deliberately honest: a roadmap entry is not complete merely because it was discussed, documented, or existed in an earlier build. The complete numbered scope is in the user's approved “OSRS Hub: the ultimate upgrade roadmap” message in the conversation.
 
@@ -16,7 +16,7 @@ This tracker is deliberately honest: a roadmap entry is not complete merely beca
 
 | Roadmap points | Area | Status | Notes |
 |---|---|---|---|
-| 1–10 | Shared data platform, write ledger, history, recovery, item data, health, migrations, release gate, shared calculations, provenance | Partial / needs implementation | Existing data platform and health endpoint inherited; write counter is an internal estimate, not authoritative Cloudflare usage. |
+| 1–10 | Shared data platform, write ledger, history, recovery, item data, health, migrations, release gate, shared calculations, provenance | Partial / needs implementation | Existing data platform and health endpoint inherited; write counter is an internal estimate, not authoritative Cloudflare usage. The Worker hard ceiling is now 25,000 estimated writes/day; the 14k/day target still requires live Cloudflare Metrics validation. |
 | 11–36 | Market and Screener | Existing / needs validation | Screener, movers and item charting exist in baseline; custom formula builder, reliable coverage labels, exports and other points require individual audits. |
 | 37–62 | Smart Flip Finder | Existing / needs implementation | Bankroll and strategy features exist in part; allocation, calibrated confidence, replay and paper trading are not confirmed complete. |
 | 63–74 | Overnight intelligence | Existing / needs validation | Overnight analysis exists; its quality depends on history coverage and must not imply guaranteed fills. |
@@ -69,10 +69,10 @@ These checkboxes track work that has actually been added and checked. They do **
 - [x] Add mobile single-column layout for the four comparison charts.
 
 ### Still open — do not tick as complete yet
-- [ ] Full frontend production build (`npm run build`) verified with dependencies installed.
+- [ ] Full frontend production build (`npm run build`) verified with dependencies installed. Dependency installation timed out in this environment.
 - [ ] Visually verify multi-graph chart rendering, tooltip behaviour and theme colours in desktop/iPhone browsers.
 - [ ] Live deployed Worker endpoint tested against real D1 data.
-- [ ] Cloudflare D1 Rows written checked after deployment and daily budget confirmed under 50,000.
+- [ ] Cloudflare D1 Rows written checked after deployment and daily budget confirmed under 25,000 actual rows/day where practical.
 - [ ] Browser regression on desktop and iPhone, including Movers fallback and loading/error states.
 - [ ] Full Discord test notification and real item-alert regression test.
 - [ ] Audit and implementation of the remaining roadmap points, phases R1–R7.
@@ -80,3 +80,62 @@ These checkboxes track work that has actually been added and checked. They do **
 ### Release gate
 **Current state: R2 working build with multi-graph comparison added, not release-approved.** Keep V100 as the known-good baseline until the open checks above pass. No database migration is required for the movement endpoint as currently implemented. Do not change Discord integration or existing safety/build-check BAT scripts.
 
+
+
+## R3–R5 implementation tranche (2026-10-15)
+
+This tranche adds working foundations across the OSRS Brain, evidence-backed market intelligence, trading workflow, and account-owned loadout portability. It does not mark entire roadmap phases complete; each numbered requirement still needs point-by-point implementation and validation.
+
+### Implemented in source
+- Added read-only `GET /api/data/knowledge?q=...&type=...&limit=...` catalogue search. It bounds query length and result count, restricts entity types, returns a small summary rather than raw JSON, and handles an unavailable catalogue without pretending results exist.
+- Added read-only `GET /api/data/opportunity-evidence` to join the existing market cache, hourly observations, and recorded market events. It reports sample coverage, last cache age and event count, explicitly distinguishes sparse history, and does not produce a future-price prediction.
+- Added the OSRS Brain catalogue search and Opportunity Evidence panel to the existing Intelligence workspace, with loading/error/empty states and narrow-screen layout.
+- Added Market and Screener CSV export using the current result set and selected columns.
+- Added an adjustable unallocated bankroll reserve (0–50%, with 20% default) to Smart Flip Finder; candidate sizing now uses available bankroll after the reserve.
+- Added Loadout JSON export/import and copy-summary action. Import is validated and restricted to known equipment slots and bounded stat/target ranges; the existing local saved-build list is now included in cloud backup/sync keys.
+- Added four Worker tests covering the new endpoints, type validation, HTTP method handling, evidence coverage, and the no-write expectation.
+- Added a tutorial, release notes and build-check record for this tranche. No migration was added and the D1 write ceiling/background schedule were not increased.
+
+### Validation state
+- `node --check worker.js`: passed.
+- `npm run test:worker`: 8 tests passed in the working environment.
+- Frontend JSX syntax: checked with the globally installed TypeScript parser/transpiler; this is a syntax check, not a Vite production build.
+- Full `npm run build`: not verified because dependency installation timed out and the Vite/plugin packages are not installed in this environment.
+- Live Cloudflare endpoints, actual D1 rows written, desktop/iPhone browser behaviour, and live OSRS catalogue contents still require post-deploy verification.
+- Discord/auth integration and all existing `.bat` safety/build scripts were not modified. No new database writes are scheduled by this tranche; new API routes are read-only.
+
+### Point ledger for this tranche
+- [x] Implement a bounded, read-only searchable OSRS catalogue endpoint and UI.
+- [x] Add evidence coverage/provenance view for stored market observations and events.
+- [x] Add CSV export for Market/Screener result sets.
+- [x] Add bankroll reserve to Smart Flip Finder sizing.
+- [x] Add validated loadout export/import and copyable setup summary.
+- [x] Add automated tests for new read-only endpoints.
+- [ ] Full R3 OSRS Brain phase (knowledge graph, sourced answer-to-action workflows and all original point criteria).
+- [ ] Full R4 Combat phase (validated mechanics-aware formulas, equipment requirements and full regression coverage).
+- [ ] Full R5 Account phase (complete imports, quest dependency routing and goal-specific coaching).
+- [ ] Full R6/R7 phases and all remaining 390-point acceptance criteria.
+- [ ] Production Vite build, live D1 metrics, and browser regression suite.
+
+**Release gate:** working candidate only. Do not deploy until `npm run build` passes locally and the deployment smoke checks in the new tutorial are completed.
+
+## R6 item page + Trading Terminal tranche (2026-10-15)
+
+### Implemented in this candidate
+- [x] Convert `/item/<id>` from a fixed modal/drawer presentation into a standalone responsive route layout.
+- [x] Move the main item chart and multi-graph comparison directly below the item heading on the full item page.
+- [x] Handle close/back from a directly opened item URL without blindly navigating off-site.
+- [x] Add `/terminal` Trading Terminal route and navigation from desktop Tools and mobile More.
+- [x] Allow up to four simultaneous item charts in the Terminal, with each item's recent hourly price observations loaded independently.
+- [x] Persist Terminal pinned item IDs locally; clear/remove actions included.
+- [x] Add high-liquidity shortlist and clearly labelled external reference links to OSRS market tools.
+- [x] Add responsive styles for the Terminal and standalone item route.
+- [x] Add a source-level guard test for the new UI surface.
+- [x] Keep Discord, Worker code, D1 migrations and existing batch scripts unchanged.
+
+### Still open
+- [ ] Confirm route refresh in a real browser on desktop and iPhone (URL and selected item retained after market cache loads).
+- [ ] Verify chart ordering and multi-chart interaction visually at desktop and phone breakpoints.
+- [ ] Production Vite build; dependency installation timed out in the current environment.
+- [ ] Full item-page sections/actions audit and error/loading-state regression.
+- [ ] Remaining 390 roadmap acceptance criteria. This tranche is not the full roadmap implementation.

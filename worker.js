@@ -130,7 +130,7 @@ async function runDiscordAlertCron(env){
 }
 
 // V51 data platform. Existing Discord/auth handlers remain above this block unchanged.
-const DATA_SOURCE="RuneLite-fed GE market data via prices.runescape.wiki", DATA_SYNC_MS=900000, MARKET_CURRENT_LIMIT=150, SNAPSHOT_INTERVAL_MS=3600000, D1_SOFT_WRITE_LIMIT=50000, OSRSBOX_API="https://api.osrsbox.com", WIKI_API="https://oldschool.runescape.wiki/api.php";
+const DATA_SOURCE="RuneLite-fed GE market data via prices.runescape.wiki", DATA_SYNC_MS=1800000, MARKET_CURRENT_LIMIT=150, SNAPSHOT_INTERVAL_MS=3600000, D1_SOFT_WRITE_LIMIT=25000, OSRSBOX_API="https://api.osrsbox.com", WIKI_API="https://oldschool.runescape.wiki/api.php";
 function ukHour(ts){try{return Number(new Intl.DateTimeFormat("en-GB",{timeZone:"Europe/London",hour:"2-digit",hour12:false}).format(new Date(ts)))}catch{return new Date(ts).getUTCHours()}}
 function utcDayKey(ts=Date.now()){return new Date(ts).toISOString().slice(0,10)}
 async function d1Reserve(env,estimated,label="db") {
@@ -260,12 +260,13 @@ async function dataApi(request,env){
  if(u.pathname==='/api/data/health'){
   const names=['market_current','market_snapshots','market_events','market_hourly_stats','market_price_history','osrs_item_data','osrs_monster_data','osrs_prayer_data','osrs_items','osrs_npcs','osrs_catalog','osrs_equipment_catalog','osrs_drop_tables','osrs_content_catalog'];
   const r=await env.DB.batch(names.map(t=>env.DB.prepare(`SELECT COUNT(*) c FROM ${t}`)));
-  const out={ok:true,source:DATA_SOURCE};names.forEach((n,i)=>out[n.replaceAll('_','')]=+(r[i]?.results?.[0]?.c||0));const budgetRow=await env.DB.prepare("SELECT value FROM data_meta WHERE key='d1_write_budget'").first().catch(()=>null);let budget={day:utcDayKey(),writes:0};try{if(budgetRow?.value)budget=JSON.parse(budgetRow.value)}catch{}out.d1Writer={day:budget.day,writes:Number(budget.writes||0),softLimit:D1_SOFT_WRITE_LIMIT,remaining:Math.max(0,D1_SOFT_WRITE_LIMIT-Number(budget.writes||0)),percent:Math.min(100,Math.round(Number(budget.writes||0)/D1_SOFT_WRITE_LIMIT*100)),kind:'internal-estimate',authoritative:false,note:'Compare with Cloudflare D1 Rows written; this counter estimates attempted row operations and is not the platform billing metric.'};const metaRows=await env.DB.prepare("SELECT key,value,updated_at FROM data_meta WHERE key IN ('data_ingestion_paused','market_sync','mapping_cursor','wiki_content_gate','rich_sync_gate','d1_write_budget')").all().catch(()=>({results:[]}));out.ingestionPaused=(metaRows.results||[]).some(x=>x.key==='data_ingestion_paused'&&String(x.value)==='1');out.dataMeta=Object.fromEntries((metaRows.results||[]).map(x=>[x.key,{value:x.value,updatedAt:Number(x.updated_at||0)}]));out.lastMarketSyncAt=Number(out.dataMeta.market_sync?.updatedAt||0)||null;out.marketSyncAgeMinutes=out.lastMarketSyncAt?Math.round((Date.now()-out.lastMarketSyncAt)/60000):null;out.marketItems=out.marketcurrent||0;out.snapshots=out.marketsnapshots||0;out.items=out.osrsitemdata||0;out.monsters=out.osrsmonsterdata||0;out.prayers=out.osrsprayerdata||0;out.itemsDatabase=out.osrsitems||0;out.npcs=out.osrsnpcs||0;out.checks={databaseConnected:true,marketCachePresent:(out.marketcurrent||0)>0,marketSyncSeen:!!out.lastMarketSyncAt,ingestionPaused:out.ingestionPaused,writerBudgetUnderSoftLimit:Number(budget.writes||0)<=D1_SOFT_WRITE_LIMIT};return json(out)
+  const out={ok:true,source:DATA_SOURCE};names.forEach((n,i)=>out[n.replaceAll('_','')]=+(r[i]?.results?.[0]?.c||0));const budgetRow=await env.DB.prepare("SELECT value FROM data_meta WHERE key='d1_write_budget'").first().catch(()=>null);let budget={day:utcDayKey(),writes:0};try{if(budgetRow?.value)budget=JSON.parse(budgetRow.value)}catch{}out.d1Writer={day:budget.day,writes:Number(budget.writes||0),softLimit:D1_SOFT_WRITE_LIMIT,remaining:Math.max(0,D1_SOFT_WRITE_LIMIT-Number(budget.writes||0)),percent:Math.min(100,Math.round(Number(budget.writes||0)/D1_SOFT_WRITE_LIMIT*100)),status:Number(budget.writes||0)>=D1_SOFT_WRITE_LIMIT?'blocked':Number(budget.writes||0)>=D1_SOFT_WRITE_LIMIT*.8?'near-limit':'within-budget',kind:'internal-estimate',authoritative:false,note:'Internal safety ceiling is 25,000 estimated writes/day. Compare with Cloudflare D1 Rows written; this counter estimates attempted row operations and is not the platform billing metric.'};const metaRows=await env.DB.prepare("SELECT key,value,updated_at FROM data_meta WHERE key IN ('data_ingestion_paused','market_sync','mapping_cursor','wiki_content_gate','rich_sync_gate','d1_write_budget')").all().catch(()=>({results:[]}));out.ingestionPaused=(metaRows.results||[]).some(x=>x.key==='data_ingestion_paused'&&String(x.value)==='1');out.dataMeta=Object.fromEntries((metaRows.results||[]).map(x=>[x.key,{value:x.value,updatedAt:Number(x.updated_at||0)}]));out.lastMarketSyncAt=Number(out.dataMeta.market_sync?.updatedAt||0)||null;out.marketSyncAgeMinutes=out.lastMarketSyncAt?Math.round((Date.now()-out.lastMarketSyncAt)/60000):null;out.marketItems=out.marketcurrent||0;out.snapshots=out.marketsnapshots||0;out.items=out.osrsitemdata||0;out.monsters=out.osrsmonsterdata||0;out.prayers=out.osrsprayerdata||0;out.itemsDatabase=out.osrsitems||0;out.npcs=out.osrsnpcs||0;out.checks={databaseConnected:true,marketCachePresent:(out.marketcurrent||0)>0,marketSyncSeen:!!out.lastMarketSyncAt,ingestionPaused:out.ingestionPaused,writerBudgetUnderSoftLimit:Number(budget.writes||0)<=D1_SOFT_WRITE_LIMIT};return json(out)
  }
  if(u.pathname==='/api/data/movement'){
   // Read-only movement analysis from the compact hourly history already collected by the market sync.
   // This endpoint performs no writes and deliberately reports coverage so sparse histories are not presented as reliable trends.
   const windowKey=String(u.searchParams.get('window')||'24h');
+  if(!['24h','7d'].includes(windowKey))return json({ok:false,error:'Unsupported movement window. Use 24h or 7d.'},400);
   const windowMs=windowKey==='7d'?7*86400000:24*3600000;
   const now=Date.now(),start=now-windowMs,expected=Math.max(2,Math.floor(windowMs/3600000));
   const result=await env.DB.prepare(`WITH ranked AS (
@@ -295,6 +296,47 @@ async function dataApi(request,env){
     return {itemId:Number(x.item_id),name:x.name||String(x.item_id),icon:x.icon||null,startPrice:first,endPrice:last,startAt:Number(x.start_at||0),endAt:Number(x.end_at||0),samples,averageVolume:Math.round(Number(x.avg_volume||0)),changeGp:last-first,changePct:first?(last-first)/first*100:0,elapsedHours:Math.round(elapsed*10)/10,expectedSamples:expected,completeness,quality:completeness>=75?'good':completeness>=35?'partial':'sparse'};
   }).filter(x=>x.startPrice>0&&x.endPrice>0);
   return json({ok:true,window:windowKey,source:'OSRS Hub stored hourly market observations',generatedAt:now,historyRows:rows.length,results:rows,notice:'Movement compares the earliest and latest stored observations in the selected window. Coverage is not a fill guarantee; sparse histories are labelled.'},200,{'Cache-Control':'public, max-age=60'});
+ }
+ if(u.pathname==='/api/data/knowledge'){
+  // Read-only OSRS Brain catalogue search. Query/type/limit are bounded and the endpoint never writes to D1.
+  if(request.method!=='GET')return json({ok:false,error:'Use GET for knowledge search.'},405,{'Allow':'GET'});
+  const q=String(u.searchParams.get('q')||'').trim().slice(0,80);
+  const allowedTypes=new Set(['item','monster','npc','quest','spell','prayer','location','activity','method','boss','']);
+  const requestedType=String(u.searchParams.get('type')||'').toLowerCase().slice(0,24);
+  if(requestedType&&!allowedTypes.has(requestedType))return json({ok:false,error:'Unsupported knowledge type.'},400);
+  if(q.length<2)return json({ok:true,query:q,results:[],notice:'Enter at least two characters to search the OSRS catalogue.'},200,{'Cache-Control':'public, max-age=30'});
+  const limit=Math.min(20,Math.max(1,Number.parseInt(u.searchParams.get('limit')||'12',10)||12));
+  let result;
+  try{
+   let sql='SELECT entity_type,entity_id,name,members,data_json,updated_at FROM osrs_catalog WHERE searchable=1 AND name LIKE ?1';
+   const args=[`%${q.replace(/[\\%_]/g,'\\$&')}%`];
+   if(requestedType){sql+=' AND entity_type=?2';args.push(requestedType)}
+   sql+=` ORDER BY CASE WHEN lower(name)=lower(?${args.length+1}) THEN 0 WHEN lower(name) LIKE lower(?${args.length+2}) THEN 1 ELSE 2 END, name LIMIT ?${args.length+3}`;
+   args.push(q,`${q}%`,limit);
+   result=await env.DB.prepare(sql).bind(...args).all();
+  }catch(e){return json({ok:false,error:'Knowledge catalogue is not ready yet. Check the database migrations and ingestion health.',detail:String(e?.message||'query failed').slice(0,180)},503,{'Cache-Control':'no-store'})}
+  const rows=(result.results||[]).map(row=>{
+   let data={};try{data=JSON.parse(row.data_json||'{}')}catch{}
+   const description=String(data.examine||data.description||data.summary||data.notes||data.quest_points&&`${data.quest_points} quest points`||'').slice(0,360);
+   return {type:row.entity_type,id:Number(row.entity_id),name:String(row.name||row.entity_id),members:!!Number(row.members||0),description,updatedAt:Number(row.updated_at||0)};
+  });
+  return json({ok:true,query:q,type:requestedType||'all',count:rows.length,results:rows,source:'OSRS Hub D1 catalogue',readOnly:true},200,{'Cache-Control':'public, max-age=30'});
+ }
+ if(u.pathname==='/api/data/opportunity-evidence'){
+  // Evidence-only endpoint for the Opportunity Graph. No score is presented as a prediction and no writes occur.
+  if(request.method!=='GET')return json({ok:false,error:'Use GET for opportunity evidence.'},405,{'Allow':'GET'});
+  const now=Date.now(),since=now-7*86400000;
+  try{
+   const r=await env.DB.prepare(`SELECT m.item_id,m.name,m.icon,m.last_seen,
+    COALESCE(h.samples,0) AS samples,COALESCE(h.first_at,0) AS first_at,COALESCE(h.last_at,0) AS last_at,
+    COALESCE(e.event_count,0) AS event_count,COALESCE(e.latest_event_at,0) AS latest_event_at
+    FROM market_current m
+    LEFT JOIN (SELECT item_id,COUNT(*) samples,MIN(captured_at) first_at,MAX(captured_at) last_at FROM market_price_history WHERE captured_at>=?1 GROUP BY item_id) h ON h.item_id=m.item_id
+    LEFT JOIN (SELECT item_id,COUNT(*) event_count,MAX(captured_at) latest_event_at FROM market_events WHERE captured_at>=?1 GROUP BY item_id) e ON e.item_id=m.item_id
+    ORDER BY COALESCE(e.event_count,0) DESC,COALESCE(h.samples,0) DESC,m.last_seen DESC LIMIT 100`).bind(since).all();
+   const results=(r.results||[]).map(x=>{const samples=Number(x.samples||0),age=Number(x.last_seen||0)?Math.max(0,(now-Number(x.last_seen))/60000):null;return {itemId:Number(x.item_id),name:String(x.name||x.item_id),icon:x.icon||null,samples,firstAt:Number(x.first_at||0)||null,lastAt:Number(x.last_at||0)||null,historyCoverage:samples>=120?'good':samples>=24?'partial':'sparse',eventCount:Number(x.event_count||0),latestEventAt:Number(x.latest_event_at||0)||null,cacheAgeMinutes:age,stale:age==null||age>180}});
+   return json({ok:true,window:'7d',generatedAt:now,source:'OSRS Hub stored observations and event log',count:results.length,results,notice:'Evidence coverage describes stored observations only. It is not a forecast, fill probability or guarantee of profit.'},200,{'Cache-Control':'public, max-age=60'});
+  }catch(e){return json({ok:false,error:'Stored evidence is unavailable until market history and event tables are ready.',detail:String(e?.message||'query failed').slice(0,180)},503,{'Cache-Control':'no-store'})}
  }
  if(u.pathname==='/api/data/signals'){
   const minVol=Math.max(0,Number(u.searchParams.get('minVolume')||250)),minDrop=Math.max(1,Number(u.searchParams.get('minDropPct')||8)),minGp=Math.max(0,Number(u.searchParams.get('minDropGp')||100)),minPrice=Math.max(0,Number(u.searchParams.get('minPrice')||100)),crash=Math.max(1,Number(u.searchParams.get('crashHourPct')||6));

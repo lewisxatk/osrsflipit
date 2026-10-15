@@ -38,8 +38,8 @@ The ZIP intentionally excludes `node_modules/`, `.wrangler/`, `.git/`, `dist/`, 
 ## Data behaviour and D1 budget
 
 - Live GE prices remain fed by the existing prices API and frontend cache; D1 is for durable market history, shared site intelligence and OSRS reference data.
-- Scheduled market sync is gated to every 15 minutes even though the Worker cron wakes every minute. It incrementally updates a small liquid market sample and a small mapping chunk; richer catalogue sources are gated to a longer interval.
-- The internal writer governor is set to 50,000 estimated rows/day as a conservative app-side brake. It is not Cloudflare billing telemetry and its count can differ from real rows written.
+- Scheduled market sync is gated to every 30 minutes even though the Worker cron wakes every minute. It incrementally updates a small liquid market sample and a small mapping chunk; richer catalogue sources are gated to a longer interval.
+- The internal writer governor is set to 25,000 estimated rows/day as a conservative app-side brake. It is not Cloudflare billing telemetry and its count can differ from real rows written.
 - D1 stores shared site-wide data. Account/auth state remains a separate purpose; the ingestion emergency stop does not disable account writes.
 
 ## V56 foundation
@@ -63,3 +63,8 @@ A successful ZIP/Worker syntax check is not the same as a full frontend build or
 ## V57 update and overnight monitor
 
 Read `TUTORIAL-V57-OVERNIGHT-DATA.md` before deploying V57. It explains the new D1 migration, expected overnight-data warm-up, and the difference between the internal write estimate and Cloudflare Metrics.
+
+
+## R3–R5 working tranche (2026-10-15)
+
+See `TUTORIAL-MASTER-ROADMAP-R3-R5.md`, `RELEASE-NOTES-MASTER-R3-R5-WORKING.txt`, and `BUILD-CHECKS-MASTER-R3-R5.txt` for new OSRS Brain catalogue search, opportunity evidence, CSV export, bankroll reserve, loadout portability, validation status and deployment gate. The 390-point roadmap remains in progress; do not treat this tranche as production-approved until the full Vite build and live checks pass.

@@ -23,8 +23,8 @@ EMERGENCY SWITCHES
 - These switches do not pause live price API reads, user/account writes or the Discord alert cron.
 
 D1 AND UPDATE EXPECTATIONS
-- The scheduled Worker wakes every minute to support the Discord alert cron, but site-wide OSRS ingestion now checks its 15-minute gate before running data jobs. This avoids repeatedly invoking catalogue/rich/wiki jobs on every cron wake.
+- The scheduled Worker wakes every minute to support the Discord alert cron, but site-wide OSRS ingestion now checks its 30-minute gate before running data jobs. This avoids repeatedly invoking catalogue/rich/wiki jobs on every cron wake.
 - The current market cache is capped at 150 high-activity items per market sync; mapping advances by 100 items per successful pass.
 - Event detection is capped at 8 records per pass and hourly behaviour/history covers up to 100 high-volume items per UK-local hour; rich OSRSBox and wiki knowledge sources have longer gates. A busy pass may reserve around 250 rows when a new hour starts, before occasional reference-data work.
-- The internal writer budget is 50,000 estimated rows per UTC day. It is not the official Cloudflare usage figure. Use Cloudflare Dashboard → D1 → osrshub-accounts → Metrics for authoritative rows_written.
+- The internal writer budget is 25,000 estimated rows per UTC day. It is not the official Cloudflare usage figure. Use Cloudflare Dashboard → D1 → osrshub-accounts → Metrics for authoritative rows_written.
 - No migration drops tables or clears account data.

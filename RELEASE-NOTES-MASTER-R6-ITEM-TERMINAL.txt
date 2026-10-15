@@ -1,0 +1,22 @@
+OSRS Hub — R6 working tranche: item page + trading terminal
+Status: working candidate, not production-release approved
+
+Added
+- Item routes (/item/<numeric-id>) render as a standalone responsive page instead of retaining the fixed drawer overlay layout.
+- The primary price chart and four-chart comparison now appear directly after the item heading on the full item page, before secondary analytics controls and details.
+- Item-page close/back handling no longer sends a user away from the site when a deep link was opened directly.
+- Added a Trading Terminal at /terminal, accessible from desktop Tools and the mobile More menu.
+- Terminal supports up to four pinned item charts at once, stores those pins locally, loads up to 48 hourly history samples per pinned item through the existing read-only prices API, and includes a liquid-market shortlist.
+- Added external reference links for the OSRS Wiki price tracker, Grand Exchange wiki page, GE Tracker, and Prices OSRS Cloud. They open separately and are explicitly described as independent sources, not integrated feeds.
+- Added responsive terminal layouts for desktop and phone.
+- Added a source-level release test for the route, terminal, chart ordering and external references.
+
+Data / safety
+- No worker.js change, Discord integration change, database migration, or new scheduled D1 write was added in this tranche.
+- Terminal pins are localStorage-only. Price-history requests use the existing read-only public prices endpoint.
+- The terminal can display sparse/no history without inventing points.
+
+Not claimed complete
+- This does not complete all 390 roadmap points. Brain chat/knowledge graph, complete quest/account imports, validated combat formulas, remaining intelligence, security and performance acceptance criteria are still open.
+- No production Vite build was verified in this environment: dependency installation timed out and Vite is not installed here.
+- No live Cloudflare deployment, real D1 write-metric check, or desktop/iPhone browser visual regression was run.

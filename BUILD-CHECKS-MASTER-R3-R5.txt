@@ -1,0 +1,16 @@
+OSRS HUB R3–R5 WORKING TRANCHE — BUILD CHECK RECORD
+
+[PASS] node --check worker.js
+[PASS] npm run test:worker — 8 tests passed
+[PASS] TypeScript transpileModule JSX syntax check (syntax-only, not Vite bundling)
+[PASS] All six SQL migrations execute against a clean local SQLite schema; new read queries smoke-tested against that schema
+[PASS] Source-level diff inspection confirms Discord/auth handler section and existing .bat scripts were not edited
+[PASS] No migration added; new API routes are read-only
+[NOT VERIFIED] npm run build — npm dependency installation timed out; Vite is unavailable in this environment
+[NOT RUN] Cloudflare deployment / live D1 API smoke tests
+[NOT RUN] Cloudflare actual D1 rows-written measurement
+[NOT RUN] Desktop browser visual regression
+[NOT RUN] iPhone Safari responsive and touch regression
+[NOT RUN] Live Discord test notification and real item-alert regression
+
+Release gate: DO NOT DEPLOY until production build and live smoke checks pass.
