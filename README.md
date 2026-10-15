@@ -1,32 +1,33 @@
-# OSRS Hub — R8 Stability Update
+# OSRS Hub — Consolidated Market & Tools Update
 
-OSRS Hub is a responsive web app for Old School RuneScape Grand Exchange research, item analytics, flip screening, account planning, loadouts, alerts and trading workflows.
+Responsive OSRS Grand Exchange research, item analytics, flip screening, loadouts, alerts and finance tools.
 
-## R8 changes
+## Included in this update
 
-- Trading Terminal remembers the selected 24h / 48h / 7d history window.
-- Saved terminal item IDs are normalised and deduplicated, preventing malformed or duplicate local pins.
-- Added a manual history refresh and a per-chart retry action when the public history request fails. Failed requests now show an error state instead of being confused with a valid empty history response.
-- Added regression coverage for persistence, pin normalisation and error/retry controls.
-- No Discord integration, Worker code, database migrations, scheduled jobs or D1 write settings were changed.
+- **Market / screener:** retains the existing filter, saved-profile, CSV and responsive item workflows.
+- **Trading Terminal:** persists the 24h / 48h / 7d window and pinned charts; includes manual refresh and per-chart retry states.
+- **Smart Flip Finder:** remembers bankroll, slot count, reserve, minimum volume, minimum after-tax margin and minimum safety score. It only recommends positive after-tax estimates and opens the full item analytics page.
+- **Finance:** allocator excludes non-positive after-tax opportunities and considers safety, liquidity and capital fit. Existing P&L import/export remains available.
+- **Market intelligence:** Price Drop Radar ranking modes now use distinct balanced, volume-first and below-alch-value scoring. Market Pulse labels current ROI snapshots accurately rather than claiming price movement without historical evidence.
+- **Loadouts:** combat style, target defence/HP and manually entered combat stats persist locally. Saved build import/export remains available.
 
-## Local checks
+## Local verification
 
-Requirements: Node.js 20+ and npm. From this folder run:
+Requirements: Node.js 20+ and npm. From this folder:
 
 ```bash
 npm install
-npm run test:worker
+npm test
 npm run build
 npm run preview
 ```
 
-These are local checks. `npm run deploy` publishes to Cloudflare and is **not** a test command. `npm run db:migrate` applies remote D1 migrations; do not run it for this UI update.
+`npm test` runs the automated Worker and application regression tests. The production build must succeed before deployment. `npm run deploy` publishes to Cloudflare; it is **not** a test command. `npm run db:migrate` applies remote D1 migrations and must not be run for this UI-only update.
 
 ## GitHub upload
 
-Upload the project files and folders in this ZIP to the root of the existing OSRS Hub repository, replacing matching files when prompted. Keep `src/`, `worker.js`, `migrations/`, `tests/`, `package.json`, `vite.config.js`, `wrangler.jsonc`, `index.html`, `_redirects`, `robots.txt`, `sitemap.xml`, `favicon.svg`, `.gitignore`, and the existing `.bat` safety/build scripts. Do not upload `.env` secrets, tokens, `node_modules/`, `dist/`, `.wrangler/`, `.git/`, logs or credentials.
+Upload the project contents to the root of the existing OSRS Hub repository and replace matching files. Keep `src/`, `worker.js`, `migrations/`, `tests/`, `package.json`, `vite.config.js`, `wrangler.jsonc`, `index.html`, `_redirects`, `robots.txt`, `sitemap.xml`, `favicon.svg`, `.gitignore` and the existing safety/build scripts. Do not upload `.env` secrets, tokens, `node_modules/`, `dist/`, `.wrangler/`, `.git/`, logs or credentials.
 
-## Release status
+## Safety / release status
 
-Worker syntax, JSX syntax parsing and the automated Worker/source tests pass in the preparation environment. A full Vite production build and real desktop/iPhone browser test are still required locally before deployment. Do not deploy based only on the syntax checks.
+The existing Worker (including Discord integration), six migrations and all existing safety/build scripts are retained unchanged. No database migration or deployment was run. Automated tests and syntax checks are run in the preparation environment; the full Vite production build and real desktop/iPhone browser tests still need to be completed locally before deploying.

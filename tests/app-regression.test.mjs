@@ -113,3 +113,52 @@ test('R8 terminal keeps its range, normalises pinned IDs, and exposes retry/refr
   assert.match(source, /Retry this chart/);
   assert.match(source, /Refresh history/);
 });
+
+test('Smart Flip Finder persists configurable bankroll rules and only ranks positive after-tax opportunities', async () => {
+  const fs = await import('node:fs/promises');
+  const source = await fs.readFile(new URL('../src/main.jsx', import.meta.url), 'utf8');
+  assert.match(source, /osrshub-smart-finder-settings/);
+  assert.match(source, /Minimum 24h volume/);
+  assert.match(source, /Minimum after-tax margin/);
+  assert.match(source, /Minimum safety score/);
+  assert.match(source, /\.filter\(x=>x\.expected>0\)\.sort\(\(a,b\)=>b\.finder-a\.finder\|\|b\.expected-a\.expected\)/);
+  assert.match(source, /onSelect\(x,"24h","page"\)/);
+});
+
+test('finance allocator excludes trades with non-positive after-tax margin and ranks by safety/liquidity', async () => {
+  const fs = await import('node:fs/promises');
+  const source = await fs.readFile(new URL('../src/main.jsx', import.meta.url), 'utf8');
+  assert.match(source, /x\.sell>x\.buy&&x\.margin>0&&x\.buy<=perSlot/);
+  assert.match(source, /allocatorScore:Math\.round\(x\.flipScore\*\.45\+x\.riskScore\*\.2\+fit\*\.2\+liquidity\*\.15\)/);
+  assert.match(source, /\.filter\(x=>x\.expected>0\)\.sort\(\(a,b\)=>b\.allocatorScore-a\.allocatorScore\|\|b\.expected-a\.expected\)/);
+});
+
+test('market intelligence labels ROI snapshots accurately instead of claiming price trends', async () => {
+  const fs = await import('node:fs/promises');
+  const source = await fs.readFile(new URL('../src/main.jsx', import.meta.url), 'utf8');
+  assert.match(source, /positive ROI/);
+  assert.match(source, /negative ROI/);
+  assert.match(source, /Current margin\/ROI snapshot/);
+  assert.doesNotMatch(source, /<small>rising<\/small>/);
+  assert.doesNotMatch(source, /<small>falling<\/small>/);
+});
+
+test('Price Drop Radar ranking mode changes signal formula and alch mode requires a positive raw gap', async () => {
+  const fs = await import('node:fs/promises');
+  const source = await fs.readFile(new URL('../src/main.jsx', import.meta.url), 'utf8');
+  assert.match(source, /mode==='volume'\?volumeSignal:mode==='alch'\?alchSignal:balanced/);
+  assert.match(source, /mode!=='alch'\|\|x\.alchGap>0/);
+  assert.match(source, /rune cost and fill risk are not included/);
+});
+
+
+test('loadout remembers combat style, target values and manually entered stats locally', async () => {
+  const fs = await import('node:fs/promises');
+  const source = await fs.readFile(new URL('../src/main.jsx', import.meta.url), 'utf8');
+  assert.match(source, /osrshub-loadout-style/);
+  assert.match(source, /osrshub-loadout-target-def/);
+  assert.match(source, /osrshub-loadout-target-hp/);
+  assert.match(source, /osrshub-loadout-stats/);
+  assert.match(source, /\[style,targetDef,targetHp,stats\]/);
+  assert.match(source, /Number\(v\)<=99/);
+});
