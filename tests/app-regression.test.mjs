@@ -63,13 +63,17 @@ test('item routes and trading terminal UI are present without new database write
   assert.match(styles, /\.terminalCharts\{display:grid;grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
 });
 
-test('historical charts consistently map high-side observations to Buy and low-side observations to Sell', async () => {
+test('buy/sell semantics use low-side buy offers and high-side sell offers across live and historical prices', async () => {
   const fs = await import('node:fs/promises');
   const source = await fs.readFile(new URL('../src/main.jsx', import.meta.url), 'utf8');
-  assert.match(source, /if\(p\.avgHighPrice!=null\)lastBuy=p\.avgHighPrice;if\(p\.avgLowPrice!=null\)lastSell=p\.avgLowPrice/);
-  assert.match(source, /buy:p\.avgHighPrice==null\?null:Number\(p\.avgHighPrice\),sell:p\.avgLowPrice==null\?null:Number\(p\.avgLowPrice\)/);
-  assert.match(source, /margin = buy > 0 && sell > 0 \? sell - buy - tax : 0/);
-  assert.match(source, /const b=Number\(p\.avgHighPrice\),s=Number\(p\.avgLowPrice\);return Number\.isFinite\(b\)&&Number\.isFinite\(s\)&&s>b\?s-b-taxFor\(s\):null/);
+  assert.match(source, /const buy = Number\(row\.low \?\? 0\), sell = Number\(row\.high \?\? 0\)/);
+  assert.match(source, /buy:p\.avgLowPrice==null\?null:Number\(p\.avgLowPrice\),sell:p\.avgHighPrice==null\?null:Number\(p\.avgHighPrice\)/);
+  assert.match(source, /if\(p\.avgLowPrice!=null\)lastBuy=p\.avgLowPrice;if\(p\.avgHighPrice!=null\)lastSell=p\.avgHighPrice/);
+  assert.match(source, /const b=Number\(p\.avgLowPrice\),s=Number\(p\.avgHighPrice\);return Number\.isFinite\(b\)&&Number\.isFinite\(s\)&&s>b\?s-b-taxFor\(s\):null/);
+  assert.match(source, /Buy = low-side offer \(avgLowPrice\) · Sell = high-side offer \(avgHighPrice\)/);
+  // Simple low/high example: low-side buy 4 gp, high-side sell 5 gp, no whole-GP tax.
+  const buy = 4, sell = 5, tax = Math.floor(sell * 0.02);
+  assert.equal(sell - buy - tax, 1);
 });
 
 test('finance allocator supports reserve capital and item rows open full item analytics', async () => {
@@ -89,7 +93,7 @@ test('terminal offers 24h, 48h and 7d windows while remaining a read-only histor
   assert.match(source, /does not add D1 writes/);
 });
 
-test('the documented high/low example yields the expected negative after-tax spread', async () => {
+test('an inverted example trade is correctly identified as a loss after tax', async () => {
   const buy = 38957192;
   const sell = 38046809;
   const tax = Math.min(Math.floor(sell * 0.02), 5000000);
@@ -98,6 +102,7 @@ test('the documented high/low example yields the expected negative after-tax spr
   const fs = await import('node:fs/promises');
   const source = await fs.readFile(new URL('../src/main.jsx', import.meta.url), 'utf8');
   assert.match(source, /Margin = Sell − Buy − GE tax/);
+  assert.match(source, /Buy \u003d low-side offer/);
   assert.match(source, /chartMode==="margin"\?\[Math\.min\(0,min-pad\),max\+pad\]/);
   assert.match(source, /Math\.log10\(Math\.abs\(item\.margin\)\+1\)/);
 });
@@ -161,4 +166,16 @@ test('loadout remembers combat style, target values and manually entered stats l
   assert.match(source, /osrshub-loadout-stats/);
   assert.match(source, /\[style,targetDef,targetHp,stats\]/);
   assert.match(source, /Number\(v\)<=99/);
+});
+
+test('loadout auto-build keeps successful slots when one equipment feed fails and reports partial results', async () => {
+  const fs = await import('node:fs/promises');
+  const source = await fs.readFile(new URL('../src/main.jsx', import.meta.url), 'utf8');
+  assert.match(source, /Promise\.all\(slots\.map\(async slot=>/);
+  assert.match(source, /Equipment request timed out\./);
+  assert.match(source, /Built \$\{Object\.keys\(next\)\.length\}\/\$\{slots\.length\} slots/);
+  assert.match(source, /setLoadout\(finalLoadout\);setDetails\(finalDetails\)/);
+  assert.match(source, /Auto-build could not find usable equipment/);
+  assert.match(source, /market=marketById\.get\(id\)\|\|\{\}/);
+  assert.match(source, /buy:Number\(market\.buy\|\|0\),sell:Number\(market\.sell\|\|0\),margin:Number\(market\.margin\|\|0\)/);
 });
