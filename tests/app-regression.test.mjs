@@ -57,7 +57,8 @@ test('item routes and trading terminal UI are present without new database write
   assert.match(source, /terminal:\s*"\/terminal"/);
   assert.match(source, /function TradingTerminal\(/);
   assert.match(source, /osrshub-terminal-pins/);
-  assert.match(source, /prices\.runescape\.wiki\/osrs/);
+  const terminal = source.slice(source.indexOf('function TradingTerminal('), source.indexOf('function App()'));
+  assert.doesNotMatch(terminal, /prices\.runescape\.wiki|ge-tracker\.com|prices\.osrs\.cloud|Grand_Exchange/);
   assert.match(source, /setItemRouteId\(m\?Number\(m\[1\]\):null\)/);
   assert.match(styles, /\.routeItemPage \.chartbox\{order:1!important/);
   assert.match(styles, /\.terminalCharts\{display:grid;grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
@@ -157,6 +158,47 @@ test('Price Drop Radar ranking mode changes signal formula and alch mode require
 });
 
 
+test('stored equipment endpoint rejects writes and unsupported slots', async () => {
+  const { env } = makeEnv([]);
+  const post = await worker.fetch(new Request('https://hub.test/api/data/equipment?slot=weapon', { method: 'POST' }), env);
+  assert.equal(post.status, 405);
+  const invalid = await worker.fetch(new Request('https://hub.test/api/data/equipment?slot=secrets'), env);
+  assert.equal(invalid.status, 400);
+});
+
+test('OSRSBox ingestion advances in two-page hourly batches with a correct completion state', async () => {
+  const fs = await import('node:fs/promises');
+  const source = await fs.readFile(new URL('../worker.js', import.meta.url), 'utf8');
+  assert.match(source, /60\*60\*1000\)return/);
+  assert.match(source, /syncOsrsBox\(env,d,2\)/);
+  assert.match(source, /stateKey=`osrsbox_\$\{dataset\}_state`/);
+  assert.match(source, /bind\(stateKey,complete\?'complete':'in-progress',now\)/);
+  assert.match(source, /const estimatedWrites=q\.length\+c\.length\+nq\.length\+eq\.length/);
+  assert.match(source, /Reserve the entire batch before writing any tables/);
+});
+
+test('stored equipment endpoint joins the OSRS catalogue to market prices without D1 writes', async () => {
+  const { env, state } = makeEnv([{ id: 4151, name: 'Abyssal whip', icon: 'Abyssal_whip.png', slot: 'weapon', equipable: 1, weapon: 1, two_handed: 0, attack_speed: 4, requirements_json: JSON.stringify({ attack: 70 }), bonuses_json: JSON.stringify({ attack_slash: 82, melee_strength: 82 }), item_json: '{}', buy: 1000000, sell: 1010000, high_volume: 20, low_volume: 15, limit_qty: 70, high_alch: 120000, members: 1 }]);
+  const response = await worker.fetch(new Request('https://hub.test/api/data/equipment?slot=weapon'), env);
+  const body = await response.json();
+  assert.equal(response.status, 200);
+  assert.equal(body.readOnly, true);
+  assert.equal(body.results[0].name, 'Abyssal whip');
+  assert.equal(body.results[0].buy, 1000000);
+  assert.equal(body.results[0].sell, 1010000);
+  assert.equal(body.results[0].equipment.melee_strength, 82);
+  assert.equal(state.writes, 0);
+});
+
+test('loadout has a baseline fallback and prioritises stored catalogue data before external data', async () => {
+  const fs = await import('node:fs/promises');
+  const source = await fs.readFile(new URL('../src/main.jsx', import.meta.url), 'utf8');
+  assert.match(source, /const fallbackEquipment=\{/);
+  assert.match(source, /fetch\(`\/api\/data\/equipment\?slot=/);
+  assert.match(source, /fetch\(`\/api\/itemstats\?slot=/);
+  assert.match(source, /Baseline data was used for:/);
+});
+
 test('loadout remembers combat style, target values and manually entered stats locally', async () => {
   const fs = await import('node:fs/promises');
   const source = await fs.readFile(new URL('../src/main.jsx', import.meta.url), 'utf8');
@@ -171,11 +213,11 @@ test('loadout remembers combat style, target values and manually entered stats l
 test('loadout auto-build keeps successful slots when one equipment feed fails and reports partial results', async () => {
   const fs = await import('node:fs/promises');
   const source = await fs.readFile(new URL('../src/main.jsx', import.meta.url), 'utf8');
-  assert.match(source, /Promise\.all\(slots\.map\(async slot=>/);
-  assert.match(source, /Equipment request timed out\./);
-  assert.match(source, /Built \$\{Object\.keys\(next\)\.length\}\/\$\{slots\.length\} slots/);
+  assert.match(source, /for\(let offset=0;offset<slots\.length;offset\+=3\)/);
+  assert.match(source, /fetchSlotRecords/);
+  assert.match(source, /bundled fallback/);
   assert.match(source, /setLoadout\(finalLoadout\);setDetails\(finalDetails\)/);
-  assert.match(source, /Auto-build could not find usable equipment/);
+  assert.match(source, /Auto-build could not find equipment in either the live catalogue or the bundled baseline/);
   assert.match(source, /market=marketById\.get\(id\)\|\|\{\}/);
   assert.match(source, /buy:Number\(market\.buy\|\|0\),sell:Number\(market\.sell\|\|0\),margin:Number\(market\.margin\|\|0\)/);
 });
