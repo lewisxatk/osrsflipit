@@ -166,11 +166,13 @@ test('stored equipment endpoint rejects writes and unsupported slots', async () 
   assert.equal(invalid.status, 400);
 });
 
-test('OSRSBox ingestion advances in two-page hourly batches with a correct completion state', async () => {
+test('OSRSBox ingestion advances all three catalogues in budgeted hourly batches with a correct completion state', async () => {
   const fs = await import('node:fs/promises');
   const source = await fs.readFile(new URL('../worker.js', import.meta.url), 'utf8');
   assert.match(source, /60\*60\*1000\)return/);
-  assert.match(source, /syncOsrsBox\(env,d,2\)/);
+  assert.match(source, /syncOsrsBox\(env,dataset,1\)/);
+  assert.match(source, /for\(const dataset of \['items','monsters','prayers'\]\)/);
+  assert.match(source, /osrsbox-\$\{dataset\}/);
   assert.match(source, /stateKey=`osrsbox_\$\{dataset\}_state`/);
   assert.match(source, /bind\(stateKey,complete\?'complete':'in-progress',now\)/);
   assert.match(source, /const estimatedWrites=q\.length\+c\.length\+nq\.length\+eq\.length/);
@@ -213,11 +215,73 @@ test('loadout remembers combat style, target values and manually entered stats l
 test('loadout auto-build keeps successful slots when one equipment feed fails and reports partial results', async () => {
   const fs = await import('node:fs/promises');
   const source = await fs.readFile(new URL('../src/main.jsx', import.meta.url), 'utf8');
-  assert.match(source, /for\(let offset=0;offset<slots\.length;offset\+=3\)/);
+  assert.match(source, /for\(let offset=0;offset<slots\.length;offset\+=6\)/);
+  assert.match(source, /setTimeout\(\(\)=>controller\.abort\(\),8000\)/);
   assert.match(source, /fetchSlotRecords/);
   assert.match(source, /bundled fallback/);
   assert.match(source, /setLoadout\(finalLoadout\);setDetails\(finalDetails\)/);
   assert.match(source, /Auto-build could not find equipment in either the live catalogue or the bundled baseline/);
   assert.match(source, /market=marketById\.get\(id\)\|\|\{\}/);
   assert.match(source, /buy:Number\(market\.buy\|\|0\),sell:Number\(market\.sell\|\|0\),margin:Number\(market\.margin\|\|0\)/);
+});
+
+
+test('OSRS Brain knowledge searches structured records and indexed Wiki pages with provenance', async () => {
+  const { env, state } = makeEnv([{ entity_type: 'monsters', entity_id: 5347, name: 'Vorkath', members: 1, data_json: JSON.stringify({ combat_level: 732, drops: [{ id: 22124, name: 'Dragonbone necklace', rarity: 1000 }] }), updated_at: 123 }]);
+  const response = await worker.fetch(new Request('https://hub.test/api/data/knowledge?q=Vorkath&type=monster'), env);
+  const body = await response.json();
+  assert.equal(response.status, 200);
+  assert.equal(body.readOnly, true);
+  assert.ok(body.results.some(x => x.name === 'Vorkath' && x.type === 'monster'));
+  assert.ok(body.results.some(x => x.type === 'wiki'));
+  assert.equal(state.writes, 0);
+});
+
+test('drop lookup returns stored OSRSBox drop details without inventing missing drop rates', async () => {
+  const { env, state } = makeEnv([{ monster_id: 5347, name: 'Vorkath', data_json: JSON.stringify({ combat_level: 732, drops: [{ id: 22124, name: 'Dragonbone necklace', quantity: [1, 1], rarity: 1000 }] }), updated_at: 123 }]);
+  const response = await worker.fetch(new Request('https://hub.test/api/data/drops?monsterId=5347'), env);
+  const body = await response.json();
+  assert.equal(response.status, 200);
+  assert.equal(body.results[0].monster, 'Vorkath');
+  assert.equal(body.results[0].drops[0].itemId, 22124);
+  assert.equal(body.results[0].drops[0].chanceDenominator, 1000);
+  assert.equal(state.writes, 0);
+});
+
+test('scheduled knowledge ingestion is not skipped by the market refresh cooldown', async () => {
+  const fs = await import('node:fs/promises');
+  const source = await fs.readFile(new URL('../worker.js', import.meta.url), 'utf8');
+  assert.match(source, /if\(!last\|\|Date\.now\(\)-Number\(last\.updated_at\|\|0\)>=DATA_SYNC_MS\)\{await seedCatalog\(env\);try\{await syncOsrsMarket\(env\)\}catch\(e\)\{await recordDataSource\(env,\"prices-wiki-api\"[\s\S]*?\}\}await syncRichData\(env\);await syncWikiContent\(env\)/);
+  assert.match(source, /2\*60\*60\*1000/);
+  assert.match(source, /for\(let offset=0;offset<3;offset\+\+\)/);
+});
+
+test('OSRSBox full item-name index is paged in 50-record batches and protects richer records', async () => {
+  const fs = await import('node:fs/promises');
+  const source = await fs.readFile(new URL('../worker.js', import.meta.url), 'utf8');
+  assert.match(source, /items-summary\.json/);
+  assert.match(source, /items\.slice\(offset,offset\+50\)/);
+  assert.match(source, /detailStatus:'summary-only'/);
+  assert.match(source, /json_extract\(osrs_catalog\.data_json,'\$\._summary'\)=1 OR length\(osrs_catalog\.data_json\)<=length\(excluded\.data_json\)/);
+  assert.match(source, /osrsbox_items_summary_cursor/);
+});
+
+test('OSRS Brain exposes data-source status and a read-only monster drop lookup', async () => {
+  const fs = await import('node:fs/promises');
+  const source = await fs.readFile(new URL('../worker.js', import.meta.url), 'utf8');
+  assert.match(source, /SELECT source_key,source_name,endpoint,cursor,status,last_success,last_error FROM osrs_data_sources/);
+  assert.match(source, /u\.pathname==='\/api\/data\/drops'/);
+  assert.match(source, /Drop data is returned from stored OSRSBox records/);
+  assert.match(source, /chanceDenominator:denominator/);
+  assert.match(source, /catalogType=\{item:'items',monster:'monsters',npc:'monsters',prayer:'prayers'\}/);
+});
+
+test('knowledge coverage UI is present on the main Intelligence page and Auto-build has bounded latency', async () => {
+  const fs = await import('node:fs/promises');
+  const source = await fs.readFile(new URL('../src/main.jsx', import.meta.url), 'utf8');
+  assert.match(source, /knowledgeCoverage/);
+  assert.match(source, /Ingestion source status/);
+  assert.match(source, /<OsrsKnowledgeSearch\/>/);
+  assert.match(source, /offset<slots\.length;offset\+=6/);
+  assert.match(source, /controller\.abort\(\),8000/);
 });
