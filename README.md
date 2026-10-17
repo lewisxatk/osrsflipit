@@ -1,22 +1,40 @@
-# OSRS Hub — R15+ Multi-Area Loadout & Intelligence Candidate
+# OSRS Hub — R24–R26 Market Radar & Mobile Experience
 
-Responsive OSRS Grand Exchange research, item analytics, flip screening, equipment loadouts, alerts and finance tools.
+Responsive OSRS Grand Exchange research, item analytics, flip screening, equipment loadouts, alerts, finance and OSRS Brain reference search.
 
-## What changed
+## R24–R26 changes
 
-- **Loadout Auto-build:** checks the OSRS Hub stored equipment catalogue first, then the OSRSBox item feed, and finally uses a small bundled baseline when live feeds are unavailable. It processes slots in small batches, respects entered stats, preserves existing gear when a slot cannot be filled, and clearly reports when fallback stats were used.
-- **Stored equipment intelligence:** the new read-only `/api/data/equipment` endpoint joins stored OSRSBox equipment records with OSRS Hub item metadata and the compact GE price cache. It performs no D1 writes and requires no new migration.
-- **Background OSRS data collection:** market snapshots continue to use the OSRS Wiki real-time prices API. OSRSBox item/monster/prayer catalogues are ingested two pages per eligible hourly run; wiki content remains paced to one page per six hours. The existing D1 write governor remains the safety limit and can pause ingestion before its 25,000-estimated-write daily ceiling.
-- **Trading Terminal:** removed third-party website links. The terminal keeps its internal item search, four-chart workspace, history windows, market shortlist, refresh and retry controls.
-- **Market and finance:** retains the corrected Buy = low-side offer, Sell = high-side offer and after-tax margin calculations, plus the existing Smart Flip Finder and bankroll reserve work.
+- **Market Radar:** new `/market-radar` route ranks currently loaded items by flip score, after-tax margin, ROI, 24-hour volume or potential profit. Includes F2P-only, positive-margin, minimum-volume and name filters; a 60-tile overview with expand-to-all; CSV export; watchlist action; and a four-item comparison tray. Tile colour/intensity is relative to the loaded snapshot, not historical movement, probability or a forecast.
+- **Mobile navigation:** Home, Screener, Radar, Watch and a secondary Tools menu; Radar is reachable in one tap. The existing Hub Brain shortcut remains available.
+- **Mobile quick calculator:** a one-hand bottom sheet reuses the existing after-tax calculator, with numeric keyboards, internal scrolling, safe-area spacing and landscape adjustments. The desktop calculator remains in the header.
+- **Responsive finish:** theme-token-based Radar tiles and comparison cards, larger touch targets, reduced-motion support, and separate positioning for the Brain and calculator floating controls so they do not overlap.
+- **Tested helper:** `src/market-radar.js` contains deterministic ranking/filter logic, covered by `tests/market-radar.test.mjs`.
+- **Safety:** no Worker or Discord changes, no migrations, no new background jobs and no added D1 writes. Radar reads the already-loaded client dataset and saves only its selected metric/comparison tray in local storage.
 
-## Data sources
+## R23 changes
 
-The app uses the OSRS Wiki real-time prices API for live and historical GE observations, OSRSBox item/equipment/monster/prayer records, and Old School RuneScape Wiki content for reference information. Data is cached and ingested at controlled intervals; a stored observation or calculated score is not a guarantee of a successful in-game fill or profit. The OSRS Wiki price API requests identify OSRS Hub with a descriptive User-Agent as its documentation requests.
+- **Historical strategy backtester:** choose an item and 7-day hourly, 30-day 6-hour, or 6-month daily price observations; configure starting bankroll, maximum units, minimum entry spread, after-tax target, stop-loss and maximum hold; replay trades with GE tax; inspect net GP, return, win rate, drawdown, profit factor, hold time, equity curve, strategy comparisons and a full trade ledger; export all trades to CSV and save local snapshots. The simulation uses observed low/high price averages and explicitly does not claim that orders would have filled.
+
+## Existing functionality retained from R20–R22
+
+- **Loadout budget planner:** configure a total setup budget, a weapon cap and an armour cap. Supports GP shorthand such as `500k`, `15m` and `1b`; preferences persist locally and are included in saved/imported/exported builds.
+- **Cost visibility:** each equipment slot shows an estimated GP cost when a current GE price is available. The summary separates weapon, armour, accessories/ammo, total buy-offer cost, instant-buy replacement cost and remaining budget.
+- **Quest exclusions:** select quests you have not completed to filter matching equipment requirements during Auto-build and manual item selection. Known OSRSBox quest requirement metadata and a small curated list of known item locks are checked. Incomplete upstream quest metadata cannot be inferred, so verify requirements before using gear in-game.
+- **Smarter selection:** Auto-build considers the entered stats, combat style, item requirements, selected quest exclusions, per-category budgets and aggregate setup budget. It prefers better style-score-per-GP among affordable items. Unpriced items are flagged in the final status message rather than represented as a confirmed total.
+- **OSRS Brain quick searches:** one-tap searches for bosses, items, quests, prayers, raids and money-making make the existing stored knowledge index easier to explore.
+- **No database or Discord changes:** this release adds no migrations, Worker edits, Discord edits, or new `.bat` files. Planner preferences are browser-local; saved/exported setups include the selected constraints.
+
+- **OSRS Brain research board:** save up to 60 knowledge records locally, revisit the eight most recent searches, sort results by relevance/name/update time, open source references, and maintain a three-record comparison shortlist. Saved research stays in the browser and does not add D1 writes.
+- **Loadout slot locks:** lock any equipped slot before Auto-build to preserve that weapon/armour/accessory while rebuilding the rest. Locked item costs and IDs are counted against the total/weapon/armour budgets to avoid double-selecting gear or silently treating the locked item as free. Lock choices persist locally and travel with saved/imported/exported builds.
+- **Roadmap status:** R23 adds a separate, testable historical replay engine and a routed backtesting workspace. This is a substantive step, not a claim that all 390 points are complete.
+
+## Data and estimate limitations
+
+OSRS Hub uses the OSRS Wiki real-time prices API for market observations and OSRSBox/Wiki records for structured equipment and reference data. Prices are estimates, not guaranteed GE fills. Budget costing prefers the low-side buy offer and falls back to the available high-side quote when the buy side is missing; the UI distinguishes missing buy-offer prices from the estimated total. Quest exclusions work only when a source record contains the relevant requirement or the item is covered by the curated known-lock list. DPS and kill-rate figures remain simplified estimates, not a full game-tick simulator. The knowledge store grows incrementally and is not yet a complete offline copy of every OSRS page or mechanic.
 
 ## Local verification
 
-Requirements: Node.js 20+ and npm. From this folder:
+Requires Node.js 20+ and npm. Run from this folder:
 
 ```bash
 npm install
@@ -25,47 +43,23 @@ npm run build
 npm run preview
 ```
 
-`npm test` runs the automated Worker and application regression tests. The production build must succeed before deployment. `npm run deploy` publishes to Cloudflare; it is **not** a test command. `npm run db:migrate` applies remote D1 migrations and must not be run for this update.
+The production build must pass before deployment. `npm run deploy` publishes to Cloudflare and is **not** a test command. `npm run db:migrate` applies remote D1 migrations; this release adds no migration, so do not run it for testing.
 
-## GitHub upload and new-file tutorial
+## GitHub upload
 
-This release adds **no new files, migrations or `.bat` scripts**. It updates the existing `src/main.jsx`, `src/upgrade.css`, `worker.js`, `tests/app-regression.test.mjs` and this README. Upload the ZIP contents into the root of the existing repository and replace matching files. Keep the existing `src/`, `worker.js`, `migrations/`, `tests/`, `package.json`, `vite.config.js`, `wrangler.jsonc`, `index.html`, `_redirects`, `robots.txt`, `sitemap.xml`, `favicon.svg`, `.gitignore` and safety/build scripts. Do not upload `.env` secrets, tokens, `node_modules/`, `dist/`, `.wrangler/`, `.git/`, logs or credentials.
+Extract the ZIP and upload the contents of the `OSRSHub` folder into the root of the existing repository, replacing matching files. This R24–R26 update changes `src/main.jsx`, `src/upgrade.css`, `package.json`, `tests/app-regression.test.mjs` and `README.md`; it adds `src/market-radar.js` and `tests/market-radar.test.mjs`. The retained R23 files `src/backtest.js` and `tests/backtest.test.mjs` provide the historical simulation logic and tests. No new `.bat` scripts are added. Keep `src/`, `worker.js`, `migrations/`, `tests/`, configuration, static assets and existing safety scripts. Do not upload `.env` secrets, tokens, `node_modules/`, `dist/`, `.wrangler/`, `.git/`, logs or credentials.
 
-### Existing `.bat` script guide
+## Existing `.bat` script guide
 
-- `00-EMERGENCY-STOP-DATA.bat` — writes the emergency pause flag to **remote D1** so scheduled market/intelligence ingestion stops. Use only if you need to pause data collection.
-- `01-RESUME-DATA.bat` — clears that remote pause flag. Use only after you intentionally paused ingestion.
-- `02-CHECK-D1-HEALTH.bat` — queries the live Worker health endpoint and remote D1 metadata; intended as a read-only diagnostic.
-- `03-LOCAL-BUILD-CHECK.bat` — installs dependencies and runs the frontend production build locally; it does not deploy.
-- `04-MASTER-RELEASE-CHECKS.bat` — local Worker syntax and frontend build checks; it does not run tests or deploy.
-- `05-MASTER-TRANCHE-CHECKS.bat` — local Worker syntax, automated tests and frontend build checks; it does not deploy or migrate.
-- `06-R2-TESTS.bat` — legacy-named local test/build script; runs Worker regression tests and the frontend build.
-- `D1-SAFE-UPDATE.bat` — **not a test script**: it installs dependencies, applies remote D1 migrations and deploys the Worker/site. Do not run unless you explicitly intend to migrate and publish.
+- `00-EMERGENCY-STOP-DATA.bat` — writes a pause flag to remote D1 to stop scheduled market/intelligence ingestion. Use only when intentionally pausing data collection.
+- `01-RESUME-DATA.bat` — clears that remote pause flag after an intentional pause.
+- `02-CHECK-D1-HEALTH.bat` — read-only health check against the live Worker/D1 metadata.
+- `03-LOCAL-BUILD-CHECK.bat` — installs dependencies and builds locally; does not deploy.
+- `04-MASTER-RELEASE-CHECKS.bat` — local Worker syntax and frontend build checks; does not run tests or deploy.
+- `05-MASTER-TRANCHE-CHECKS.bat` — local Worker syntax, tests and frontend build; does not deploy or migrate.
+- `06-R2-TESTS.bat` — legacy-named local regression/build script.
+- `D1-SAFE-UPDATE.bat` — **not a test script**. It applies remote migrations and deploys. Do not run unless you intentionally approve a deployment/migration.
 
-Do not run `npm run db:migrate` or `npm run deploy` merely to test this update; those change remote state or publish the site.
+## Release safety
 
-## Safety / release status
-
-The Discord integration functions and routing were not changed. The Worker has isolated non-Discord changes for equipment reads, OSRSBox caching and paced catalogue ingestion. All six existing migrations and safety scripts are retained. No migration or deployment was run. Automated tests and Worker/JSX syntax checks are run in the preparation environment; the full Vite production build and real desktop/iPhone browser tests must still be completed locally before deployment.
-
-
-## R18 — Knowledge index expansion (no new files or migrations)
-
-This release extends the existing data platform without adding another roadmap or tutorial file to the ZIP.
-
-- **OSRSBox item summary index:** the Worker fetches the official static `items-summary.json` catalogue, normalises it and indexes up to 50 item names/IDs per hourly ingestion cycle into `osrs_catalog`. The public file is edge-cached for 24 hours; the full summary JSON is not stored as one oversized database row. These are labelled summary-only until the richer paginated OSRSBox record arrives; summary rows cannot overwrite longer detailed records. The index is paced by the existing 25,000 estimated-write daily governor.
-- **Structured OSRSBox ingestion:** items, monsters and prayers each advance one 25-record page per hourly cycle. Raw item/monster/prayer records and equipment data remain in the existing tables. This is deliberately incremental rather than a one-time bulk write that could exhaust D1.
-- **Wiki knowledge ingestion:** three curated reference pages are fetched per two-hour cycle. The existing `osrs_content_catalog` stores bounded wikitext, searchable plain-text extracts, section names and up to 100 page links. The queue covers core skills, quests, gear, combat, bosses, raids and money-making references. Missing pages are skipped forward so one invalid title cannot permanently stall ingestion.
-- **OSRS Brain search:** `/api/data/knowledge` now searches structured OSRSBox records and indexed Wiki pages with source provenance. `/api/data/drops` exposes drop records from stored monster JSON and only reports probability fields that the source provides. `/api/data/health` reports catalogue counts and source-sync status. All three endpoints are read-only.
-- **Loadout reliability:** Auto-build checks six slots concurrently and uses an 8-second timeout per batch request path, rather than potentially waiting over a minute for eleven slow slot requests. The bundled fallback still makes no claim to be a complete gear catalogue.
-- **Discord:** the Worker code before the `// V51 data platform...` marker is unchanged from the previous release. No Discord handlers, OAuth settings or notification behaviour were intentionally changed.
-
-### Run and verify locally
-
-1. Use the existing `03-LOCAL-BUILD-CHECK.bat` or run `npm install`, `npm test`, then `npm run build`.
-2. The existing `05-MASTER-TRANCHE-CHECKS.bat` is a local check only; read its prompts before using it.
-3. Do not run `D1-SAFE-UPDATE.bat`, `npm run db:migrate` or `npm run deploy` merely to test. This release adds no migration.
-4. After a successful build and an approved deployment, open **Intelligence → OSRS Brain knowledge store**, refresh coverage, search an item/boss, and inspect the source status. Catalogue growth happens on scheduled Worker runs, not when you click Search.
-5. If Loadout Auto-build is still empty, use the displayed build message and inspect `/api/data/health` and `/api/data/equipment?slot=weapon&limit=10`; do not assume a populated UI means the remote database is fully ingested.
-
-**Coverage note:** this is a growing local reference index, not a promise to have captured every OSRS mechanic or every Wiki page. The full OSRSBox item catalogue index is paged into D1 gradually, and detailed records follow separately.
+No Worker or Discord changes and no database migrations were made for R24–R26. The Market Radar reads already-loaded client-side item records and does not trigger collection. Automated tests (46 total), Worker syntax and JSX transpilation pass in the authoring environment. The production Vite build and real desktop/iPhone browser testing have not been verified here; do not call this production-ready until the build and device checks pass.

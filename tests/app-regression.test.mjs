@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import worker from '../worker.js';
 
 function makeEnv(rows = []) {
@@ -208,14 +209,14 @@ test('loadout remembers combat style, target values and manually entered stats l
   assert.match(source, /osrshub-loadout-target-def/);
   assert.match(source, /osrshub-loadout-target-hp/);
   assert.match(source, /osrshub-loadout-stats/);
-  assert.match(source, /\[style,targetDef,targetHp,stats\]/);
+  assert.match(source, /\[style,targetDef,targetHp,stats,totalBudget,weaponBudget,armourBudget,excludedQuests\]/);
   assert.match(source, /Number\(v\)<=99/);
 });
 
 test('loadout auto-build keeps successful slots when one equipment feed fails and reports partial results', async () => {
   const fs = await import('node:fs/promises');
   const source = await fs.readFile(new URL('../src/main.jsx', import.meta.url), 'utf8');
-  assert.match(source, /for\(let offset=0;offset<slots\.length;offset\+=6\)/);
+  assert.match(source, /for\(let offset=0;offset<slotsToBuild\.length;offset\+=6\)/);
   assert.match(source, /setTimeout\(\(\)=>controller\.abort\(\),8000\)/);
   assert.match(source, /fetchSlotRecords/);
   assert.match(source, /bundled fallback/);
@@ -282,6 +283,100 @@ test('knowledge coverage UI is present on the main Intelligence page and Auto-bu
   assert.match(source, /knowledgeCoverage/);
   assert.match(source, /Ingestion source status/);
   assert.match(source, /<OsrsKnowledgeSearch\/>/);
-  assert.match(source, /offset<slots\.length;offset\+=6/);
+  assert.match(source, /offset<slotsToBuild\.length;offset\+=6/);
   assert.match(source, /controller\.abort\(\),8000/);
+});
+
+
+test('loadout planner persists total, weapon and armour GP budgets plus quest exclusions', async () => {
+  const fs = await import('node:fs/promises');
+  const source = await fs.readFile(new URL('../src/main.jsx', import.meta.url), 'utf8');
+  assert.match(source, /osrshub-loadout-budget/);
+  assert.match(source, /osrshub-loadout-weapon-budget/);
+  assert.match(source, /osrshub-loadout-armour-budget/);
+  assert.match(source, /osrshub-loadout-excluded-quests/);
+  assert.match(source, /Total setup budget \(GP\)/);
+  assert.match(source, /Weapon budget \(GP\)/);
+  assert.match(source, /Armour budget \(GP\)/);
+  assert.match(source, /Exclude equipment requiring quests I haven't completed/);
+  assert.match(source, /requiresExcludedQuest/);
+  assert.match(source, /remainingBudget/);
+});
+
+test('saved and exported loadouts include planner constraints and restore them on import', async () => {
+  const fs = await import('node:fs/promises');
+  const source = await fs.readFile(new URL('../src/main.jsx', import.meta.url), 'utf8');
+  assert.match(source, /totalBudget,weaponBudget,armourBudget,excludedQuests/);
+  assert.match(source, /setExcludedQuests\(source\.excludedQuests\.filter/);
+  assert.match(source, /setExcludedQuests\(b\.excludedQuests\.filter/);
+});
+
+test('OSRS Brain offers interactive one-tap searches for common knowledge topics', async () => {
+  const fs = await import('node:fs/promises');
+  const source = await fs.readFile(new URL('../src/main.jsx', import.meta.url), 'utf8');
+  assert.match(source, /knowledgeQuickTopics/);
+  assert.match(source, /\[\"Vorkath\",\"boss\"\]/);
+  assert.match(source, /\[\"Recipe for Disaster\",\"quest\"\]/);
+  assert.match(source, /onClick=\{\(\)=>runSearch\(term,kind\)\}/);
+});
+
+
+test('manual loadout picker filters by stats, quest exclusions and available GP budget', async () => {
+  const fs = await import('node:fs/promises');
+  const source = await fs.readFile(new URL('../src/main.jsx', import.meta.url), 'utf8');
+  assert.match(source, /fitsSlotBudget/);
+  assert.match(source, /meetsRequirements\(x\)&&!requiresExcludedQuest\(x\)&&fitsSlotBudget\(x,editing\.slot\)/);
+  assert.match(source, /Number\(m\.buy\|\|x\?\.buy\|\|m\.sell\|\|x\?\.sell\|\|0\)/);
+});
+
+test('R20 OSRS Brain research board saves records, remembers recent searches, sorts results and supports a three-record shortlist', async () => {
+  const fs = await import('node:fs/promises');
+  const source = await fs.readFile(new URL('../src/main.jsx', import.meta.url), 'utf8');
+  assert.match(source, /osrshub-brain-saved-records/);
+  assert.match(source, /osrshub-brain-recent-searches/);
+  assert.match(source, /const displayRows=\[\.\.\.rows\]\.sort/);
+  assert.match(source, /const toggleCompare=r=>/);
+  assert.match(source, /prev\.length<3/);
+  assert.match(source, /Open source/);
+  assert.match(source, /knowledgeCompare/);
+});
+
+test('R21 loadout slot locks persist in saved/exported builds and Auto-build preserves locked equipment while budgeting it', async () => {
+  const fs = await import('node:fs/promises');
+  const source = await fs.readFile(new URL('../src/main.jsx', import.meta.url), 'utf8');
+  assert.match(source, /osrshub-loadout-locked-slots/);
+  assert.match(source, /Keep selected items during Auto-build/);
+  assert.match(source, /lockedSlots\},\.\.\.v\.filter/);
+  assert.match(source, /armourBudget,excludedQuests,lockedSlots/);
+  assert.match(source, /for\(const slot of lockedSlots\)/);
+  assert.match(source, /if\(lockedSlots\.includes\(result\.slot\)&&loadout\[result\.slot\]\)continue/);
+  assert.match(source, /usedIds\.add\(Number\(kept\.id\)\)/);
+});
+
+test('R23 historical backtester is a routed tool with strategy controls, auditable trades and CSV export', async () => {
+  const fs = await import('node:fs/promises');
+  const source = await fs.readFile(new URL('../src/main.jsx', import.meta.url), 'utf8');
+  const styles = await fs.readFile(new URL('../src/upgrade.css', import.meta.url), 'utf8');
+  assert.match(source, /backtest:"\/backtest"/);
+  assert.match(source, /function HistoricalBacktester\(/);
+  assert.match(source, /simulateHistoricalStrategy\(history,c\)/);
+  assert.match(source, /compareHistoricalStrategies\(history,c\)/);
+  assert.match(source, /Export trades CSV/);
+  assert.match(source, /Save snapshot/);
+  assert.match(source, /EQUITY CURVE/);
+  assert.match(source, /backtestEquityChart/);
+  assert.match(source, /Historical simulation, not a fill guarantee/);
+  assert.match(source, /\["backtest","Historical Backtester"\]/);
+  assert.match(styles, /\.backtestMetricGrid/);
+  assert.match(styles, /@media\(max-width:520px\)\{\.backtestHero/);
+});
+
+test('R24-R26 Market Radar is routed, exposes evidence-safe current snapshot language and mobile quick calculator', async () => {
+  const source = await readFile(new URL('../src/main.jsx', import.meta.url), 'utf8');
+  assert.match(source, /heatmap:"\/market-radar"/);
+  assert.match(source, /function MarketRadar\(\{items,onSelect,onWatch\}\)/);
+  assert.match(source, /does not claim historical movement or guarantee a fill/);
+  assert.match(source, /mobileQuickCalcSheet/);
+  assert.match(source, /mobileQuickCalcFab/);
+  assert.match(source, /<span>Radar<\/span>/);
 });
