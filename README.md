@@ -1,6 +1,24 @@
-# OSRS Hub — R24–R26 Market Radar & Mobile Experience
+# OSRS Hub — R27–R30 Account Studio & Data Intelligence
 
 Responsive OSRS Grand Exchange research, item analytics, flip screening, equipment loadouts, alerts, finance and OSRS Brain reference search.
+
+## R27–R30 changes
+
+- **Loadout crash fix:** moved the GP-price and armour-slot helpers before render-time cost calculations. The previous order could throw a JavaScript temporal-dead-zone `ReferenceError` when the Loadout component rendered. This is now covered by a regression test.
+- **Account Studio:** combined Loadout, the existing Calculations tools, account overview and combat/PvM intelligence behind three internal tabs: Gear & DPS, Calculators, and Account intelligence. The Tools menu now shows one Account Studio entry instead of separate Loadout and Calculations pages. `/loadout` and `/calculations` remain supported as legacy paths and open Account Studio. Existing loadout, budget, quest-exclusion, saved-build and slot-lock local-storage keys are retained.
+- **Item analytics back-to-top:** full item analytics opened from Home or Screener now includes a visible “Back to top” control alongside the return-to-page action.
+- **Backtester onboarding:** added an on-page walkthrough and three editable strategy presets: Balanced (10m GP), Small bankroll (1m GP), and Patient exit (25m GP). Presets only set inputs; the app still needs actual historical observations before producing results and does not fabricate example profit figures.
+- **Data Control Centre:** added to Intelligence using the existing `GET /api/data/health` endpoint. Shows source status/errors, market sync age, catalogue counts, ingestion pause state and the internal daily write estimate. It is read-only: no ingestion trigger, retry, D1 writes, schema changes or Worker modifications.
+- **Responsive pass:** added mobile-first layouts for Account Studio, Data Control Centre, the backtester tutorial and item analytics controls.
+- **Safety:** Worker, Discord integration, migrations and existing `.bat` scripts are unchanged. No new scheduled jobs, endpoints, dependencies or database writes are introduced.
+
+## R27–R30 validation record
+
+- `node --test tests/*.test.mjs`: **51/51 tests passed** in the authoring environment.
+- JSX transpilation parse: **passed** using the installed TypeScript compiler.
+- `node --check worker.js`: **passed**; Worker source was not changed.
+- Production `npm run build`: must be run in an environment with installed dependencies. If Vite is unavailable, this check is not passed and the ZIP must not be described as production-build verified.
+- Desktop and actual iPhone browser testing: not performed in the authoring environment; verify these after installing the ZIP locally.
 
 ## R24–R26 changes
 
@@ -47,7 +65,7 @@ The production build must pass before deployment. `npm run deploy` publishes to 
 
 ## GitHub upload
 
-Extract the ZIP and upload the contents of the `OSRSHub` folder into the root of the existing repository, replacing matching files. This R24–R26 update changes `src/main.jsx`, `src/upgrade.css`, `package.json`, `tests/app-regression.test.mjs` and `README.md`; it adds `src/market-radar.js` and `tests/market-radar.test.mjs`. The retained R23 files `src/backtest.js` and `tests/backtest.test.mjs` provide the historical simulation logic and tests. No new `.bat` scripts are added. Keep `src/`, `worker.js`, `migrations/`, `tests/`, configuration, static assets and existing safety scripts. Do not upload `.env` secrets, tokens, `node_modules/`, `dist/`, `.wrangler/`, `.git/`, logs or credentials.
+Extract the ZIP and upload the contents of the `OSRSHub` folder into the root of the existing repository, replacing matching files. This R27–R30 update changes `src/main.jsx`, `src/upgrade.css`, `package.json` and `README.md`; it adds `tests/r27-regression.test.mjs`. The R24–R26 `src/market-radar.js` and `tests/market-radar.test.mjs` and the R23 `src/backtest.js` and `tests/backtest.test.mjs` remain required and are included in the ZIP. No new `.bat` scripts are added. Keep `src/`, `worker.js`, `migrations/`, `tests/`, configuration, static assets and existing safety scripts. Do not upload `.env` secrets, tokens, `node_modules/`, `dist/`, `.wrangler/`, `.git/`, logs or credentials.
 
 ## Existing `.bat` script guide
 
@@ -62,4 +80,4 @@ Extract the ZIP and upload the contents of the `OSRSHub` folder into the root of
 
 ## Release safety
 
-No Worker or Discord changes and no database migrations were made for R24–R26. The Market Radar reads already-loaded client-side item records and does not trigger collection. Automated tests (46 total), Worker syntax and JSX transpilation pass in the authoring environment. The production Vite build and real desktop/iPhone browser testing have not been verified here; do not call this production-ready until the build and device checks pass.
+No Worker or Discord changes and no database migrations were made for R24–R26. The Market Radar reads already-loaded client-side item records and does not trigger collection. Automated tests (51 total) and JSX transpilation passed in the authoring environment. Worker syntax and `.bat` script contents are unchanged from R24–R26. The production Vite build and real desktop/iPhone browser testing must be verified locally; do not call this production-ready until those checks pass.
