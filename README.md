@@ -1,6 +1,25 @@
-# OSRS Hub — R27–R30 Account Studio & Data Intelligence
+# OSRS Hub — R31–R35 Private Control Room & Loadout Intelligence
 
 Responsive OSRS Grand Exchange research, item analytics, flip screening, equipment loadouts, alerts, finance and OSRS Brain reference search.
+
+## R31–R35 changes
+
+- **Private Administrator Control Room** at `/admin-control-room`, deliberately omitted from navigation. The page contains the Data Control Centre and OSRS Brain Knowledge Store. The Worker protects both `/api/data/health` and `/api/data/knowledge` server-side, so knowing the URL alone does not expose the data. Login uses an HMAC-signed, HttpOnly, Secure, SameSite=Strict cookie with an 8-hour expiry; the password is never stored in browser local storage.
+- **Required one-time setup:** configure a strong Cloudflare Worker secret named `ADMIN_PASSWORD` before using the private page. From the repository folder run `npx wrangler secret put ADMIN_PASSWORD` and enter a unique password when prompted. Do not put the password in `wrangler.jsonc`, source code, GitHub, or a `.env` file committed to the repo. This is a Worker secret change, not a D1 migration. If you use Cloudflare's dashboard instead, add `ADMIN_PASSWORD` under the Worker secrets/variables settings as a secret, then deploy the Worker code normally.
+- **OSRSBox static mirror fallback:** item detail and all equipment-slot requests try the official `osrsbox/osrsbox-db` GitHub static-data mirror if OSRSBox static hosting fails. If the paged REST API is unavailable, scheduled ingestion falls back to bounded 25-record batches from the static item JSON, monster JSON (using the NPC index and skipping unavailable/non-monster records), and prayer JSON sources. Each dataset has a separate persisted fallback cursor; writes still pass through the existing D1 budget governor, and the source registry records the actual fallback endpoint. A failed upstream request is never presented as successful unless the fallback batch succeeds.
+- **Loadout combat-style filtering:** melee, ranged and magic builds now reject weapons and offensive gear that don't match the selected combat style. Melee/magic auto-builds omit the ammunition slot instead of filling it with arrows. Quest exclusions remain saved locally across sessions.
+- **Budget-first practical selection:** auto-build prioritises the strongest style-compatible items that fit the available budget, rather than sorting primarily by a style-score/price ratio that could favour very weak gear. Unknown-price items are only considered when no priced candidates are available and remain flagged as uncertain.
+- **DPS upgrade pathway:** new full-slot scan loads equipment candidates in bounded batches and lays out current gear → proposed replacement, estimated GP cost, estimated DPS change and new estimated DPS. Ranking is cost-efficiency among positive DPS gains. It remains a transparent simplified model, not a tick-accurate OSRS simulator.
+- **Market sync explanation:** Data Control Centre labels the timestamp as the backend market collection sync and explains that market screens can request newer prices directly. Source errors for 522/530 show that upstream is unavailable and distinguish this from an empty catalogue.
+- **Safety:** no database migrations, no D1 schema changes, no new cron schedules, no new dependencies, and no Discord code or settings changed. Existing safety scripts are preserved.
+
+## R31–R35 verification record
+
+- Worker syntax: `node --check worker.js`.
+- Regression tests: `npm test` / `node --test tests/*.test.mjs`.
+- JSX syntax: checked with the installed TypeScript JSX parser.
+- ZIP integrity: checked after packaging.
+- A production Vite build and live Cloudflare/browser verification must not be claimed unless those are run successfully in the install environment. This release requires the `ADMIN_PASSWORD` secret to be configured after the Worker code is uploaded; without it, admin endpoints fail closed with HTTP 503.
 
 ## R27–R30 changes
 
@@ -65,7 +84,7 @@ The production build must pass before deployment. `npm run deploy` publishes to 
 
 ## GitHub upload
 
-Extract the ZIP and upload the contents of the `OSRSHub` folder into the root of the existing repository, replacing matching files. This R27–R30 update changes `src/main.jsx`, `src/upgrade.css`, `package.json` and `README.md`; it adds `tests/r27-regression.test.mjs`. The R24–R26 `src/market-radar.js` and `tests/market-radar.test.mjs` and the R23 `src/backtest.js` and `tests/backtest.test.mjs` remain required and are included in the ZIP. No new `.bat` scripts are added. Keep `src/`, `worker.js`, `migrations/`, `tests/`, configuration, static assets and existing safety scripts. Do not upload `.env` secrets, tokens, `node_modules/`, `dist/`, `.wrangler/`, `.git/`, logs or credentials.
+Extract the ZIP and upload the contents of the `OSRSHub` folder into the root of the existing repository, replacing matching files. This R31–R35 update changes `worker.js`, `src/main.jsx`, `src/upgrade.css`, `package.json`, `README.md`, and the existing `tests/app-regression.test.mjs` / `tests/movement-endpoint.test.mjs`; it adds `tests/r31-admin-loadout.test.mjs`. The R24–R26 `src/market-radar.js` and `tests/market-radar.test.mjs` and the R23 `src/backtest.js` and `tests/backtest.test.mjs` remain required and are included in the ZIP. No new `.bat` scripts are added. Keep `src/`, `worker.js`, `migrations/`, `tests/`, configuration, static assets and existing safety scripts. Do not upload `.env` secrets, tokens, `node_modules/`, `dist/`, `.wrangler/`, `.git/`, logs or credentials.
 
 ## Existing `.bat` script guide
 

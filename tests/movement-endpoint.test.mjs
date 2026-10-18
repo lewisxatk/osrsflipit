@@ -59,7 +59,10 @@ test('movement endpoint rejects unsupported windows instead of silently returnin
 
 test('health endpoint advertises the conservative 25,000 estimated-write daily ceiling', async () => {
   const { env } = makeEnv([]);
-  const response = await worker.fetch(new Request('https://hub.test/api/data/health'), env);
+  env.ADMIN_PASSWORD = 'test-only-long-admin-password-2026';
+  const login = await worker.fetch(new Request('https://hub.test/api/admin/login', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:env.ADMIN_PASSWORD})}), env);
+  const cookie = login.headers.get('Set-Cookie').split(';')[0];
+  const response = await worker.fetch(new Request('https://hub.test/api/data/health', {headers:{Cookie:cookie}}), env);
   const body = await response.json();
   assert.equal(response.status, 200);
   assert.equal(body.d1Writer.softLimit, 25000);

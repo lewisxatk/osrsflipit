@@ -3,6 +3,15 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import worker from '../worker.js';
 
+async function adminFetch(url, env, init = {}) {
+  env.ADMIN_PASSWORD = 'test-only-long-admin-password-2026';
+  const login = await worker.fetch(new Request(new URL('/api/admin/login', url), { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({password:env.ADMIN_PASSWORD}) }), env);
+  assert.equal(login.status, 200);
+  const cookie = login.headers.get('Set-Cookie').split(';')[0];
+  const headers = new Headers(init.headers || {}); headers.set('Cookie', cookie);
+  return worker.fetch(new Request(url, {...init, headers}), env);
+}
+
 function makeEnv(rows = []) {
   const state = { writes: 0, lastSql: '' };
   const DB = {
@@ -19,7 +28,7 @@ function makeEnv(rows = []) {
 
 test('knowledge search is read-only and returns bounded catalogue summaries', async () => {
   const { env, state } = makeEnv([{ entity_type: 'monster', entity_id: 50, name: 'King Black Dragon', members: 1, data_json: JSON.stringify({ description: 'A mighty dragon' }), updated_at: 123 }]);
-  const response = await worker.fetch(new Request('https://hub.test/api/data/knowledge?q=King'), env);
+  const response = await adminFetch('https://hub.test/api/data/knowledge?q=King', env);
   const body = await response.json();
   assert.equal(response.status, 200);
   assert.equal(body.results[0].name, 'King Black Dragon');
@@ -30,7 +39,7 @@ test('knowledge search is read-only and returns bounded catalogue summaries', as
 
 test('knowledge search rejects unsupported catalogue types', async () => {
   const { env } = makeEnv([]);
-  const response = await worker.fetch(new Request('https://hub.test/api/data/knowledge?q=Dragon&type=secrets'), env);
+  const response = await adminFetch('https://hub.test/api/data/knowledge?q=Dragon&type=secrets', env);
   assert.equal(response.status, 400);
 });
 
@@ -209,7 +218,7 @@ test('loadout remembers combat style, target values and manually entered stats l
   assert.match(source, /osrshub-loadout-target-def/);
   assert.match(source, /osrshub-loadout-target-hp/);
   assert.match(source, /osrshub-loadout-stats/);
-  assert.match(source, /\[style,targetDef,targetHp,stats,totalBudget,weaponBudget,armourBudget,excludedQuests\]/);
+  assert.match(source, /\[style,targetDef,targetHp,stats,totalBudget,weaponBudget,armourBudget,excludedQuests,excludedItems\]/);
   assert.match(source, /Number\(v\)<=99/);
 });
 
@@ -229,7 +238,7 @@ test('loadout auto-build keeps successful slots when one equipment feed fails an
 
 test('OSRS Brain knowledge searches structured records and indexed Wiki pages with provenance', async () => {
   const { env, state } = makeEnv([{ entity_type: 'monsters', entity_id: 5347, name: 'Vorkath', members: 1, data_json: JSON.stringify({ combat_level: 732, drops: [{ id: 22124, name: 'Dragonbone necklace', rarity: 1000 }] }), updated_at: 123 }]);
-  const response = await worker.fetch(new Request('https://hub.test/api/data/knowledge?q=Vorkath&type=monster'), env);
+  const response = await adminFetch('https://hub.test/api/data/knowledge?q=Vorkath&type=monster', env);
   const body = await response.json();
   assert.equal(response.status, 200);
   assert.equal(body.readOnly, true);
@@ -277,12 +286,13 @@ test('OSRS Brain exposes data-source status and a read-only monster drop lookup'
   assert.match(source, /catalogType=\{item:'items',monster:'monsters',npc:'monsters',prayer:'prayers'\}/);
 });
 
-test('knowledge coverage UI is present on the main Intelligence page and Auto-build has bounded latency', async () => {
+test('knowledge coverage UI is confined to the private Control Room and Auto-build has bounded latency', async () => {
   const fs = await import('node:fs/promises');
   const source = await fs.readFile(new URL('../src/main.jsx', import.meta.url), 'utf8');
   assert.match(source, /knowledgeCoverage/);
   assert.match(source, /Ingestion source status/);
-  assert.match(source, /<OsrsKnowledgeSearch\/>/);
+  assert.match(source, /function AdminControlRoom\(/);
+  assert.match(source, /<DataControlCentre\/><OsrsKnowledgeSearch\/>/);
   assert.match(source, /offset<slotsToBuild\.length;offset\+=6/);
   assert.match(source, /controller\.abort\(\),8000/);
 });
@@ -296,8 +306,8 @@ test('loadout planner persists total, weapon and armour GP budgets plus quest ex
   assert.match(source, /osrshub-loadout-armour-budget/);
   assert.match(source, /osrshub-loadout-excluded-quests/);
   assert.match(source, /Total setup budget \(GP\)/);
-  assert.match(source, /Weapon budget \(GP\)/);
-  assert.match(source, /Armour budget \(GP\)/);
+  assert.match(source, /Optional weapon cap \(GP\)/);
+  assert.match(source, /Optional armour cap \(GP\)/);
   assert.match(source, /Exclude equipment requiring quests I haven't completed/);
   assert.match(source, /requiresExcludedQuest/);
   assert.match(source, /remainingBudget/);
@@ -325,7 +335,7 @@ test('manual loadout picker filters by stats, quest exclusions and available GP 
   const fs = await import('node:fs/promises');
   const source = await fs.readFile(new URL('../src/main.jsx', import.meta.url), 'utf8');
   assert.match(source, /fitsSlotBudget/);
-  assert.match(source, /meetsRequirements\(x\)&&!requiresExcludedQuest\(x\)&&fitsSlotBudget\(x,editing\.slot\)/);
+  assert.match(source, /meetsRequirements\(x\)&&!requiresExcludedQuest\(x\)&&!isExcludedItem\(x\)&&styleCompatible\(x,editing\.slot\)&&fitsSlotBudget\(x,editing\.slot\)/);
   assert.match(source, /Number\(m\.buy\|\|x\?\.buy\|\|m\.sell\|\|x\?\.sell\|\|0\)/);
 });
 
@@ -347,7 +357,7 @@ test('R21 loadout slot locks persist in saved/exported builds and Auto-build pre
   assert.match(source, /osrshub-loadout-locked-slots/);
   assert.match(source, /Keep selected items during Auto-build/);
   assert.match(source, /lockedSlots\},\.\.\.v\.filter/);
-  assert.match(source, /armourBudget,excludedQuests,lockedSlots/);
+  assert.match(source, /armourBudget,excludedQuests,excludedItems,lockedSlots/);
   assert.match(source, /for\(const slot of lockedSlots\)/);
   assert.match(source, /if\(lockedSlots\.includes\(result\.slot\)&&loadout\[result\.slot\]\)continue/);
   assert.match(source, /usedIds\.add\(Number\(kept\.id\)\)/);
