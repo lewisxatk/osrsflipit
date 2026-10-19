@@ -96,12 +96,15 @@ test('finance allocator supports reserve capital and item rows open full item an
   assert.match(source, /tab==="finance"&&<Finance items=\{items\} onSelect=\{selectItem\}/);
 });
 
-test('terminal offers 24h, 48h and 7d windows while remaining a read-only history client', async () => {
+test('terminal provides multi-range single-item chart and remains read-only', async () => {
   const fs = await import('node:fs/promises');
   const source = await fs.readFile(new URL('../src/main.jsx', import.meta.url), 'utf8');
-  assert.match(source, /\[\[24,"24h"\],\[48,"48h"\],\[168,"7d"\]\]/);
-  assert.match(source, /slice\(-windowHours\)/);
-  assert.match(source, /does not add D1 writes/);
+  const terminal = source.slice(source.indexOf('function TradingTerminal('), source.indexOf('function HistoricalBacktester('));
+  assert.match(terminal, /\[\["24h","24H"\],\["48h","48H"\],\["1w","1W"\]/);
+  assert.match(terminal, /api\(`\/timeseries\?timestep=\$\{timestep\}&id=\$\{selected\.id\}`\)/);
+  assert.match(terminal, /does not add D1 writes/);
+  assert.match(terminal, /Watchlist/);
+  assert.match(terminal, /Live opportunities/);
 });
 
 test('an inverted example trade is correctly identified as a loss after tax', async () => {
@@ -118,16 +121,16 @@ test('an inverted example trade is correctly identified as a loss after tax', as
   assert.match(source, /Math\.log10\(Math\.abs\(item\.margin\)\+1\)/);
 });
 
-test('R8 terminal keeps its range, normalises pinned IDs, and exposes retry/refresh for failed history', async () => {
+test('terminal persists selected item, range, theme and watchlist with retry support', async () => {
   const fs = await import('node:fs/promises');
   const source = await fs.readFile(new URL('../src/main.jsx', import.meta.url), 'utf8');
-  assert.match(source, /safeRead\("osrshub-terminal-range",48\)/);
-  assert.match(source, /localStorage\.setItem\("osrshub-terminal-range",String\(windowHours\)\)/);
-  assert.match(source, /Array\.from\(new Set\(\(Array\.isArray\(saved\)\?saved:\[\]\)\.map\(Number\)/);
-  assert.match(source, /const refreshHistory=\(\)=>\{setSeries\(\{\}\);setHistoryErrors\(\{\}\);setRefreshKey\(v=>v\+1\)\}/);
-  assert.match(source, /Price history could not be loaded\./);
-  assert.match(source, /Retry this chart/);
-  assert.match(source, /Refresh history/);
+  const terminal = source.slice(source.indexOf('function TradingTerminal('), source.indexOf('function HistoricalBacktester('));
+  assert.match(terminal, /osrshub-terminal-selected/);
+  assert.match(terminal, /osrshub-terminal-range-label/);
+  assert.match(terminal, /osrshub-terminal-theme/);
+  assert.match(terminal, /osrshub-terminal-watch/);
+  assert.match(terminal, /Retry history/);
+  assert.match(terminal, /Refresh chart window/);
 });
 
 test('Smart Flip Finder persists configurable bankroll rules and only ranks positive after-tax opportunities', async () => {
