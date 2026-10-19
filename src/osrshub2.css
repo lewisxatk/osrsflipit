@@ -69,3 +69,18 @@
 .td-watch-price{border-radius:5px;padding:4px 5px;transition:background .15s,box-shadow .15s,color .15s}.td-watch-price.priceFlash-up{animation:tdPriceUp 1.05s ease-out}.td-watch-price.priceFlash-down{animation:tdPriceDown 1.05s ease-out}@keyframes tdPriceUp{0%{background:#16a34a44;box-shadow:0 0 0 0 #22c55e88;color:#4ade80}45%{background:#16a34a22;box-shadow:0 0 12px 2px #22c55e44}100%{background:transparent;box-shadow:none}}@keyframes tdPriceDown{0%{background:#e11d4844;box-shadow:0 0 0 0 #fb718588;color:#fb7185}45%{background:#e11d4822;box-shadow:0 0 12px 2px #fb718544}100%{background:transparent;box-shadow:none}}
 @media(max-width:850px){.td-compare-cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(prefers-reduced-motion:reduce){.td-watch-price.priceFlash-up,.td-watch-price.priceFlash-down{animation:none!important}}
+/* OSRS Hub 2.0 terminal follow-up: anchored item search and inline flip calculator */
+.td-left-tools{position:relative;overflow:visible;min-width:0}
+.td-left-search-suggestions{position:relative;z-index:30;width:100%;max-height:230px;overflow:auto;margin:5px 0 12px;background:var(--td-panel);border:1px solid var(--td-border);border-radius:9px;box-shadow:0 12px 28px #0003}
+.td-left-search-suggestions button{width:100%;display:flex;align-items:center;gap:9px;padding:8px 10px;border:0;border-bottom:1px solid var(--td-border);background:transparent;color:var(--td-text);text-align:left;cursor:pointer}
+.td-left-search-suggestions button:hover{background:var(--td-panel2)}
+.td-left-search-suggestions img{width:26px;height:26px;object-fit:contain}
+.td-left-search-suggestions span{display:flex;min-width:0;flex-direction:column;gap:3px}
+.td-left-search-suggestions strong{font-size:11px}.td-left-search-suggestions small{font-size:9px;color:var(--td-muted)}
+.td-inline-calculator{display:grid;gap:8px;padding:11px;margin:8px 0 12px;border:1px solid var(--td-border);border-radius:9px;background:var(--td-panel2)}
+.td-inline-calculator>strong{font-size:12px;color:var(--td-text)}
+.td-inline-calculator label{display:grid;gap:4px;color:var(--td-muted);font-size:10px}
+.td-inline-calculator input{width:100%;min-width:0;box-sizing:border-box;padding:8px;border:1px solid var(--td-border);border-radius:6px;background:var(--td-bg);color:var(--td-text);font-size:11px}
+.td-inline-calculator>div{display:flex;justify-content:space-between;gap:8px;font-size:10px;color:var(--td-muted)}
+.td-inline-calculator b{color:var(--td-text);font-variant-numeric:tabular-nums}
+.td-inline-calculator>small{font-size:9px;line-height:1.45;color:var(--td-muted)}
