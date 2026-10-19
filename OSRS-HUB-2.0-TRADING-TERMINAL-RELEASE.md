@@ -24,3 +24,7 @@ This release focuses on the Trading Terminal page only. It does not redesign Loa
 
 ## Install
 Back up the existing repository, extract the ZIP, and copy the contents of `OSRSHub-2.0/` into the repository root. Do not upload `node_modules`. Do not run D1 migrations for this release. Review the Cloudflare build log before assuming the live site has updated.
+
+
+## Build fix (2026-10-19)
+Fixed a missing closing parenthesis in the market scanner Flip score bar width expression that caused Vite/esbuild to stop at `src/main.jsx:380`. All 71 Node regression tests pass and `node --check worker.js` passes. Production Vite build could not be rerun in this environment because dependency installation timed out; verify `npm run build` in Cloudflare before relying on the deployment. No Worker, Discord, D1 schema, or migration changes were made.
