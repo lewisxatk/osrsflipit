@@ -1,18 +1,16 @@
-# OSRS HUB 2.0
+# OSRS Hub 2.0
 
-This package is a terminal-focused update to the existing OSRS Hub project.
+## Trading Terminal refinement
+This release refines the Trading Terminal toward the supplied Aurora mockup. It removes the large page intro, follows the global site theme, and adds user-customisable chart display controls for buy/sell series, volume bars, grid, line/area mode and crosshair.
 
-## Run locally
-1. Install Node.js (LTS) and Bun is optional.
-2. Open a terminal in this folder.
-3. Run `npm install`.
-4. Run `npm run dev` and open the local URL Vite prints.
-5. Run `npm test` for the regression suite and `npm run build` before uploading to GitHub/Cloudflare.
+## Install
+1. Back up your existing GitHub repository.
+2. Extract this ZIP.
+3. Upload the **contents** of the `OSRSHub-2.0` folder into the root of your existing repository.
+4. Run `npm install`, `npm test`, and `npm run build` locally.
+5. Upload only after the production build succeeds.
 
-## Install to existing GitHub repository
-Back up the repository first, then copy the contents of this folder into the repository root. Do not include `node_modules`. Keep `worker.js`, `wrangler.jsonc`, migrations, and existing environment configuration. This terminal update does not require D1 migrations.
+Do not run D1 migrations for this release. Discord, authentication, alerts, Worker source and the existing GE API are intended to remain unchanged.
 
-## Trading Terminal
-The terminal defaults to Twisted Bow when present in the loaded market dataset, allows item switching, has a right-side watchlist, historical ranges, filters and a sortable opportunity table. Aurora, Graphite and Light palettes are available in the terminal's own theme control. Historical and live prices use the existing GE API; values are not hardcoded to match the mockup.
-
-See `OSRS-HUB-2.0-TRADING-TERMINAL-RELEASE.md` for scope and verification status.
+## Validation status
+The included automated tests pass (71/71). The production Vite build was not verified in the packaging environment because dependency installation timed out; verify locally before deploying.
