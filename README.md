@@ -100,3 +100,11 @@ Extract the ZIP and upload the contents of the `OSRSHub` folder into the root of
 ## Release safety
 
 No Worker or Discord changes and no database migrations were made for R24–R26. The Market Radar reads already-loaded client-side item records and does not trigger collection. Automated tests (51 total) and JSX transpilation passed in the authoring environment. Worker syntax and `.bat` script contents are unchanged from R24–R26. The production Vite build and real desktop/iPhone browser testing must be verified locally; do not call this production-ready until those checks pass.
+
+## R36–R38 Phases 1–3 foundation and intelligence update
+
+See `PHASE-1-3-IMPLEMENTATION-NOTES.md` for the audit, read-only schema diagnostics, OSRSBox-to-D1 fallback behaviour, Brain evidence quality metadata, validation record and install instructions. This update does not add migrations, dependencies, background schedules or new D1 writes. The production Vite build remains unverified until run in an environment with Vite installed.
+
+## OSRS data archive (R39)
+
+See [`docs/OSRS-DATA-ARCHIVE-SETUP.md`](docs/OSRS-DATA-ARCHIVE-SETUP.md) for the step-by-step guide. To create a commit-pinned local OSRSBox repository archive, run `node scripts/archive-osrsbox.mjs`. To upload the archive and manifest to a private Cloudflare R2 bucket (after creating it and authenticating Wrangler), run `node scripts/archive-osrsbox.mjs --upload`. This archive process performs no D1 writes; the existing ingestion worker remains governed by the 25,000 estimated-write/day ceiling.

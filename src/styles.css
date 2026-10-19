@@ -1897,3 +1897,100 @@ html[data-theme="dark"] .multiGraphCompare,html[data-theme="dark"] .miniGraphCar
 html[data-theme="aurora"] .multiGraphCompare,html[data-theme="aurora"] .miniGraphCard{background:#101f33;border-color:#304a66}
 html[data-theme="comfort"] .multiGraphCompare,html[data-theme="comfort"] .miniGraphCard{background:#fbfaf7;border-color:#ded8ce}
 @media(max-width:600px){.multiGraphCompare{padding:11px;margin:14px 0}.multiGraphGrid{grid-template-columns:minmax(0,1fr);gap:9px}.miniGraphCard{padding:9px 7px 3px}.multiGraphHeading h3{font-size:14px}.miniGraphTitle{font-size:10px}}
+
+
+/* R41 design foundation: persistent desktop navigation. Mobile navigation is intentionally untouched. */
+.desktopHubSidebar{display:none}
+@media(min-width:1101px){
+ .desktopHubSidebar{display:flex;position:fixed;z-index:120;left:0;top:74px;bottom:0;width:232px;box-sizing:border-box;flex-direction:column;gap:4px;padding:22px 14px 16px;background:rgba(250,251,255,.92);border-right:1px solid #e6e8f1;backdrop-filter:blur(22px);overflow-y:auto;animation:hubSidebarIn .32s ease-out both}
+ html[data-theme="dark"] .desktopHubSidebar{background:rgba(20,24,34,.94);border-right-color:#2d3545}
+ .hubSidebarLabel{padding:5px 12px 9px;color:#9298a8;font-size:10px;font-weight:800;letter-spacing:1.4px}
+ .hubSidebarLabelTools{margin-top:16px}
+ .desktopHubSidebar>button{position:relative;display:flex;align-items:center;gap:11px;width:100%;min-height:41px;padding:9px 12px;border:1px solid transparent;border-radius:12px;background:transparent;color:#616879;text-align:left;font-size:12px;font-weight:600;line-height:1.2;font-family:inherit;cursor:pointer;transition:background .18s ease,border-color .18s ease,color .18s ease,transform .18s ease}
+ html[data-theme="dark"] .desktopHubSidebar>button{color:#b6bdcc}
+ .desktopHubSidebar>button:hover{background:#f0f1ff;color:#4f46e5;transform:translateX(2px)}
+ html[data-theme="dark"] .desktopHubSidebar>button:hover{background:#252a3a;color:#c7c4ff}
+ .desktopHubSidebar>button.active{color:#5146dc;background:linear-gradient(105deg,#ecebff,#f5f7ff);border-color:#e2e0ff;box-shadow:0 5px 16px rgba(99,91,220,.08)}
+ html[data-theme="dark"] .desktopHubSidebar>button.active{background:linear-gradient(105deg,#2b2b49,#222c40);border-color:#45436f;color:#c8c5ff}
+ .hubSidebarGlyph{display:inline-flex;align-items:center;justify-content:center;flex:0 0 22px;width:22px;height:22px;border-radius:7px;background:#f0f1f8;color:#6e71a1;font-size:16px}
+ .desktopHubSidebar>button.active .hubSidebarGlyph{background:#dcdafe;color:#4f46e5}
+ html[data-theme="dark"] .hubSidebarGlyph{background:#2b3140;color:#b4b8df}
+ .desktopHubSidebar>button>b{margin-left:auto;min-width:19px;text-align:center;padding:3px 5px;border-radius:8px;background:#fce7ef;color:#be185d;font-size:10px}
+ .hubSidebarFooter{margin-top:auto;padding:14px 10px 4px;border-top:1px solid #e7e9f1;color:#8b90a0}
+ html[data-theme="dark"] .hubSidebarFooter{border-top-color:#303746}
+ .hubSidebarStatus{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:650;color:#656c7b;margin-bottom:8px}
+ .hubSidebarStatus i{width:7px;height:7px;border-radius:50%;background:#35b879;box-shadow:0 0 0 4px rgba(53,184,121,.12)}
+ .hubSidebarFooter small{font-size:8px;letter-spacing:.8px}
+ .app>main,.app>.watchTicker,.app>.tickerWrap{margin-left:232px}
+ .app>main{padding-left:30px;padding-right:30px}
+ .navlinks{display:none!important}
+ .nav{padding-left:22px;padding-right:22px}
+ .pageIntro,.hero{animation:hubPageEnter .24s ease-out both}
+}
+@keyframes hubSidebarIn{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
+@keyframes hubPageEnter{from{opacity:.75;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+@media(prefers-reduced-motion:reduce){.desktopHubSidebar,.pageIntro,.hero,.desktopHubSidebar>button{animation:none!important;transition:none!important}}
+
+/* R41 premium workspace surfaces shared by Terminal, Screener, Loadout and Quest Pathway. */
+@media(min-width:1101px){
+ .terminalGrid,.terminalWorkspace,.loadoutPage,.questPathway,.screenerPage,.marketPage{animation:hubPageEnter .24s ease-out both}
+ .terminalCard,.loadoutCard,.questCard,.financeCard,.calcCard,.screenerTableShell,.marketPage .tablewrap{border-radius:17px;transition:border-color .18s ease,box-shadow .18s ease,transform .18s ease}
+ .terminalCard:hover,.loadoutCard:hover,.questCard:hover{border-color:#d9d6ff;box-shadow:0 14px 35px rgba(84,75,170,.08)}
+ .primary,.secondary,.iconbtn,.toolbar button,.rangeButtons button{transition:transform .16s ease,box-shadow .16s ease,background .16s ease,border-color .16s ease}
+ .primary:hover,.secondary:hover{transform:translateY(-1px)}
+}
+html:not([data-theme="dark"]) .pageIntro h1{letter-spacing:-1.4px}
+html:not([data-theme="dark"]) .hero{border-radius:20px}
+
+/* R42: full workspace visual pass. Home and existing mobile navigation intentionally preserved. */
+:root{--hub-lavender:#7667e8;--hub-blue:#4f8ee8;--hub-ink:#202438;--hub-muted:#778096;--hub-line:#e7e9f4;--hub-panel:#fff;--hub-soft:#f7f8ff;--hub-shadow:0 12px 34px rgba(43,49,96,.065)}
+@media(min-width:1101px){
+ .tradingTerminal,.loadoutPage,.questPathway,.screenerWide,.screenerPage,.marketPage,.accountStudio,.coolStuff,.financePage,.backtestPage,.heatmapPage{max-width:1600px;margin-inline:auto}
+ .tradingTerminal{display:flex;flex-direction:column;gap:18px}
+ .terminalHero{position:relative;overflow:hidden;border:1px solid #e3e5fb!important;border-radius:24px!important;padding:28px 30px!important;background:radial-gradient(ellipse at 94% 8%,rgba(123,105,239,.17),transparent 36%),linear-gradient(125deg,#fff 0%,#f6f7ff 62%,#eff5ff 100%)!important;box-shadow:var(--hub-shadow)}
+ .terminalHero h2{font-size:clamp(25px,2.1vw,34px)!important;letter-spacing:-1.25px!important;color:var(--hub-ink)!important;margin:8px 0 10px!important}
+ .terminalHero p{max-width:760px;color:#717990!important;line-height:1.65!important}
+ .terminalLive{border:1px solid #dcefe6!important;background:#f2fcf6!important;color:#21865d!important;border-radius:999px!important;padding:9px 13px!important;font-size:10px!important;letter-spacing:.65px}
+ .terminalSearchWrap{border:1px solid #e4e7f3!important;border-radius:16px!important;background:#fff!important;box-shadow:0 4px 16px rgba(37,45,83,.035);min-height:52px!important}
+ .terminalPinBar{border:1px solid #e6e8f4!important;background:#fff!important;border-radius:16px!important;padding:12px 15px!important;box-shadow:0 5px 20px rgba(37,45,83,.035)}
+ .terminalRangeSwitch{padding:4px!important;background:#f1f2fb!important;border-radius:11px!important}
+ .terminalRangeSwitch button{border-radius:8px!important;padding:7px 12px!important;transition:background .18s ease,box-shadow .18s ease,transform .18s ease!important}
+ .terminalRangeSwitch button.active{background:#fff!important;box-shadow:0 2px 7px #242c4a14!important;color:#5146d8!important}
+ .terminalCharts{gap:16px!important}
+ .terminalChart{border:1px solid #e4e7f3!important;border-radius:20px!important;background:linear-gradient(180deg,#fff,#fcfcff)!important;box-shadow:0 8px 26px rgba(40,48,90,.045)!important;padding:17px!important;transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease!important;animation:hubCardIn .32s ease both}
+ .terminalChart:hover{transform:translateY(-3px);border-color:#d2ceff!important;box-shadow:0 16px 36px rgba(81,70,216,.09)!important}
+ .terminalChart header{padding-bottom:13px!important;border-bottom:1px solid #eff0f8!important}
+ .terminalMetricRow{padding:11px 0!important;border-bottom:1px solid #f0f1f8!important;color:#858ba0!important}
+ .terminalMetricRow b{color:#343a50!important}
+ .terminalOpenItem{border-radius:10px!important;background:#f2f2ff!important;color:#5349d7!important;padding:9px 11px!important;transition:background .18s ease,transform .18s ease!important}
+ .terminalOpenItem:hover{background:#e8e8ff!important;transform:translateX(2px)}
+ .terminalWatch{border:1px solid #e5e8f4!important;border-radius:20px!important;background:#fff!important;box-shadow:var(--hub-shadow);padding:20px!important}
+ .terminalMarketRow{border-bottom:1px solid #f0f1f8!important;padding:12px 4px!important;transition:background .16s ease,border-radius .16s ease}
+ .terminalMarketRow:hover{background:#f8f8ff;border-radius:11px}
+ .questPathway{color:var(--hub-ink)}
+ .questPathway .questHero,.questPathway .questBanner{border-radius:23px!important;overflow:hidden}
+ .questPathway .questMainCard,.questPathway .questSideCard,.questPathway .questSideStack>section{border:1px solid #e5e7f3!important;border-radius:19px!important;background:linear-gradient(180deg,#fff,#fdfdff)!important;box-shadow:0 8px 26px rgba(40,48,90,.045)!important;transition:box-shadow .2s ease,border-color .2s ease,transform .2s ease}
+ .questPathway .questMainCard:hover,.questPathway .questSideCard:hover{border-color:#d7d3ff!important;box-shadow:0 14px 30px rgba(81,70,216,.07)!important}
+ .questPathway .questAction{border-radius:11px!important;transition:transform .18s ease,box-shadow .18s ease!important}
+ .questPathway .questAction:hover{transform:translateY(-1px);box-shadow:0 7px 18px #7667e82a}
+ .loadoutPage{gap:18px!important}
+ .loadoutPage .loadoutCard,.loadoutPage .loadoutPanel,.loadoutPage .loadoutSection,.loadoutPage .loadoutSummary{border-radius:19px!important;border-color:#e5e7f3!important;box-shadow:0 8px 26px rgba(40,48,90,.045)!important;transition:box-shadow .2s ease,border-color .2s ease,transform .2s ease!important}
+ .loadoutPage .loadoutCard:hover,.loadoutPage .loadoutPanel:hover{border-color:#d7d3ff!important;box-shadow:0 14px 30px rgba(81,70,216,.07)!important}
+ .screenerWide{padding-top:8px}
+ .screenerWide .screenerSearchRow .search{border-radius:15px!important;border-color:#e1e5f3!important;box-shadow:0 5px 18px rgba(37,45,83,.035)!important;min-height:52px}
+ .screenerToolsRow{border:1px solid #e5e7f3!important;border-radius:17px!important;background:rgba(255,255,255,.9)!important;padding:12px!important;box-shadow:0 5px 18px rgba(37,45,83,.03)}
+ .screenerTableShell{border:1px solid #e5e7f3!important;border-radius:19px!important;overflow:hidden;box-shadow:var(--hub-shadow)!important;background:#fff!important}
+ .screenerMarketHeader{padding:18px 20px!important}
+ .marketTable tbody tr,.screenerTableShell tbody tr{transition:background .14s ease}
+ .marketTable tbody tr:hover,.screenerTableShell tbody tr:hover{background:#f7f7ff!important}
+ .pageIntro h1,.sectionhead h2{letter-spacing:-1.25px}
+ .primary,.secondary,.iconbtn,.toolbar button,.rangeButtons button,.questNextAction{transition:transform .16s ease,box-shadow .16s ease,background .16s ease,border-color .16s ease!important}
+ .primary:hover,.secondary:hover{transform:translateY(-1px)}
+}
+@keyframes hubCardIn{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:1100px){
+ /* Preserve the established mobile layout: only refine touch feedback and card surfaces. */
+ .terminalChart,.questPathway .questMainCard,.questPathway .questSideCard{transition:border-color .18s ease,box-shadow .18s ease!important}
+ .terminalChart:active,.questAction:active,.terminalOpenItem:active{transform:scale(.99)}
+}
+@media(prefers-reduced-motion:reduce){.terminalChart,.terminalMarketRow,.terminalOpenItem,.questPathway .questAction,.loadoutPage .loadoutCard,.marketTable tbody tr{animation:none!important;transition:none!important}}
