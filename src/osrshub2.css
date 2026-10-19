@@ -84,3 +84,19 @@
 .td-inline-calculator>div{display:flex;justify-content:space-between;gap:8px;font-size:10px;color:var(--td-muted)}
 .td-inline-calculator b{color:var(--td-text);font-variant-numeric:tabular-nums}
 .td-inline-calculator>small{font-size:9px;line-height:1.45;color:var(--td-muted)}
+
+/* Trading terminal: bind Your Radar to the site's actual saved watchlists. */
+.td-watchlist-picker{display:grid;grid-template-columns:1fr;gap:5px;padding:0 12px 11px;color:var(--td-muted);font-size:9px;font-weight:700;letter-spacing:.04em}
+.td-watchlist-picker select{width:100%;min-width:0;padding:8px 9px;border:1px solid var(--td-border);border-radius:7px;background:var(--td-bg);color:var(--td-text);font-size:11px;letter-spacing:0;outline:none}
+.td-watchlist-picker select:focus{border-color:var(--td-accent)}
+.td-calc-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.td-calc-results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.td-calc-results>div{display:flex;flex-direction:column;gap:3px;padding:8px;border:1px solid var(--td-border);border-radius:7px;background:var(--td-bg);min-width:0}
+.td-calc-results span{font-size:9px;color:var(--td-muted)}
+.td-calc-results b{font-size:11px;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+.td-calc-results .wide{grid-column:1/-1}
+.td-calc-results small{font-size:9px;color:var(--td-muted)}
+.td-open-item-page{display:inline-flex;align-items:center;gap:5px;margin-top:6px;padding:5px 7px;border:1px solid var(--td-border);border-radius:6px;background:var(--td-panel2);color:var(--td-muted);font-size:9px;cursor:pointer}
+.td-open-item-page:hover{border-color:var(--td-accent);color:var(--td-text)}
+.td-open-item-page:disabled{opacity:.45;cursor:not-allowed}
+@media(max-width:480px){.td-calc-fields{grid-template-columns:1fr 1fr}.td-calc-results{grid-template-columns:1fr 1fr}.td-open-item-page{font-size:9px}}
