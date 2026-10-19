@@ -1994,3 +1994,84 @@ html:not([data-theme="dark"]) .hero{border-radius:20px}
  .terminalChart:active,.questAction:active,.terminalOpenItem:active{transform:scale(.99)}
 }
 @media(prefers-reduced-motion:reduce){.terminalChart,.terminalMarketRow,.terminalOpenItem,.questPathway .questAction,.loadoutPage .loadoutCard,.marketTable tbody tr{animation:none!important;transition:none!important}}
+
+
+/* R43: return to compact top navigation and restore full-width workspace. */
+@media(min-width:1101px){
+ .desktopHubSidebar{display:none!important}
+ .navlinks{display:flex!important;align-items:center;gap:6px;flex:0 0 auto}
+ .app>main,.app>.watchTicker,.app>.tickerWrap{margin-left:0!important}
+ .app>main{padding-left:clamp(18px,2vw,34px)!important;padding-right:clamp(18px,2vw,34px)!important;max-width:none!important;width:100%;box-sizing:border-box}
+ .nav{padding-left:clamp(18px,2vw,30px)!important;padding-right:clamp(18px,2vw,30px)!important}
+ .navlinks>button,.extrasDock>button{white-space:nowrap}
+ .navlinks>button{padding:9px 13px}
+}
+@media(min-width:1101px) and (max-width:1350px){
+ .nav{gap:12px!important}.brand{margin-right:2px!important}.globalSearch{max-width:250px!important;min-width:160px!important}
+ .navlinks>button,.extrasDock>button{padding:8px 9px!important;font-size:12px!important}
+ .topClock{display:none!important}
+}
+@keyframes r43FadeUp{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+.pageIntro,.hero,.questPathwayPage,.loadoutPage,.tradingTerminal{animation:r43FadeUp .24s ease-out both}
+button,.secondary,.primary,.questRouteStep,.loadoutCard,.dashboardCard{transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease,background-color .16s ease}
+@media(hover:hover) and (prefers-reduced-motion:no-preference){button:hover{filter:brightness(1.025)}.dashboardCard:hover,.questRouteStep:hover,.loadoutCard:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(70,80,120,.08)}}
+@media(prefers-reduced-motion:reduce){.pageIntro,.hero,.questPathwayPage,.loadoutPage,.tradingTerminal{animation:none!important}button,.secondary,.primary,.questRouteStep,.loadoutCard,.dashboardCard{transition:none!important}}
+
+/* R44 full-workspace redesign: compact top navigation, wide terminal and studio surfaces. */
+@media(min-width:1101px){
+ .app{--hub-workspace-width:100%;}
+ .app>main{max-width:none!important;margin-left:0!important;margin-right:0!important;padding:22px clamp(22px,2.1vw,38px) 48px!important;width:100%!important;}
+ .desktopHubSidebar{display:none!important}
+ .nav{position:sticky;top:0;z-index:120;display:flex;min-height:66px;gap:clamp(12px,1.7vw,28px);padding:0 clamp(20px,2vw,36px)!important;backdrop-filter:blur(18px);}
+ .navlinks{display:flex!important;align-items:center;gap:5px;flex:0 0 auto;order:2}
+ .globalSearch{flex:1 1 300px;min-width:180px;max-width:520px!important;order:3}
+ .brand{flex:0 0 auto;order:1}
+ .navlinks>button,.extrasDock>button{padding:10px 12px!important;border-radius:11px!important}
+ .extrasDock{position:relative}
+ .extrasMenu.toolsMenu{position:absolute;top:calc(100% + 9px);right:0;left:auto;z-index:150;min-width:245px;max-height:min(70vh,580px);overflow:auto;border:1px solid var(--hub-border,#e5e7f2);border-radius:16px;background:var(--hub-panel,#fff);box-shadow:0 18px 55px #27315b24;padding:7px;}
+ .extrasMenu.toolsMenu button{width:100%;text-align:left;border-radius:10px;padding:10px 12px;}
+ .pageIntro,.hero{max-width:none!important;margin:0 0 18px!important}
+ .tradingTerminal,.loadoutPage,.questPathwayPage,.screenerWide{width:100%;max-width:none!important;margin-left:auto!important;margin-right:auto!important}
+}
+.tradingTerminal{gap:18px!important}
+.terminalHero{border-radius:22px!important;padding:clamp(20px,2.5vw,34px)!important;box-shadow:0 12px 38px rgba(70,75,150,.08)!important}
+.terminalCharts{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:16px!important}
+.terminalChart,.terminalWatch,.terminalBottomGrid>section{border-radius:18px!important;box-shadow:0 7px 24px rgba(60,72,120,.055)!important}
+.terminalChart header{padding-bottom:12px!important}
+.terminalMarketRow{min-height:58px!important}
+.loadoutHero,.questPathHero{border-radius:22px!important;box-shadow:0 10px 34px rgba(60,72,120,.07)!important}
+.loadoutGrid{grid-template-columns:minmax(0,1.15fr) minmax(320px,.85fr)!important;gap:18px!important}
+.loadoutCard,.loadoutPlannerPanel,.loadoutStatsInput{border-radius:18px!important;box-shadow:0 7px 24px rgba(60,72,120,.05)!important}
+.gearSlot{min-height:100px!important;border-radius:12px!important;transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease!important}
+.gearSlot:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(85,85,190,.1)}
+.questPathGrid{grid-template-columns:minmax(0,1.55fr) minmax(280px,.75fr)!important;gap:18px!important}
+.questMainCard,.questSideCard{border-radius:18px!important;box-shadow:0 7px 24px rgba(60,72,120,.05)!important}
+.questTrainingPlanner{display:grid;gap:16px;padding:2px 0}
+.questTrainingControls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.questTrainingControls label{display:grid;gap:7px;color:var(--muted,#68718a);font-size:12px;font-weight:700}
+.questTrainingControls input,.questTrainingControls select{min-width:0;width:100%;border:1px solid var(--hub-border,#dfe3f2);border-radius:11px;padding:11px;background:var(--hub-panel,#fff);color:var(--text,#111a38);font:inherit}
+.questTrainingSummary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.questTrainingSummary>div{display:grid;gap:5px;padding:13px;border:1px solid var(--hub-border,#e4e7f2);border-radius:13px;background:linear-gradient(145deg,rgba(118,111,255,.06),transparent)}
+.questTrainingSummary small,.questTrainingMethodMetrics small{font-size:10px;color:var(--muted,#68718a)}
+.questTrainingSummary strong{font-size:17px;overflow-wrap:anywhere}
+.questTrainingModes{display:flex;gap:7px;flex-wrap:wrap;padding:5px;border-radius:13px;background:var(--hub-soft,#f3f5fc)}
+.questTrainingModes button{flex:1;min-width:95px;border:1px solid transparent;border-radius:10px;background:transparent;padding:10px 12px;color:var(--text,#111a38);font:inherit;font-size:12px;font-weight:750;cursor:pointer}
+.questTrainingModes button.active{background:linear-gradient(110deg,#635bff,#8477ff);color:#fff;box-shadow:0 5px 14px #6b63f333}
+.questTrainingMethodList{display:grid;gap:10px}
+.questTrainingMethodList article{position:relative;display:grid;grid-template-columns:34px minmax(0,1fr) auto auto;gap:12px;align-items:center;padding:14px;border:1px solid var(--hub-border,#e5e7f2);border-radius:14px;background:var(--hub-panel,#fff);transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease}
+.questTrainingMethodList article.recommended{border-color:#9b96ff;box-shadow:0 0 0 2px rgba(119,110,255,.08)}
+.questTrainingMethodList article:hover{transform:translateY(-1px);box-shadow:0 8px 22px rgba(64,72,125,.08)}
+.questTrainingRank{display:grid;place-items:center;width:32px;height:32px;border-radius:10px;background:rgba(109,100,255,.12);color:#655cf0;font-weight:850}
+.questTrainingMethodCopy{display:grid;gap:4px;min-width:0}
+.questTrainingMethodCopy strong{font-size:13px}
+.questTrainingMethodCopy small{font-size:11px;line-height:1.45;color:var(--muted,#68718a)}
+.questTrainingMethodCopy span{font-size:10px;color:var(--muted,#68718a)}
+.questTrainingMethodMetrics{display:grid;gap:3px;text-align:right;min-width:90px}
+.questTrainingMethodMetrics b{font-size:12px;font-variant-numeric:tabular-nums}
+.questTrainingBadge{align-self:start;border-radius:999px;background:rgba(112,105,255,.1);color:#655cf0;padding:5px 8px;font-size:9px;font-weight:850;letter-spacing:.4px}
+.questTrainingDisclaimer{margin:0;color:var(--muted,#68718a);font-size:11px;line-height:1.6}
+@media(max-width:1100px){.terminalCharts{grid-template-columns:1fr!important}.loadoutGrid,.questPathGrid{grid-template-columns:1fr!important}.questTrainingControls{grid-template-columns:1fr 1fr}.questTrainingSummary{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.questTrainingControls{grid-template-columns:1fr}.questTrainingMethodList article{grid-template-columns:30px minmax(0,1fr);align-items:start}.questTrainingMethodMetrics{grid-column:2;grid-template-columns:auto auto;gap:5px 10px;text-align:left}.questTrainingBadge{position:absolute;right:10px;top:10px}.questTrainingMethodCopy{padding-right:50px}.questTrainingSummary strong{font-size:14px}}
+@media(prefers-reduced-motion:reduce){.gearSlot,.questTrainingMethodList article,.terminalChart{transition:none!important}}
+@media(min-width:1101px){.brand{order:0}.navlinks{order:1}.globalSearch{order:2}.nav>.navActions,.nav>.navRight,.nav>.navTools{order:3}}
+@media(min-width:1101px){.brand,.navlinks,.globalSearch{order:initial}}
