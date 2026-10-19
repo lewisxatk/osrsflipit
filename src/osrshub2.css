@@ -100,3 +100,47 @@
 .td-open-item-page:hover{border-color:var(--td-accent);color:var(--td-text)}
 .td-open-item-page:disabled{opacity:.45;cursor:not-allowed}
 @media(max-width:480px){.td-calc-fields{grid-template-columns:1fr 1fr}.td-calc-results{grid-template-columns:1fr 1fr}.td-open-item-page{font-size:9px}}
+
+
+/* Final Trading Terminal polish: compact calculator, short-window charts and clean item route. */
+.td-inline-calculator{padding:9px!important;margin-top:7px!important;border-radius:9px!important;gap:8px!important;background:var(--td-panel2)!important;border-color:var(--td-border)!important;box-shadow:none!important}
+.td-inline-calculator>strong{font-size:11px!important;line-height:1.25;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.td-calc-fields{gap:6px!important}
+.td-calc-fields label{font-size:9px!important;gap:4px!important}
+.td-calc-fields input{height:31px!important;min-width:0;padding:0 7px!important;border-radius:6px!important;font-size:10px!important}
+.td-calc-results{gap:5px!important}
+.td-calc-results>div{padding:6px 7px!important;border-radius:6px!important}
+.td-calc-results span{font-size:8px!important;line-height:1.2}
+.td-calc-results b{font-size:10px!important;line-height:1.2;overflow-wrap:anywhere}
+.td-calc-results .wide{display:grid!important;grid-template-columns:1fr auto;align-items:center;gap:4px 8px}
+.td-calc-results .wide small{grid-column:1/-1}
+.td-inline-calculator>small{display:block;font-size:8px!important;line-height:1.35!important;margin-top:0}
+.td-mini-history{margin-top:12px;padding-top:11px;border-top:1px solid var(--td-border)}
+.td-mini-history-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:8px}
+.td-mini-history-head strong{font-size:11px;color:var(--td-text);font-weight:750}
+.td-mini-history-head>span{font-size:9px;color:var(--td-muted)}
+.td-mini-history-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.td-mini-history-card{min-width:0;padding:8px 9px 7px;border:1px solid var(--td-border);border-radius:8px;background:var(--td-panel2)}
+.td-mini-history-title{display:flex;align-items:center;justify-content:space-between;gap:5px}
+.td-mini-history-title span{font-size:9px;color:var(--td-muted);font-weight:700}
+.td-mini-history-title b{font-size:10px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.td-mini-history-card svg{display:block;width:100%;height:48px;margin-top:5px;overflow:visible}
+.td-mini-baseline{stroke:var(--td-border);stroke-width:1;stroke-dasharray:3 4}
+.td-mini-buy-line,.td-mini-sell-line{fill:none;stroke-width:2.2;stroke-linejoin:round;stroke-linecap:round;vector-effect:non-scaling-stroke}
+.td-mini-buy-line{stroke:var(--td-buy)}.td-mini-sell-line{stroke:var(--td-sell)}
+.td-mini-no-data{height:48px;display:grid;place-items:center;color:var(--td-muted);font-size:8px;text-align:center}
+.td-mini-history-legend{display:flex;align-items:center;gap:9px;margin-top:3px;color:var(--td-muted);font-size:8px}
+.td-mini-history-legend span{display:flex;align-items:center;gap:4px}.td-mini-history-legend i{width:6px;height:6px;border-radius:50%;display:inline-block}.td-mini-history-legend i.buy{background:var(--td-buy)}.td-mini-history-legend i.sell{background:var(--td-sell)}.td-mini-history-legend small{margin-left:auto;font-size:8px}
+.itemPageMain{max-width:none!important;width:100%;padding:0!important;margin:0!important;min-height:0!important}
+.routeItemPage.drawerback{padding:0!important;min-height:calc(100vh - 72px)!important}
+.routeItemPage .drawer{padding:14px clamp(14px,2.5vw,34px) 34px!important;width:min(1320px,100%)!important}
+.routeItemPage .itemPageTopActions{margin:0 0 10px!important;min-height:30px}
+.routeItemPage .eyebrow{margin-bottom:7px!important}
+.routeItemPage .itemtitle{margin-bottom:6px!important}
+.routeItemPage .detailTileControls{margin:8px 0!important;padding:9px 11px!important}
+.routeItemPage .panelstats{margin:8px 0!important}
+.routeItemPage .chartbox{margin-top:8px!important;padding:12px!important}
+.routeItemPage .chartNote{margin-top:5px!important;padding:5px 2px!important}
+.routeItemPage .multiGraphCompare{margin-top:10px!important}
+.routeItemPage .itemFullSections{margin-top:12px!important}
+@media(max-width:760px){.td-mini-history-grid{grid-template-columns:1fr;gap:6px}.td-mini-history-card{padding:8px 9px}.td-mini-history-card svg{height:54px}.td-mini-history-head{align-items:flex-start;flex-direction:column;gap:3px}.routeItemPage.drawerback{min-height:calc(100vh - 58px)!important}.routeItemPage .drawer{padding:10px 12px 28px!important}}
