@@ -1,0 +1,16 @@
+CREATE TABLE IF NOT EXISTS data_meta (key TEXT PRIMARY KEY,value TEXT NOT NULL,updated_at INTEGER NOT NULL);
+CREATE TABLE IF NOT EXISTS market_current (item_id INTEGER PRIMARY KEY,high INTEGER,low INTEGER,high_time INTEGER,low_time INTEGER,high_volume INTEGER DEFAULT 0,low_volume INTEGER DEFAULT 0,avg_high INTEGER DEFAULT 0,avg_low INTEGER DEFAULT 0,limit_qty INTEGER DEFAULT 0,name TEXT,examine TEXT,members INTEGER DEFAULT 0,tradeable INTEGER DEFAULT 0,icon TEXT,value INTEGER DEFAULT 0,alch INTEGER DEFAULT 0,last_seen INTEGER NOT NULL);
+CREATE TABLE IF NOT EXISTS market_snapshots (id INTEGER PRIMARY KEY AUTOINCREMENT,captured_at INTEGER NOT NULL,source TEXT NOT NULL,payload_json TEXT NOT NULL);
+CREATE INDEX IF NOT EXISTS idx_market_snapshots_time ON market_snapshots(captured_at DESC);
+CREATE TABLE IF NOT EXISTS osrs_skills (id INTEGER PRIMARY KEY,name TEXT UNIQUE NOT NULL,max_level INTEGER DEFAULT 99,members INTEGER DEFAULT 0,icon TEXT);
+CREATE TABLE IF NOT EXISTS osrs_quests (id INTEGER PRIMARY KEY,name TEXT UNIQUE NOT NULL,members INTEGER DEFAULT 0,quest_points INTEGER DEFAULT 0,difficulty TEXT,duration TEXT,requirements_json TEXT,rewards_json TEXT,updated_at INTEGER);
+CREATE TABLE IF NOT EXISTS osrs_monsters (id INTEGER PRIMARY KEY,name TEXT UNIQUE NOT NULL,combat_level INTEGER,hitpoints INTEGER,max_hit INTEGER,attack_style TEXT,weakness TEXT,members INTEGER DEFAULT 0,boss INTEGER DEFAULT 0,slayer_level INTEGER DEFAULT 0,attributes_json TEXT,updated_at INTEGER);
+CREATE TABLE IF NOT EXISTS osrs_loot (id INTEGER PRIMARY KEY AUTOINCREMENT,monster_id INTEGER,item_id INTEGER,quantity_min INTEGER,quantity_max INTEGER,chance_num INTEGER,chance_den INTEGER,notes TEXT);
+CREATE TABLE IF NOT EXISTS osrs_methods (id INTEGER PRIMARY KEY,name TEXT UNIQUE NOT NULL,category TEXT,skill TEXT,level_required INTEGER DEFAULT 1,gp_hour_base INTEGER DEFAULT 0,xp_hour_base INTEGER DEFAULT 0,attention TEXT,members INTEGER DEFAULT 0,inputs_json TEXT,outputs_json TEXT,requirements_json TEXT,notes TEXT,updated_at INTEGER);
+CREATE TABLE IF NOT EXISTS osrs_equipment (item_id INTEGER PRIMARY KEY,slot TEXT,attack_speed INTEGER,attack_bonus_json TEXT,defence_bonus_json TEXT,strength_bonus_json TEXT,prayer_bonus INTEGER DEFAULT 0,magic_damage REAL DEFAULT 0,ranged_strength INTEGER DEFAULT 0,requirements_json TEXT,updated_at INTEGER);
+CREATE TABLE IF NOT EXISTS osrs_bosses (monster_id INTEGER PRIMARY KEY,name TEXT UNIQUE NOT NULL,style TEXT,solo INTEGER DEFAULT 0,team INTEGER DEFAULT 0,min_combat INTEGER DEFAULT 0,loot_profile TEXT,notes TEXT);
+CREATE TABLE IF NOT EXISTS osrs_item_data (item_id INTEGER PRIMARY KEY,name TEXT,data_json TEXT NOT NULL,updated_at INTEGER NOT NULL);
+CREATE TABLE IF NOT EXISTS osrs_monster_data (monster_id INTEGER PRIMARY KEY,name TEXT,data_json TEXT NOT NULL,updated_at INTEGER NOT NULL);
+CREATE TABLE IF NOT EXISTS osrs_prayer_data (prayer_id INTEGER PRIMARY KEY,name TEXT,data_json TEXT NOT NULL,updated_at INTEGER NOT NULL);
+CREATE INDEX IF NOT EXISTS idx_osrs_item_name ON osrs_item_data(name);
+CREATE INDEX IF NOT EXISTS idx_osrs_monster_name ON osrs_monster_data(name);
