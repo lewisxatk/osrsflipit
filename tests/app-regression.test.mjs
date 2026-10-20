@@ -379,7 +379,9 @@ test('R23 historical backtester is a routed tool with strategy controls, auditab
   assert.match(source, /EQUITY CURVE/);
   assert.match(source, /backtestEquityChart/);
   assert.match(source, /Historical simulation, not a fill guarantee/);
-  assert.match(source, /\["backtest","Historical Backtester"\]/);
+  assert.match(source, /backtest:"\/backtest"/);
+  assert.doesNotMatch(source.slice(source.indexOf('const TAB_PATHS='), source.indexOf('function tabFromPath')), /\["backtest","Historical Backtester"\]/);
+  assert.match(source, /function HistoricalBacktester\(/);
   assert.match(styles, /\.backtestMetricGrid/);
   assert.match(styles, /@media\(max-width:520px\)\{\.backtestHero/);
 });
@@ -391,5 +393,7 @@ test('R24-R26 Market Radar is routed, exposes evidence-safe current snapshot lan
   assert.match(source, /does not claim historical movement or guarantee a fill/);
   assert.match(source, /mobileQuickCalcSheet/);
   assert.match(source, /mobileQuickCalcFab/);
-  assert.match(source, /<span>Radar<\/span>/);
+  assert.match(source, /Market Radar/);
+  assert.match(source, /analysisRadarTail/);
+  assert.match(source, /<span>Trading<\/span>/);
 });

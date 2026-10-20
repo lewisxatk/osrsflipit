@@ -24,7 +24,9 @@ test('R27 Account Studio consolidates legacy Loadout and Calculations routes wit
   assert.match(source, /<Calculators items=\{items\}\/>/);
   assert.match(source, /osrshub-loadout-budget/);
   assert.match(source, /osrshub-loadout-builds/);
-  assert.match(source, /\["account","Account Studio"\]/);
+  assert.match(source, /\["account","Account Studio","◉"\]/);
+  assert.match(source, /Quest Progression/);
+  assert.match(source, /Loadout Studio/);
 });
 
 test('R27 item analytics page provides a back-to-top control on full item routes', () => {

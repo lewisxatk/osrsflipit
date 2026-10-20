@@ -15,9 +15,12 @@ test('R40 Quest Pathway persists its goal and checklist locally without API writ
   assert.match(source, /function QuestPathway\(/);
   assert.match(source, /Data quality note/);
 });
-test('R40 navigation exposes Quest Pathway and Loadout Studio on desktop and mobile', () => {
-  assert.match(source, /\["quests","Quest Pathway"\],\["loadout","Loadout Studio"\]/);
-  assert.match(source, /\[\["command","Command Centre"\],\["quests","Quest Pathway"\],\["loadout","Loadout Studio"\]/);
+test('R40 navigation consolidates Quest Pathway and Loadout Studio into Account Studio tabs', () => {
+  assert.match(source, /Quest Progression/);
+  assert.match(source, /\["gear","calculators","account","quests"\]/);
+  assert.match(source, /Quest Progression/);
+  assert.match(source, /Loadout Studio/);
+  assert.match(source, /Account Studio sections/);
 });
 test('R40 styles include reduced-motion support and responsive Quest Pathway layouts', () => {
   assert.match(styles, /prefers-reduced-motion:reduce/);

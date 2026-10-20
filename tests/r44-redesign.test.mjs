@@ -3,11 +3,14 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 const main=fs.readFileSync(new URL('../src/main.jsx',import.meta.url),'utf8');
 const css=fs.readFileSync(new URL('../src/styles.css',import.meta.url),'utf8');
-test('R44 desktop navigation is compact and routes secondary pages through Tools',()=>{
+test('R44 navigation is simplified and hidden legacy pages remain directly routable',()=>{
  assert.match(main,/>Home<\/button>/);
  assert.match(main,/>Trading Terminal<\/button>/);
- assert.match(main,/>Screener<\/button>/);
- assert.match(main,/>Tools <ChevronDown/);
+ assert.match(main,/>Account Studio<\/button>/);
+ assert.doesNotMatch(main.slice(main.indexOf('<div className="navlinks">'),main.indexOf('<div className="globalSearch">')),/>Screener<\/button>/);
+ assert.match(main,/>More <ChevronDown/);
+ assert.match(main,/screener:"\/screener"/);
+ assert.match(main,/backtest:"\/backtest"/);
  assert.match(css,/\.desktopHubSidebar\{display:none!important\}/);
  assert.match(css,/\.app>main\{max-width:none!important/);
 });
