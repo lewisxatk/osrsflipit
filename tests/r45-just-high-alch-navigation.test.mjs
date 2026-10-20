@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 const source=await readFile(new URL('../src/main.jsx',import.meta.url),'utf8');
 const styles=await readFile(new URL('../src/osrshub2.css',import.meta.url),'utf8');
-test('Just High Alch is a dedicated routed page with nature rune-aware profit and price history',()=>{
+test('High Alcher is a dedicated routed page with nature rune-aware profit and price history',()=>{
  assert.match(source,/highalch:"\/just-high-alch"/);
  assert.match(source,/function JustHighAlch\(/);
  assert.match(source,/profit=alch-cost/);
@@ -13,9 +13,9 @@ test('Just High Alch is a dedicated routed page with nature rune-aware profit an
  assert.match(source,/Historical prices unavailable/);
  assert.match(source,/timestep=\$\{step\}&id=\$\{selected\.id\}/);
 });
-test('Quick Tools pop-out is desktop-only and links to Just High Alch',()=>{
+test('Quick Tools pop-out is desktop-only and links to High Alcher',()=>{
  assert.match(source,/function QuickToolsDock\(/);
- assert.match(source,/Open Just High Alch/);
+ assert.match(source,/Open High Alcher/);
  assert.match(source,/className="quickToolsDock desktopOnlyGe"/);
  assert.match(styles,/@media\(max-width:1050px\)\{\.quickToolsDock/);
 });

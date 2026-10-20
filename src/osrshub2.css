@@ -210,3 +210,15 @@ html[data-theme="dark"] .jhaFilters input:not([type=checkbox]),html[data-theme="
 html[data-theme="dark"] .quickToolsLauncher,html[data-theme="void"] .quickToolsLauncher,html[data-theme="aurora"] .quickToolsLauncher{background:#171b22;color:#eef2f7;border-color:#465063}
 html[data-theme="comfort"] .jhaHero,html[data-theme="comfort"] .jhaStatGrid article,html[data-theme="comfort"] .jhaChartCard,html[data-theme="comfort"] .jhaFilters,html[data-theme="comfort"] .jhaTableCard,html[data-theme="comfort"] .quickToolsPopover{background:#fbf7ec;color:#3b352b;border-color:#ddd3bd}
 @media(max-width:1050px){.quickToolsDock{display:none!important}}
+
+/* OSRS Hub navigation polish: reclaim the oversized intro space globally. */
+main{padding-top:24px!important}
+.pageIntro{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:0 0 14px!important;padding:4px 0 10px!important;border-bottom:1px solid var(--border,#e5e7eb)}
+.pageIntro .eyebrow{font-size:9px;letter-spacing:.12em;margin:0 0 3px!important}
+.pageIntro h1{font-size:clamp(18px,2vw,24px)!important;line-height:1.15!important;letter-spacing:-.025em!important;margin:0!important;font-weight:750!important}
+.pageIntro p{display:none!important}
+.hero.compactPageHeading{align-items:center!important;margin:0 0 16px!important;min-height:42px!important}
+.hero.compactPageHeading .eyebrow{margin:0 0 3px!important;font-size:9px!important}
+.hero.compactPageHeading h1{font-size:clamp(20px,2.2vw,26px)!important;line-height:1.15!important;letter-spacing:-.035em!important}
+.hero.compactPageHeading .status{padding:7px 10px!important;font-size:11px!important}
+@media(max-width:700px){main{padding-top:16px!important}.pageIntro{margin-bottom:10px!important}.pageIntro .status{display:none}.hero.compactPageHeading{margin-bottom:12px!important}}
