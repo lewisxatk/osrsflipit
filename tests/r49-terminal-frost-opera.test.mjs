@@ -44,3 +44,14 @@ test("R51 theme repair forces readable Terminal surfaces and high-contrast Paper
   assert.ok(styles.includes('html[data-theme="light"] .tradingTerminal .green'));
   assert.ok(styles.includes('color:#087447!important'));
 });
+
+
+test("R52 adds persistent buy/sell graph colour controls and resets to theme defaults", () => {
+  assert.ok(app.includes('aria-label="Buy line colour"'));
+  assert.ok(app.includes('aria-label="Sell line colour"'));
+  assert.ok(app.includes('osrshub-terminal-buy-color'));
+  assert.ok(app.includes('osrshub-terminal-sell-color'));
+  assert.ok(app.includes('Reset colours'));
+  assert.ok(styles.includes('html[data-theme="frost"] .app :is('));
+  assert.ok(styles.includes('html[data-theme="opera"] .app :is('));
+});
