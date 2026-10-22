@@ -644,3 +644,20 @@ html[data-theme="light"] .tradingTerminal .redtxt,
 html[data-theme="light"] .tradingTerminal .negative,
 html[data-theme="light"] .tradingTerminal .td-negative,
 html[data-theme="light"] .app .redtxt{color:#bd263c!important;font-weight:700!important}
+
+
+/* R52: remove legacy fixed-white surfaces in Frost and Opera, including Market and Item Analytics. */
+html[data-theme="frost"],html[data-theme="frost"] body,html[data-theme="frost"] .app{background:#f3f7fc!important;color:#17283c!important}
+html[data-theme="opera"],html[data-theme="opera"] body,html[data-theme="opera"] .app{background:#100e11!important;color:#fff1f4!important}
+html[data-theme="frost"] .app :is(input,select,textarea),html[data-theme="frost"] .app :is(.searchBox,.searchInput,.searchBar,.searchField,.screenerTableShell,.screenerTableWrap,.tableShell,.marketTableWrap,.tableWrap,.tableContainer,.analyticsPanel,.itemAnalytics,.itemPanel,.itemDetailPanel,.chartPanel,.chartCard,.detailCard,.detailPanel,.metricCard,.statCard,.filterPanel,.filtersPanel,.dropdownMenu,.popover,.modal,.modalContent,.panel,.card,.cardSurface,.tableCard,.tableShell table){background-color:#fff!important;color:#17283c!important;border-color:#d3dfed!important}
+html[data-theme="opera"] .app :is(input,select,textarea),html[data-theme="opera"] .app :is(.searchBox,.searchInput,.searchBar,.searchField,.screenerTableShell,.screenerTableWrap,.tableShell,.marketTableWrap,.tableWrap,.tableContainer,.analyticsPanel,.itemAnalytics,.itemPanel,.itemDetailPanel,.chartPanel,.chartCard,.detailCard,.detailPanel,.metricCard,.statCard,.filterPanel,.filtersPanel,.dropdownMenu,.popover,.modal,.modalContent,.panel,.card,.cardSurface,.tableCard,.tableShell table){background-color:#1b171c!important;color:#fff1f4!important;border-color:#49323b!important}
+html[data-theme="frost"] .app :is(th,.tableHead,.tableHeader,.table-header,.screenerTable thead,.marketTable thead){background:#eaf2fb!important;color:#243b53!important}
+html[data-theme="opera"] .app :is(th,.tableHead,.tableHeader,.table-header,.screenerTable thead,.marketTable thead){background:#2b2027!important;color:#fff1f4!important}
+html[data-theme="frost"] .app :is(td,tr,.tableRow,.table-row){border-color:#d3dfed!important}
+html[data-theme="opera"] .app :is(td,tr,.tableRow,.table-row){border-color:#49323b!important}
+html[data-theme="frost"] .app :is(h1,h2,h3,h4,h5,label,th,td,p,small,strong,b,legend){color:inherit}
+html[data-theme="opera"] .app :is(h1,h2,h3,h4,h5,label,th,td,p,small,strong,b,legend){color:inherit}
+html[data-theme="frost"] .tradingTerminal .td-line-color,html[data-theme="opera"] .tradingTerminal .td-line-color{display:inline-flex;align-items:center;gap:5px;padding:0 6px;font-size:10px;font-weight:700;white-space:nowrap}
+.tradingTerminal .td-line-color input[type="color"]{width:25px;height:25px;min-width:25px;padding:2px;border:1px solid var(--oh-line,#d3dfed);border-radius:7px;background:transparent;cursor:pointer}
+.tradingTerminal .td-chart-controls{flex-wrap:wrap;gap:7px}
+@media(max-width:700px){.tradingTerminal .td-line-color{flex:0 0 auto}}
