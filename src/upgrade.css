@@ -661,3 +661,33 @@ html[data-theme="frost"] .tradingTerminal .td-line-color,html[data-theme="opera"
 .tradingTerminal .td-line-color input[type="color"]{width:25px;height:25px;min-width:25px;padding:2px;border:1px solid var(--oh-line,#d3dfed);border-radius:7px;background:transparent;cursor:pointer}
 .tradingTerminal .td-chart-controls{flex-wrap:wrap;gap:7px}
 @media(max-width:700px){.tradingTerminal .td-line-color{flex:0 0 auto}}
+
+
+/* R53 — Fresh motion system: purposeful, restrained, theme-aware. */
+:root{--oh-motion-fast:140ms;--oh-motion-mid:220ms;--oh-motion-slow:360ms;--oh-ease:cubic-bezier(.2,.75,.25,1)}
+@keyframes ohFadeUp{from{opacity:0;transform:translate3d(0,8px,0)}to{opacity:1;transform:translate3d(0,0,0)}}
+@keyframes ohSoftIn{from{opacity:0}to{opacity:1}}
+@keyframes ohGlowPulse{0%,100%{box-shadow:0 0 0 rgba(54,211,153,0)}50%{box-shadow:0 0 0 3px rgba(54,211,153,.12)}}
+@keyframes ohPriceUp{0%{background-color:rgba(16,185,129,.28);transform:translateY(1px)}100%{background-color:transparent;transform:translateY(0)}}
+@keyframes ohPriceDown{0%{background-color:rgba(244,63,94,.25);transform:translateY(1px)}100%{background-color:transparent;transform:translateY(0)}}
+@keyframes ohShimmer{0%{background-position:150% 0}100%{background-position:-150% 0}}
+@keyframes ohSweep{0%{background-position:180% 0}100%{background-position:-180% 0}}
+/* Soft entrance and hover depth for cards and controls */
+.app :is(.card,.panel,.stat-card,.statCard,.metric-card,.metricCard,.dashboard-card,.dashboardCard,.td-stat-grid article,.td-left-section,.td-inline-calculator,.td-watch-panel,.td-chart-summary>div){animation:ohFadeUp 300ms var(--oh-ease) both}
+.app :is(button,[role="button"],.clickable){transition:background-color var(--oh-motion-fast) ease,border-color var(--oh-motion-fast) ease,box-shadow var(--oh-motion-mid) var(--oh-ease),transform var(--oh-motion-fast) var(--oh-ease),color var(--oh-motion-fast) ease}
+.app :is(button,[role="button"],.clickable):not(:disabled):hover{box-shadow:0 5px 16px rgba(35,65,105,.10)}
+.app :is(button,[role="button"],.clickable):not(:disabled):active{transform:translateY(1px) scale(.99)}
+.app :is(input,select,textarea){transition:border-color var(--oh-motion-fast) ease,box-shadow var(--oh-motion-fast) ease}
+.app :is(input,select,textarea):focus-visible{outline:none;box-shadow:0 0 0 3px rgba(75,145,220,.16)}
+.tradingTerminal .td-stat-grid article{transition:transform var(--oh-motion-mid) var(--oh-ease),box-shadow var(--oh-motion-mid) var(--oh-ease),border-color var(--oh-motion-mid) ease}
+.tradingTerminal .td-stat-grid article:hover{transform:translateY(-2px);box-shadow:var(--oh-shadow,0 8px 24px rgba(20,40,70,.1))}
+.tradingTerminal .td-watch-price.priceFlash-up{animation:ohPriceUp 850ms ease-out!important;color:#07865e!important;font-weight:800!important}
+.tradingTerminal .td-watch-price.priceFlash-down{animation:ohPriceDown 850ms ease-out!important;color:#d52e4b!important;font-weight:800!important}
+/* Shimmer for existing loading states only; never animate fake market values. */
+.app :is(.skeleton,.loadingSkeleton,.loading-skeleton,.shimmer){background-image:linear-gradient(100deg,transparent 20%,rgba(140,160,190,.12) 45%,transparent 70%);background-size:220% 100%;animation:ohShimmer 1.5s ease-in-out infinite}
+html[data-theme="frost"] .app :is(button,[role="button"]):not(:disabled):hover{box-shadow:0 7px 20px rgba(55,110,170,.14)}
+html[data-theme="opera"] .app :is(button,[role="button"]):not(:disabled):hover{box-shadow:0 7px 20px rgba(241,45,77,.14)}
+/* Chart colour pickers are deliberately cheap to interact with: no animated transitions or layout work. */
+.tradingTerminal .td-line-color input[type="color"]{transition:none!important;animation:none!important;touch-action:manipulation}
+.tradingTerminal .td-chart-controls .td-line-color{contain:layout style}
+@media(prefers-reduced-motion:reduce){:root{--oh-motion-fast:0ms;--oh-motion-mid:0ms;--oh-motion-slow:0ms}.app *, .app *::before,.app *::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
