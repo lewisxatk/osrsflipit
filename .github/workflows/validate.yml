@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   validate:
-    name: Tests and production build
+    name: Tests, production build, and versioned ZIPs
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
@@ -26,3 +26,17 @@ jobs:
         run: npm test
       - name: Build production bundle
         run: npm run build
+      - name: Package versioned source and production bundle
+        run: |
+          VERSION="$(node -p "require('./package.json').version")"
+          mkdir -p release
+          zip -r "release/osrshub-${VERSION}-source.zip" . -x '.git/*' 'node_modules/*' 'dist/*' 'release/*'
+          zip -r "release/osrshub-${VERSION}-production-dist.zip" dist
+          printf 'OSRS Hub %s\nCommit: %s\nValidation: npm test + npm run build passed\n' "$VERSION" "$GITHUB_SHA" > release/BUILD-INFO.txt
+      - name: Upload versioned build archives
+        uses: actions/upload-artifact@v4
+        with:
+          name: osrshub-${{ github.sha }}-build-zips
+          path: release/*
+          if-no-files-found: error
+          retention-days: 30
