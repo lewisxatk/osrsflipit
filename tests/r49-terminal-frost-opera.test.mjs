@@ -55,3 +55,18 @@ test("R52 adds persistent buy/sell graph colour controls and resets to theme def
   assert.ok(styles.includes('html[data-theme="frost"] .app :is('));
   assert.ok(styles.includes('html[data-theme="opera"] .app :is('));
 });
+
+
+test("R53 includes accessible, reduced-motion-aware visual effects", () => {
+  assert.ok(styles.includes("@keyframes ohFadeUp"));
+  assert.ok(styles.includes("@keyframes ohPriceUp"));
+  assert.ok(styles.includes("@keyframes ohShimmer"));
+  assert.ok(styles.includes("@media(prefers-reduced-motion:reduce)"));
+});
+
+test("R53 graph colour pickers do not trigger React state updates on every drag event", () => {
+  assert.ok(app.includes('defaultValue={chartColors.buy}'));
+  assert.ok(app.includes('onBlur={e=>{const next=e.currentTarget.value;if(next!==chartColors.buy)setChartBuyColor(next)}}'));
+  assert.ok(app.includes('defaultValue={chartColors.sell}'));
+  assert.ok(app.includes('onBlur={e=>{const next=e.currentTarget.value;if(next!==chartColors.sell)setChartSellColor(next)}}'));
+});
