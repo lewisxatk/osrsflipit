@@ -31,7 +31,7 @@ jobs:
           VERSION="$(node -p "require('./package.json').version")"
           mkdir -p release
           zip -r "release/osrshub-${VERSION}-source.zip" . -x '.git/*' 'node_modules/*' 'dist/*' 'release/*'
-          zip -r "release/osrshub-${VERSION}-production-dist.zip" dist
+          zip -r "release/osrshub-${VERSION}-production-site.zip" site
           printf 'OSRS Hub %s\nCommit: %s\nValidation: npm test + npm run build passed\n' "$VERSION" "$GITHUB_SHA" > release/BUILD-INFO.txt
       - name: Upload versioned build archives
         uses: actions/upload-artifact@v4
