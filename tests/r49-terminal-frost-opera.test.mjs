@@ -36,3 +36,11 @@ test("Mobile terminal scanner tabs and bottom navigation have bounded sticky/fix
   assert.ok(styles.includes(".td-scanner-tabs{position:sticky!important;top:58px!important"));
   assert.ok(styles.includes(".mobileNav{position:fixed!important"));
 });
+
+
+test("R51 theme repair forces readable Terminal surfaces and high-contrast Paper profit values", () => {
+  assert.ok(styles.includes('html[data-theme="frost"] .tradingTerminal :is('));
+  assert.ok(styles.includes('html[data-theme="opera"] .tradingTerminal :is('));
+  assert.ok(styles.includes('html[data-theme="light"] .tradingTerminal .green'));
+  assert.ok(styles.includes('color:#087447!important'));
+});
