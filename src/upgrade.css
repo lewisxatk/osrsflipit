@@ -611,3 +611,36 @@ html[data-theme="opera"] .tradingTerminal .td-market-table th,html[data-theme="o
 html[data-theme="frost"] .tradingTerminal .td-table-tools input,html[data-theme="frost"] .tradingTerminal .td-table-tools select,html[data-theme="opera"] .tradingTerminal .td-table-tools input,html[data-theme="opera"] .tradingTerminal .td-table-tools select{min-width:0}
 @media(max-width:1200px){.tradingTerminal .td-table-tools{grid-template-columns:repeat(2,minmax(0,1fr))}.tradingTerminal .td-table-tools input:first-child{grid-column:1/-1}}
 @media(max-width:520px){.tradingTerminal .td-inline-calculator{padding:10px}.tradingTerminal .td-inline-calculator .quickCalcResult strong,.tradingTerminal .td-inline-calculator .quickCalcResult b{font-size:11px}}
+
+
+/* R51 accessibility repair: make every Terminal surface follow the selected global theme. */
+html[data-theme="frost"] .tradingTerminal{
+ --td-bg:#f3f7fc;--td-panel:#ffffff;--td-panel2:#f7faff;--td-text:#17283c;--td-muted:#536b82;--td-border:#d3dfed;--td-accent:#397fce;
+ background:#f3f7fc!important;color:#17283c!important;border-color:#d3dfed!important;
+}
+html[data-theme="opera"] .tradingTerminal{
+ --td-bg:#100e11;--td-panel:#1b171c;--td-panel2:#241d24;--td-text:#fff1f4;--td-muted:#d0bdc5;--td-border:#49323b;--td-accent:#ff3454;
+ background:#100e11!important;color:#fff1f4!important;border-color:#49323b!important;
+}
+html[data-theme="frost"] .tradingTerminal :is(.td-topline,.td-stat-grid article,.td-left-panel,.td-left-section,.td-chart-panel,.td-market-table-panel,.td-watch-panel,.td-custom-scanner,.td-inline-calculator,.td-market-status,.td-chart-summary>div,.td-watch-row,.td-table-tools,.td-chart-controls,.td-quick-tool,.td-market-table,.td-item-header,.td-item-detail,.td-stat-card){background-color:#fff!important;background-image:none!important;color:#17283c!important;border-color:#d3dfed!important}
+html[data-theme="opera"] .tradingTerminal :is(.td-topline,.td-stat-grid article,.td-left-panel,.td-left-section,.td-chart-panel,.td-market-table-panel,.td-watch-panel,.td-custom-scanner,.td-inline-calculator,.td-market-status,.td-chart-summary>div,.td-watch-row,.td-table-tools,.td-chart-controls,.td-quick-tool,.td-market-table,.td-item-header,.td-item-detail,.td-stat-card){background-color:#1b171c!important;background-image:none!important;color:#fff1f4!important;border-color:#49323b!important}
+html[data-theme="frost"] .tradingTerminal :is(h1,h2,h3,h4,h5,strong,b,label,small,p,span,em,th,td,button,a,legend){color:#17283c}
+html[data-theme="opera"] .tradingTerminal :is(h1,h2,h3,h4,h5,strong,b,label,small,p,span,em,th,td,button,a,legend){color:#fff1f4}
+html[data-theme="frost"] .tradingTerminal :is(.td-live-dot,.td-stat-icon,.td-item-icon){filter:none}
+html[data-theme="frost"] .tradingTerminal :is(input,select,textarea){background:#f7faff!important;color:#17283c!important;border-color:#c7d7e8!important}
+html[data-theme="opera"] .tradingTerminal :is(input,select,textarea){background:#241d24!important;color:#fff1f4!important;border-color:#49323b!important}
+html[data-theme="frost"] .tradingTerminal .td-market-table tr:hover td,html[data-theme="frost"] .tradingTerminal .td-market-table tr.current td{background:#eaf3ff!important}
+html[data-theme="opera"] .tradingTerminal .td-market-table tr:hover td,html[data-theme="opera"] .tradingTerminal .td-market-table tr.current td{background:#302029!important}
+html[data-theme="frost"] .tradingTerminal .td-chart-summary strong,html[data-theme="frost"] .tradingTerminal .td-stat-grid strong,html[data-theme="frost"] .tradingTerminal .td-item-title{color:#17283c!important}
+html[data-theme="opera"] .tradingTerminal .td-chart-summary strong,html[data-theme="opera"] .tradingTerminal .td-stat-grid strong,html[data-theme="opera"] .tradingTerminal .td-item-title{color:#fff1f4!important}
+/* Paper theme: high contrast green values on white and pale cards. */
+html[data-theme="light"] .tradingTerminal .green,
+html[data-theme="light"] .tradingTerminal .positive,
+html[data-theme="light"] .tradingTerminal .td-positive,
+html[data-theme="light"] .tradingTerminal [class*="green"],
+html[data-theme="light"] .app .green,
+html[data-theme="light"] .app .positive{color:#087447!important;font-weight:700!important}
+html[data-theme="light"] .tradingTerminal .redtxt,
+html[data-theme="light"] .tradingTerminal .negative,
+html[data-theme="light"] .tradingTerminal .td-negative,
+html[data-theme="light"] .app .redtxt{color:#bd263c!important;font-weight:700!important}
