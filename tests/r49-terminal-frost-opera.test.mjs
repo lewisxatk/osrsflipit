@@ -83,3 +83,11 @@ test("R54 terminal profiles save immediately and maximum price participates in f
   assert.ok(app.includes('[valid,tableQuery,category,minVolume,minMargin,maxPrice,sortKey,sortDir,scannerTab,quickFilter]'));
   assert.ok(app.includes('setMaxPrice(profile.maxPrice||"")'));
 });
+
+
+test("R55 keeps Potential Profit and ROI as separate named Terminal columns", () => {
+  assert.ok(app.includes('["limitProfit","Potential Profit"]'));
+  assert.ok(app.includes('["roi","ROI"]'));
+  assert.ok(styles.includes('.tradingTerminal .td-market-table th:nth-child(5)'));
+  assert.ok(styles.includes('.tradingTerminal .td-market-table th:nth-child(6)'));
+});
