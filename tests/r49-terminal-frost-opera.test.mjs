@@ -80,7 +80,6 @@ test("R54 Trading Terminal displays and sorts after-tax margin multiplied by GE 
 
 test("R54 terminal profiles save immediately and maximum price participates in filtering", () => {
   assert.ok(app.includes('localStorage.setItem("osrshub-terminal-profiles",JSON.stringify(next))'));
-  assert.ok(app.includes('maxPrice,sortKey,sortDir,scannerTab,quickFilter') === false || app.includes('maxPrice,sortKey,sortDir,scannerTab,quickFilter'));
   assert.ok(app.includes('[valid,tableQuery,category,minVolume,minMargin,maxPrice,sortKey,sortDir,scannerTab,quickFilter]'));
   assert.ok(app.includes('setMaxPrice(profile.maxPrice||"")'));
 });
