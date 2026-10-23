@@ -691,3 +691,17 @@ html[data-theme="opera"] .app :is(button,[role="button"]):not(:disabled):hover{b
 .tradingTerminal .td-line-color input[type="color"]{transition:none!important;animation:none!important;touch-action:manipulation}
 .tradingTerminal .td-chart-controls .td-line-color{contain:layout style}
 @media(prefers-reduced-motion:reduce){:root{--oh-motion-fast:0ms;--oh-motion-mid:0ms;--oh-motion-slow:0ms}.app *, .app *::before,.app *::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
+
+
+/* R55: keep Potential Profit and ROI visually distinct in the Terminal table. */
+.tradingTerminal .td-market-table{min-width:1120px;table-layout:auto}
+.tradingTerminal .td-market-table th:nth-child(1),.tradingTerminal .td-market-table td:nth-child(1){min-width:190px}
+.tradingTerminal .td-market-table th:nth-child(2),.tradingTerminal .td-market-table td:nth-child(2),
+.tradingTerminal .td-market-table th:nth-child(3),.tradingTerminal .td-market-table td:nth-child(3){min-width:92px}
+.tradingTerminal .td-market-table th:nth-child(4),.tradingTerminal .td-market-table td:nth-child(4){min-width:105px}
+.tradingTerminal .td-market-table th:nth-child(5),.tradingTerminal .td-market-table td:nth-child(5){min-width:145px}
+.tradingTerminal .td-market-table th:nth-child(6),.tradingTerminal .td-market-table td:nth-child(6){min-width:82px}
+.tradingTerminal .td-market-table th:nth-child(7),.tradingTerminal .td-market-table td:nth-child(7){min-width:105px}
+.tradingTerminal .td-market-table th:nth-child(8),.tradingTerminal .td-market-table td:nth-child(8){min-width:105px}
+.tradingTerminal .td-market-table th:nth-child(9),.tradingTerminal .td-market-table td:nth-child(9){min-width:105px}
+.tradingTerminal .td-market-table td:nth-child(5) .td-limit-profit-note{display:block;margin-top:3px;font-size:10px;line-height:1.25;opacity:.75;white-space:nowrap}
