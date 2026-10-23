@@ -70,3 +70,17 @@ test("R53 graph colour pickers do not trigger React state updates on every drag 
   assert.ok(app.includes('defaultValue={chartColors.sell}'));
   assert.ok(app.includes('onBlur={e=>{const next=e.currentTarget.value;if(next!==chartColors.sell)setChartSellColor(next)}}'));
 });
+
+
+test("R54 Trading Terminal displays and sorts after-tax margin multiplied by GE item limit", () => {
+  assert.ok(app.includes('["limitProfit","Margin × item limit"]'));
+  assert.ok(app.includes('item.margin*Number(item.limit)'));
+  assert.ok(app.includes('sortKey==="limitProfit"?Number(x.margin||0)*Math.max(0,Number(x.limit)||0)'));
+});
+
+test("R54 terminal profiles save immediately and maximum price participates in filtering", () => {
+  assert.ok(app.includes('localStorage.setItem("osrshub-terminal-profiles",JSON.stringify(next))'));
+  assert.ok(app.includes('maxPrice,sortKey,sortDir,scannerTab,quickFilter') === false || app.includes('maxPrice,sortKey,sortDir,scannerTab,quickFilter'));
+  assert.ok(app.includes('[valid,tableQuery,category,minVolume,minMargin,maxPrice,sortKey,sortDir,scannerTab,quickFilter]'));
+  assert.ok(app.includes('setMaxPrice(profile.maxPrice||"")'));
+});
