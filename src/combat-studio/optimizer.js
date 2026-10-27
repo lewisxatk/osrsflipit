@@ -92,15 +92,19 @@ export function targetProfile(name) {
   if (/cerberus|kalphitequeen|dagannothrex|scurrius|sarachnis|mole/.test(n)) return {recommendedStyle:"Melee",weakness:"Melee style depends on defensive bonuses",confidence:"Hint only",summary:"Melee is a general candidate; compare actual stab/slash/crush defence records before declaring a best style."};
   return {recommendedStyle:null,weakness:null,confidence:"Target stats not verified",summary:"No verified target defence/weakness profile is available in this page-level dataset."};
 }
-const gearScore = (item, style) => {
+const gearScore = (item, style, target = "") => {
   const a=attackBonus(item,style),s=strengthBonus(item,style),speed=valueOf(item,["attack_speed","attackSpeed","speed","ticks"]);
   const attack=a===null?0:Math.max(-50,a)*0.018;
   const strength=s===null?0:Math.max(-50,s)*0.045;
-  const speedFactor=speed===null?1:Math.max(1,8-speed)*0.08;
+  const speedFactor=speed===null?0:Math.max(1,8-speed)*0.08;
   const specialName = key(item?._name ?? item?.name);
   const tags = key(item?.target_tags ?? item?.targetTags ?? item?.slayer_category ?? "");
-  const bane = /dragon/.test(specialName) && /dragon|wyvern|vorkath|galvek|elvarg/.test(tags);
-  return 1+attack+strength+speedFactor+(bane?0.35:0);
+  const targetName = key(target);
+  const dragonTarget = /dragon|wyvern|vorkath|galvek|elvarg/.test(targetName);
+  const baneWeapon = dragonTarget && (/dragonhunter/.test(specialName) || /dragonbane/.test(specialName) || /dragonhunter|dragonbane/.test(tags));
+  const styleFit = style==="Ranged" ? /crossbow|bow|blowpipe/.test(specialName) : style==="Melee" ? /lance|hasta|spear/.test(specialName) : /staff|trident|wand/.test(specialName);
+  const bane = baneWeapon ? (styleFit ? 0.8 : 0.45) : 0;
+  return 1+attack+strength+speedFactor+bane;
 };
 export function estimateLoadout({items=[],target="",style="Ranged",budget=0,stats={},quests=[],accountAware=true,excluded=[],questOverrides={},scoreOnly=false,forcedSlots=null}={}) {
   const targetMeta=targetProfile(target), exclude=new Set(excluded.map(key));
@@ -108,17 +112,19 @@ export function estimateLoadout({items=[],target="",style="Ranged",budget=0,stat
   const knownCosts=equipment.map(priceOf).filter(v=>v!==null).sort((a,b)=>a-b);
   const budgetN=Math.max(0,Number(budget)||0);
   const warnings=[];
+  if (budgetN <= 0) warnings.push("Enter a budget greater than zero GP before generating a loadout.");
   if (!equipment.length) warnings.push("The page has no connected item records; confirm the items dataset is loading.");
   if (accountAware && !Object.keys(stats||{}).length) warnings.push("No account stats are available, so skill requirements cannot be fully verified.");
   if (accountAware && !quests?.length) warnings.push("Quest progress is unavailable. Quest-restricted items are excluded unless manually marked done in the local quest checklist.");
+  if (budgetN <= 0) return {slots:slots.map(slot=>[slot,"—"]),estimatedDps:null,candidateCount:0,totalCost:0,remainingBudget:0,weaponSpeed:null,weaponAttack:null,weaponDamage:null,targetMeta,warnings};
   const results=slots.map(slot=>{
     const pool=equipment.filter(item=>{
       if (inferEquipmentSlot(item)!==slot) return false;
       const name=String(item._name??item.name??"");
       if (exclude.has(key(name)) || item.tradeable===false || item.tradable===false || item.members===false && item?.equipable!==true) return false;
       const p=priceOf(item);
-      if (slot!=="Ammo" && p===null) return false;
-      if (p!==null && p>budgetN && budgetN>0) return false;
+      if (p===null) return false;
+      if (p>budgetN && budgetN>0) return false;
       if (accountAware) {
         if (itemReqOk(item,stats)===false) return false;
         if (isQuestAvailable(item,quests,questOverrides)===false) return false;
@@ -126,7 +132,7 @@ export function estimateLoadout({items=[],target="",style="Ranged",budget=0,stat
       const reqType=key(item?.item_type??item?.type??item?.category??"");
       if (/food|fish|potion|logs|ore|rawfood|cookedfood|misc|junk/.test(reqType) || /rawherring|cookedherring|rawtrout|rawsalmon|rawanchovies|rawsardine|rawmackerel|rawcod|rawtuna|rawshark|rawmonkfish|rawlobster|rawswordfish/.test(key(name))) return false;
       return true;
-    }).map(item=>({...item,_name:String(item._name??item.name??item.item_name),_price:priceOf(item),_estimatedScore:gearScore(item,style),_slot:slot}))
+    }).map(item=>({...item,_name:String(item._name??item.name??item.item_name),_price:priceOf(item),_estimatedScore:gearScore(item,style,target),_slot:slot}))
       .sort((a,b)=>b._estimatedScore-a._estimatedScore);
     return {slot,pool};
   });
@@ -144,7 +150,7 @@ export function estimateLoadout({items=[],target="",style="Ranged",budget=0,stat
     } else chosen.push([row.slot,"—"]);
   }
   if (budgetN>0 && spent>budgetN) {
-    const selected=chosen.map(([slot,name])=>({slot,name,item:equipment.find(x=>key(x._name??x.name)===key(name))})).filter(x=>x.name!=="—").sort((a,b)=>gearScore(a.item||{},style)-gearScore(b.item||{},style));
+    const selected=chosen.map(([slot,name])=>({slot,name,item:equipment.find(x=>key(x._name??x.name)===key(name))})).filter(x=>x.name!=="—").sort((a,b)=>gearScore(a.item||{},style,target)-gearScore(b.item||{},style,target));
     for (const row of selected) {
       if (spent<=budgetN) break;
       const p=priceOf(row.item)||0;
@@ -153,7 +159,7 @@ export function estimateLoadout({items=[],target="",style="Ranged",budget=0,stat
     }
   }
   const selectedItems=chosen.map(([slot,name])=>equipment.find(x=>key(x._name??x.name)===key(name))).filter(Boolean);
-  const currentScore=selectedItems.reduce((sum,item)=>sum+gearScore(item,style)-1,0);
+  const currentScore=selectedItems.reduce((sum,item)=>sum+gearScore(item,style,target)-1,0);
   const speeds=selectedItems.map(item=>valueOf(item,["attack_speed","attackSpeed","speed","ticks"])).filter(v=>v!==null);
   const weapon=selectedItems.find(item=>inferEquipmentSlot(item)==="Weapon");
   const weaponSpeed=weapon ? valueOf(weapon,["attack_speed","attackSpeed","speed","ticks"]) : null;
