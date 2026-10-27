@@ -153,6 +153,13 @@ export function estimateLoadout({items=[],target="",style="Ranged",budget=0,stat
   const results=slots.map(slot=>{
     const pool=equipment.filter(item=>{
       if (inferEquipmentSlot(item)!==slot) return false;
+      const itemNameKey = key(item?._name ?? item?.name);
+      if (slot === "Ammo" && style !== "Ranged") return false;
+      if (slot === "Weapon") {
+        if (style === "Melee" && /bow|crossbow|blowpipe|chinchompa|ballista|shortbow|longbow|staff|wand|trident|sceptre|tome/.test(itemNameKey)) return false;
+        if (style === "Ranged" && !/bow|crossbow|blowpipe|ballista|chinchompa|dart|javelin|throwingknife/.test(itemNameKey)) return false;
+        if (style === "Magic" && !/staff|wand|trident|sceptre|battlestaff|mystic/.test(itemNameKey)) return false;
+      }
       const name=String(item._name??item.name??"");
       if (exclude.has(key(name)) || item.tradeable===false || item.tradable===false || item.members===false && item?.equipable!==true) return false;
       const p=priceOf(item);
