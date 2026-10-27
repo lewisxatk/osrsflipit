@@ -3,13 +3,15 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 const source = readFileSync(new URL('../src/main.jsx', import.meta.url), 'utf8');
 const styles = readFileSync(new URL('../src/upgrade.css', import.meta.url), 'utf8');
-test('R40 exposes dedicated Loadout Studio and Quest Pathway routes', () => {
-  assert.match(source, /loadout:"\/loadout"/);
-  assert.match(source, /PATH_TABS\["\/loadout"\]="loadout"/);
-  assert.match(source, /onClick=\{\(\)=>navigateTab\("loadout"\)\}>Loadout<\/button>/);
-  assert.match(source, /quests:"\/quest-pathway"/);
-  assert.match(source, /tab==="loadout"&&<Loadout/);
-  assert.match(source, /tab==="quests"&&<QuestPathway/);
+test('Combat Studio has a dedicated route while legacy loadout URLs remain supported', () => {
+  assert.ok(source.includes('combat:"/combat-studio"'));
+  assert.ok(source.includes('PATH_TABS["/combat-studio"]="combat"'));
+  assert.ok(source.includes('PATH_TABS["/loadout"]="combat"'));
+  assert.ok(source.includes('navigateTab("combat")}>Combat Studio</button>'));
+  assert.ok(source.includes('import CombatStudioPage from "./CombatStudioPage.jsx"'));
+  assert.ok(source.includes('(tab==="loadout"||tab==="combat")&&<CombatStudioPage'));
+  assert.ok(source.includes('quests:"/quest-pathway"'));
+  assert.ok(source.includes('tab==="quests"&&<QuestPathway'));
 });
 test('R40 Quest Pathway persists its goal and checklist locally without API writes', () => {
   assert.match(source, /osrshub-quest-checklist/);
@@ -37,10 +39,10 @@ test('standalone Loadout workspace includes username lookup, manual overrides, t
   assert.match(source, /osrshub-loadout-excluded-items/);
   assert.match(source, /Incomplete quest requirements are excluded/);
 });
-test('standalone Loadout workspace hides the generic page intro and has responsive light UI styling', () => {
-  assert.match(source, /\["screener","terminal","loadout"\]\.includes\(tab\)\?null/);
-  const css=readFileSync(new URL('../src/osrshub2.css', import.meta.url), 'utf8');
-  assert.match(css, /\.loadoutPage \.loadoutHero/);
-  assert.match(css, /\.loadoutStyleTabs/);
-  assert.match(css, /@media\(max-width:600px\)/);
+test('Combat Studio workspace hides the generic page intro and has responsive theme-aware styling', () => {
+  assert.match(source, /\["screener","terminal","loadout","combat"\]\.includes\(tab\)\?null/);
+  const css=readFileSync(new URL('../src/combat-studio.css', import.meta.url), 'utf8');
+  assert.match(css, /\.cs-hero/);
+  assert.match(css, /\.cs-tabs/);
+  assert.match(css, /@media\(max-width:760px\)/);
 });
