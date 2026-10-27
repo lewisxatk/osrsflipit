@@ -28,7 +28,6 @@ const METHODS={
  Smithing:{fast:["Blast Furnace / high-XP bars","Costs and requirements depend on ores, coal and unlocks."],afk:["Cannonballs","Low attention but much slower XP."],cheap:["Bars or items with the lowest net cost per XP","Use live prices and include coal/ore costs."]},
  Cooking:{fast:["Highest suitable fish or efficient cooking methods","Burn rates and food prices change the effective cost."],afk:["Cook fish in batches","Low attention with some burn risk."],cheap:["Fish with low net cost per XP","Check current raw/cooked price difference."]},
  Runecraft:{fast:["High-efficiency altar methods","Often needs quests, pouches or specific access."],afk:["Guardians of the Rift","Activity-based method with variable attention."],cheap:["Guardians of the Rift or low-cost altar routes","Cost depends on method, access and rune output."]},
- Hunter:{fast:["Highest suitable efficient hunter method"],afk:["Birdhouse runs where unlocked"],cheap:["Low-cost traps or birdhouse runs"]},
 };
 const xpFormat=n=>n>=1e9?(n/1e9).toFixed(2)+"B":n>=1e6?(n/1e6).toFixed(2)+"M":Math.round(n).toLocaleString("en-GB");
 export default function LevellingPage(){
