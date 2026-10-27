@@ -81,8 +81,11 @@ const strengthBonus = (item, style) => style === "Ranged"
  ? valueOf(item,["magic_damage","magicDamage","magic_strength","magicStrength"])
  : valueOf(item,["melee_strength","meleeStrength","strength_bonus","strengthBonus","str"]);
 const priceOf = item => {
-  const direct = num(item?._price,item?.sell,item?.high,item?.price,item?.buy,item?.latest_price,item?.last_price);
-  return direct !== null && direct > 0 ? direct : null;
+  for (const value of [item?._price,item?.sell,item?.high,item?.price,item?.buy,item?.latest_price,item?.last_price]) {
+    const candidate = num(value);
+    if (candidate !== null && candidate > 0) return candidate;
+  }
+  return null;
 };
 export function targetProfile(name, records = []) {
   const n = key(name);
