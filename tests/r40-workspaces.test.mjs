@@ -4,14 +4,14 @@ import { readFileSync } from 'node:fs';
 const source = readFileSync(new URL('../src/main.jsx', import.meta.url), 'utf8');
 const styles = readFileSync(new URL('../src/upgrade.css', import.meta.url), 'utf8');
 test('Combat Studio has a dedicated route while legacy loadout URLs remain supported', () => {
-  assert.match(source, /combat:"\\/combat-studio"/);
-  assert.match(source, /PATH_TABS\\["\\/combat-studio"\\]="combat"/);
-  assert.match(source, /PATH_TABS\\["\\/loadout"\\]="combat"/);
-  assert.match(source, /navigateTab\\("combat"\\)>Combat Studio<\\/button>/);
-  assert.match(source, /import CombatStudioPage from ".\\/CombatStudioPage.jsx"/);
-  assert.match(source, /\\(tab==="loadout"\\|\\|tab==="combat"\\)&&<CombatStudioPage/);
-  assert.match(source, /quests:"\\/quest-pathway"/);
-  assert.match(source, /tab==="quests"&&<QuestPathway/);
+  assert.ok(source.includes('combat:"/combat-studio"'));
+  assert.ok(source.includes('PATH_TABS["/combat-studio"]="combat"'));
+  assert.ok(source.includes('PATH_TABS["/loadout"]="combat"'));
+  assert.ok(source.includes('navigateTab("combat")}>Combat Studio</button>'));
+  assert.ok(source.includes('import CombatStudioPage from "./CombatStudioPage.jsx"'));
+  assert.ok(source.includes('(tab==="loadout"||tab==="combat")&&<CombatStudioPage'));
+  assert.ok(source.includes('quests:"/quest-pathway"'));
+  assert.ok(source.includes('tab==="quests"&&<QuestPathway'));
 });
 test('R40 Quest Pathway persists its goal and checklist locally without API writes', () => {
   assert.match(source, /osrshub-quest-checklist/);
