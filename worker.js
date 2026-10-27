@@ -424,6 +424,21 @@ async function dataApi(request,env){
    return json({ok:true,slot,count:results.length,results,source:'OSRS Hub stored OSRSBox catalogue joined to market cache',readOnly:true},200,{'Cache-Control':'public, max-age=60'});
   }catch(e){return json({ok:false,error:'Stored equipment catalogue is not ready yet.',detail:String(e?.message||'query failed').slice(0,160),results:[],readOnly:true},200,{'Cache-Control':'no-store'});}
  }
+ if(u.pathname==='/api/data/monsters'){
+  // Read-only monster/boss search. Returns only stored source records and explicitly
+  // exposes gaps rather than inventing target stats or weaknesses.
+  if(request.method!=='GET')return json({ok:false,error:'Use GET for monster catalogue reads.'},405,{'Allow':'GET'});
+  const q=String(u.searchParams.get('q')||'').trim().slice(0,80);
+  const limit=Math.min(1000,Math.max(1,Number.parseInt(u.searchParams.get('limit')||'500',10)||500));
+  try{
+   let sql='SELECT monster_id,name,data_json,updated_at FROM osrs_monster_data',args=[];
+   if(q.length>=2){sql+=' WHERE lower(name) LIKE lower(?1)';args.push('%'+q+'%')}
+   sql+=' ORDER BY name LIMIT ?'+(args.length+1);args.push(limit);
+   const rows=await env.DB.prepare(sql).bind(...args).all();
+   const results=(rows.results||[]).map(row=>{let data={};try{data=JSON.parse(row.data_json||'{}')}catch{}return {id:Number(row.monster_id),name:String(row.name||data.name||row.monster_id),combatLevel:Number(data.combat_level??data.combat??0)||null,hitpoints:Number(data.hitpoints??data.hp??0)||null,defence:Number(data.defence??data.defence_level??0)||null,attackStyles:Array.isArray(data.attack_styles)?data.attack_styles:[],weakness:data.weakness??data.weaknesses??null,defensiveBonuses:data.defensive??data.defensive_bonuses??null,immunities:data.immunities??null,source:'Stored OSRSBox monster record',updatedAt:Number(row.updated_at||0),rawDataStatus:data.detailStatus||null}});
+   return json({ok:true,count:results.length,query:q||null,results,readOnly:true,notice:'Targets are limited to currently ingested source records. Missing stats and weaknesses remain unknown; target variants and boss phases may require separate records.'},200,{'Cache-Control':'public, max-age=60'});
+  }catch(e){return json({ok:false,error:'Stored monster catalogue is not ready yet.',detail:String(e?.message||'query failed').slice(0,160),results:[],readOnly:true},200,{'Cache-Control':'no-store'});}
+ }
  if(u.pathname==='/api/data/knowledge'){
   // Read-only cross-source Brain search across structured OSRSBox records and indexed Wiki reference pages.
   if(request.method!=='GET')return json({ok:false,error:'Use GET for knowledge search.'},405,{'Allow':'GET'});
