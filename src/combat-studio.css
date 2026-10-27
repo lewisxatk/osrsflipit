@@ -28,3 +28,9 @@ html[data-theme="comfort"] .combat-studio{--cs-accent:#a65b38;--cs-bg:#fffaf4;--
 .combat-studio .cs-guide-links a{color:var(--cs-accent);text-decoration:underline}
 .combat-studio .cs-guide-links p{line-height:1.6}
 @media(max-width:760px){.combat-studio .cs-upgrade-grid{display:none}.combat-studio .cs-upgrade-slot{grid-template-columns:22px minmax(0,1fr) auto}.combat-studio .cs-upgrade-current,.combat-studio .cs-upgrade-next{grid-column:2}.combat-studio .cs-upgrade-slot em,.combat-studio .cs-upgrade-slot small{display:none}}
+
+.combat-studio .cs-import-help{margin-top:10px;border-top:1px solid var(--cs-line);padding-top:9px;color:var(--cs-muted);font-size:11px;line-height:1.6}
+.combat-studio .cs-import-help summary{cursor:pointer;color:var(--cs-accent);font-weight:700}
+.combat-studio .cs-import-help ol{padding-left:20px}
+.combat-studio .cs-import-help li{padding:3px 0}
+.combat-studio .cs-import-help a{color:var(--cs-accent);text-decoration:underline}
