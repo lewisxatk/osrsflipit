@@ -3,12 +3,14 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 const source = readFileSync(new URL('../src/main.jsx', import.meta.url), 'utf8');
 const styles = readFileSync(new URL('../src/upgrade.css', import.meta.url), 'utf8');
-test('R40 exposes dedicated Loadout Studio and Quest Pathway routes', () => {
-  assert.match(source, /loadout:"\/loadout"/);
-  assert.match(source, /PATH_TABS\["\/loadout"\]="loadout"/);
-  assert.match(source, /onClick=\{\(\)=>navigateTab\("loadout"\)\}>Loadout<\/button>/);
-  assert.match(source, /quests:"\/quest-pathway"/);
-  assert.match(source, /tab==="loadout"&&<Loadout/);
+test('Combat Studio has a dedicated route while legacy loadout URLs remain supported', () => {
+  assert.match(source, /combat:"\\/combat-studio"/);
+  assert.match(source, /PATH_TABS\\["\\/combat-studio"\\]="combat"/);
+  assert.match(source, /PATH_TABS\\["\\/loadout"\\]="combat"/);
+  assert.match(source, /navigateTab\\("combat"\\)>Combat Studio<\\/button>/);
+  assert.match(source, /import CombatStudioPage from ".\\/CombatStudioPage.jsx"/);
+  assert.match(source, /\\(tab==="loadout"\\|\\|tab==="combat"\\)&&<CombatStudioPage/);
+  assert.match(source, /quests:"\\/quest-pathway"/);
   assert.match(source, /tab==="quests"&&<QuestPathway/);
 });
 test('R40 Quest Pathway persists its goal and checklist locally without API writes', () => {
