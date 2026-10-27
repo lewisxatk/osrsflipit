@@ -1,5 +1,5 @@
 import React,{useEffect,useMemo,useRef,useState} from "react";
-import {Swords,Shield,Target,TrendingUp,LockKeyhole,ArrowRight,Save,Activity,Coins,BookOpen,ArrowLeftRight,Upload,Search,RefreshCw,UserRound,CheckCircle2,AlertCircle} from "lucide-react";
+import {Swords,Shield,Target,TrendingUp,LockKeyhole,ArrowRight,Save,Activity,Coins,BookOpen,ArrowLeftRight,Upload,Search,RefreshCw,UserRound,CheckCircle2,AlertCircle,ChevronDown} from "lucide-react";
 import "./combat-studio.css";
 
 const STYLE_SLOTS={
