@@ -8,3 +8,29 @@ html[data-theme="frost"] .combat-studio{--cs-accent:#527cae;--cs-bg:#fff;--cs-bg
 html[data-theme="comfort"] .combat-studio{--cs-accent:#a65b38;--cs-bg:#fffaf4;--cs-bg2:#f7eee4;--cs-line:#e9d9c8;--cs-text:#39291f;--cs-muted:#826b5b;color-scheme:light}
 @media(max-width:1250px){.cs-controls{grid-template-columns:repeat(3,minmax(0,1fr))}.cs-main{grid-template-columns:minmax(0,1.5fr) minmax(260px,.8fr)}.cs-gear-layout{grid-template-columns:1fr}.cs-lower{grid-template-columns:repeat(2,minmax(0,1fr))}.cs-lower>#cs-alts{grid-column:1/-1}}
 @media(max-width:760px){.combat-studio{padding:8px}.cs-hero{flex-direction:column;align-items:stretch}.cs-account{width:100%}.cs-import-heading{align-items:flex-start;flex-direction:column}.cs-import-controls{align-items:stretch;flex-direction:column}.cs-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}.cs-controls,.cs-main,.cs-lower{grid-template-columns:1fr}.cs-lower>#cs-alts{grid-column:auto}.cs-panel header{align-items:flex-start;flex-direction:column}.cs-metrics{flex-wrap:wrap}.cs-upgrade{grid-template-columns:22px minmax(0,1fr) auto}.cs-upgrade em,.cs-upgrade small{display:none}.cs-paperdoll{grid-template-rows:repeat(4,minmax(65px,1fr));padding:7px}.cs-gear-row{grid-template-columns:.6fr 1.4fr 1fr;padding:8px 6px;font-size:10px}.cs-gear-row small{font-size:9px}}
+
+/* Follow-up interaction and visibility fixes */
+.combat-studio .cs-controls{position:relative;z-index:8;overflow:visible}
+.combat-studio .cs-target-label{position:relative;z-index:10}
+.combat-studio .cs-target-picker{z-index:11}
+.combat-studio .cs-target-results{z-index:1000;max-height:min(360px,55vh);overscroll-behavior:contain}
+.combat-studio .cs-gear-layout,.combat-studio .cs-build{overflow:visible}
+.combat-studio .cs-gear-row .cs-item-name{display:flex;align-items:center;gap:7px}
+.combat-studio .cs-table-item-icon,.combat-studio .cs-upgrade-next img{width:22px;height:22px;object-fit:contain;flex-shrink:0}
+.combat-studio .cs-table-item-placeholder{display:inline-grid;place-items:center;width:22px;height:22px;color:var(--cs-accent)}
+.combat-studio .cs-upgrade-grid{display:grid;grid-template-columns:32px .6fr 1fr 1fr .5fr 1fr;gap:7px;padding:8px 3px;color:var(--cs-muted);font-size:9px;font-weight:700}
+.combat-studio .cs-upgrade-slot{grid-template-columns:23px .6fr 1fr 1fr auto 1fr}
+.combat-studio .cs-upgrade-current,.combat-studio .cs-upgrade-next{display:flex;align-items:center;gap:5px;min-width:0;overflow-wrap:anywhere}
+.combat-studio .cs-exclude-form{display:flex;gap:7px;margin:10px 0}
+.combat-studio .cs-exclude-form input{flex:1;min-width:0;padding:8px;border:1px solid var(--cs-line);border-radius:7px;background:var(--cs-bg2);color:var(--cs-text)}
+.combat-studio .cs-remove-exclusion{border:1px solid var(--cs-line);background:var(--cs-bg2);color:var(--cs-text);border-radius:5px;padding:5px;font-size:9px}
+.combat-studio .cs-guide-links{display:grid;gap:9px;padding:8px 0}
+.combat-studio .cs-guide-links a{color:var(--cs-accent);text-decoration:underline}
+.combat-studio .cs-guide-links p{line-height:1.6}
+@media(max-width:760px){.combat-studio .cs-upgrade-grid{display:none}.combat-studio .cs-upgrade-slot{grid-template-columns:22px minmax(0,1fr) auto}.combat-studio .cs-upgrade-current,.combat-studio .cs-upgrade-next{grid-column:2}.combat-studio .cs-upgrade-slot em,.combat-studio .cs-upgrade-slot small{display:none}}
+
+.combat-studio .cs-import-help{margin-top:10px;border-top:1px solid var(--cs-line);padding-top:9px;color:var(--cs-muted);font-size:11px;line-height:1.6}
+.combat-studio .cs-import-help summary{cursor:pointer;color:var(--cs-accent);font-weight:700}
+.combat-studio .cs-import-help ol{padding-left:20px}
+.combat-studio .cs-import-help li{padding:3px 0}
+.combat-studio .cs-import-help a{color:var(--cs-accent);text-decoration:underline}
