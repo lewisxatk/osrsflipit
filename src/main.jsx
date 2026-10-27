@@ -341,7 +341,7 @@ class AppErrorBoundary extends React.Component {
   componentDidCatch(error,info){document.documentElement.classList.add("osrshub-mounted");console.error("OSRS Hub UI error",error,info)}
   render(){
     if(!this.state.hasError)return this.props.children;
-    return <div className="errorScreen"><div className="errorCard"><div className="brand brandStatic"><span>OSRS</span>Hub</div><div className="eyebrow">RECOVERABLE ERROR</div><h1>OSRS Hub hit a small UI error.</h1><p>The page was protected from going completely blank. Reloading should restore the app.</p><div><button className="primary" onClick={()=>window.location.reload()}>Reload OSRS Hub</button><button className="secondary" onClick={()=>this.setState({hasError:false,error:null})}>Try again</button></div></div></div>
+    return <div className="errorScreen"><div className="errorCard"><div className="brand brandStatic"><span>OSRS</span>Hub</div><div className="eyebrow">RECOVERABLE ERROR</div><h1>OSRS Hub hit a small UI error.</h1><p>The page was protected from going completely blank. Reloading should restore the app.</p><details open className="errorDetails"><summary>Technical details</summary><pre style={{whiteSpace:"pre-wrap",overflowWrap:"anywhere"}}>{String(this.state.error?.stack||this.state.error?.message||this.state.error||"Unknown UI error")}</pre></details><div><button className="primary" onClick={()=>window.location.reload()}>Reload OSRS Hub</button><button className="secondary" onClick={()=>this.setState({hasError:false,error:null})}>Try again</button></div></div></div>
   }
 }
 
