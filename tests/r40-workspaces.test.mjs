@@ -39,10 +39,10 @@ test('standalone Loadout workspace includes username lookup, manual overrides, t
   assert.match(source, /osrshub-loadout-excluded-items/);
   assert.match(source, /Incomplete quest requirements are excluded/);
 });
-test('standalone Loadout workspace hides the generic page intro and has responsive light UI styling', () => {
+test('Combat Studio workspace hides the generic page intro and has responsive theme-aware styling', () => {
   assert.match(source, /\["screener","terminal","loadout","combat"\]\.includes\(tab\)\?null/);
   const css=readFileSync(new URL('../src/combat-studio.css', import.meta.url), 'utf8');
   assert.match(css, /\.cs-hero/);
   assert.match(css, /\.cs-tabs/);
-  assert.match(css, /@media\(max-width:600px\)/);
+  assert.match(css, /@media\(max-width:760px\)/);
 });
