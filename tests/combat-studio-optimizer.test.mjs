@@ -14,7 +14,7 @@ test("loadout ranking creates equipment slots under the GP budget and respects e
     {id:2,name:"Rune crossbow",slot:"weapon",sell:90,equipment:{ranged_attack:60,ranged_strength:6,attack_speed:6}},
     {id:3,name:"Archer ring",slot:"ring",sell:20,equipment:{ranged_attack:4}},
     {id:4,name:"Raw Herring",slot:"ring",sell:1,equipment:{}},
-    {id:5,name:"Leather body",slot:"body",sell:15,equipment:{ranged_attack:2}},
+    {id:5,name:"Leather body",slot:"body",sell:15,members:false,equipment:{ranged_attack:2}},
     {id:6,name:"Excluded bow",slot:"weapon",sell:1,equipment:{ranged_attack:500,ranged_strength:100}}
   ];
   const result = estimateLoadout({
