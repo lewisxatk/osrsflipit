@@ -13,8 +13,10 @@ const num = (...values) => {
   }
   return null;
 };
-const valueOf = (item, keys) => num(...keys.map(k => item?.[k]));
+const valueOf = (item, keys) => num(...keys.map(k => item?.[k] ?? item?.equipment?.[k] ?? item?.bonuses?.[k] ?? item?.stats?.[k]));
 export function inferEquipmentSlot(item) {
+  const itemName = key(item?.name ?? item?.item_name ?? "");
+  if (/rawherring|cookedherring|rawtrout|rawsalmon|rawanchovies|rawsardine|rawmackerel|rawcod|rawtuna|rawshark|rawmonkfish|rawlobster|rawswordfish|potato|logs|ores|runes$/.test(itemName)) return null;
   const raw = String(item?.equipment_slot ?? item?.equipmentSlot ?? item?.slot ?? item?.equip_slot ?? item?.slot_name ?? "").trim();
   const canon = key(raw);
   const aliases = {
@@ -23,8 +25,7 @@ export function inferEquipmentSlot(item) {
     hands:"Hands",gloves:"Hands",feet:"Feet",boots:"Feet",ring:"Ring"
   };
   if (aliases[canon]) return aliases[canon];
-  const name = key(item?.name ?? item?.item_name ?? "");
-  if (/rawherring|cookedherring|rawtrout|rawsalmon|rawanchovies|rawsardine|rawmackerel|rawcod|rawtuna|rawshark|rawmonkfish|rawlobster|rawswordfish/.test(name)) return null;
+  const name = itemName;
   if (/^ringof|ring$|archerring|berserkerring|seersring|warriorring|magesring|lightbearer/.test(name)) return "Ring";
   if (/(helmet|helm|mask|coif|hood|cowl|crown|hat)$/.test(name)) return "Head";
   if (/(cape|cloak|assembler|quiver)$/.test(name)) return "Cape";
@@ -97,7 +98,8 @@ const gearScore = (item, style) => {
   const strength=s===null?0:Math.max(-50,s)*0.045;
   const speedFactor=speed===null?1:Math.max(1,8-speed)*0.08;
   const specialName = key(item?._name ?? item?.name);
-  const bane = /dragon/.test(specialName) && /dragon|wyvern|vorkath|galvek|elvarg/.test(key(item?.target_tags ?? ""));
+  const tags = key(item?.target_tags ?? item?.targetTags ?? item?.slayer_category ?? "");
+  const bane = /dragon/.test(specialName) && /dragon|wyvern|vorkath|galvek|elvarg/.test(tags);
   return 1+attack+strength+speedFactor+(bane?0.35:0);
 };
 export function estimateLoadout({items=[],target="",style="Ranged",budget=0,stats={},quests=[],accountAware=true,excluded=[],questOverrides={},scoreOnly=false,forcedSlots=null}={}) {
@@ -122,7 +124,7 @@ export function estimateLoadout({items=[],target="",style="Ranged",budget=0,stat
         if (isQuestAvailable(item,quests,questOverrides)===false) return false;
       }
       const reqType=key(item?.item_type??item?.type??item?.category??"");
-      if (/food|fish|potion|logs|ore|rawfood|cookedfood|misc|junk/.test(reqType)) return false;
+      if (/food|fish|potion|logs|ore|rawfood|cookedfood|misc|junk/.test(reqType) || /rawherring|cookedherring|rawtrout|rawsalmon|rawanchovies|rawsardine|rawmackerel|rawcod|rawtuna|rawshark|rawmonkfish|rawlobster|rawswordfish/.test(key(name))) return false;
       return true;
     }).map(item=>({...item,_name:String(item._name??item.name??item.item_name),_price:priceOf(item),_estimatedScore:gearScore(item,style),_slot:slot}))
       .sort((a,b)=>b._estimatedScore-a._estimatedScore);
