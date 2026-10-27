@@ -134,29 +134,45 @@ export function estimateLoadout({items=[],target="",style="Ranged",budget=0,stat
       .sort((a,b)=>b._estimatedScore-a._estimatedScore);
     return {slot,pool};
   });
-  const chosen=[];
-  let spent=0;
-  for (const row of results) {
-    const ranked=row.pool.filter(item=>!item._price || spent+item._price<=budgetN || budgetN===0);
-    let pick=ranked[0]||null;
-    if (!pick && row.pool.length) {
-      pick=[...row.pool].sort((a,b)=>(a._price??0)-(b._price??0))[0];
-    }
+  // Start from affordable low-cost gear in every slot, then spend remaining GP
+  // on the best marginal score improvement per GP. This avoids choosing one
+  // expensive item first and needlessly leaving otherwise-affordable slots empty.
+  const chosenBySlot = new Map();
+  let spent = 0;
+  const rowsByMinimumCost = [...results].map(row => ({
+    ...row,
+    cheapest: [...row.pool].sort((a,b)=>(a._price??Infinity)-(b._price??Infinity)||b._estimatedScore-a._estimatedScore)[0] ?? null
+  })).sort((a,b)=>(a.cheapest?._price??Infinity)-(b.cheapest?._price??Infinity));
+  for (const row of rowsByMinimumCost) {
+    const affordable = row.pool.filter(item => item._price != null && spent + item._price <= budgetN);
+    const pick = affordable.sort((a,b)=>(a._price??Infinity)-(b._price??Infinity)||b._estimatedScore-a._estimatedScore)[0];
     if (pick) {
-      chosen.push([row.slot,pick._name]);
-      spent += pick._price || 0;
-    } else chosen.push([row.slot,"—"]);
-  }
-  if (budgetN>0 && spent>budgetN) {
-    const selected=chosen.map(([slot,name])=>({slot,name,item:equipment.find(x=>key(x._name??x.name)===key(name))})).filter(x=>x.name!=="—").sort((a,b)=>gearScore(a.item||{},style,target)-gearScore(b.item||{},style,target));
-    for (const row of selected) {
-      if (spent<=budgetN) break;
-      const p=priceOf(row.item)||0;
-      chosen[chosen.findIndex(x=>x[0]===row.slot)]=[row.slot,"—"];
-      spent-=p;
+      chosenBySlot.set(row.slot,pick);
+      spent += pick._price;
     }
   }
-  const selectedItems=chosen.map(([slot,name])=>equipment.find(x=>key(x._name??x.name)===key(name))).filter(Boolean);
+  // Upgrade one slot at a time, preferring the largest score gain per extra GP.
+  // Each selected item is replaced, never double-counted.
+  for (let guard=0; guard<equipment.length; guard++) {
+    let best = null;
+    for (const row of results) {
+      const current = chosenBySlot.get(row.slot) ?? null;
+      for (const candidate of row.pool) {
+        if (current && key(candidate._name)===key(current._name)) continue;
+        const costDelta = (candidate._price??Infinity) - (current?._price??0);
+        const scoreDelta = candidate._estimatedScore - (current?._estimatedScore??0);
+        if (!Number.isFinite(costDelta) || !Number.isFinite(scoreDelta) || scoreDelta<=0) continue;
+        if (costDelta>budgetN-spent) continue;
+        const efficiency = costDelta<=0 ? scoreDelta*1e6 : scoreDelta/costDelta;
+        if (!best || efficiency>best.efficiency) best={slot:row.slot,candidate,current,costDelta,scoreDelta,efficiency};
+      }
+    }
+    if (!best) break;
+    chosenBySlot.set(best.slot,best.candidate);
+    spent += best.costDelta;
+  }
+  const chosen = slots.map(slot => [slot,chosenBySlot.get(slot)?._name ?? "—"]);
+  const selectedItems=chosen.map(([slot,name])=>chosenBySlot.get(slot) ?? equipment.find(x=>key(x._name??x.name)===key(name))).filter(Boolean);
   const currentScore=selectedItems.reduce((sum,item)=>sum+gearScore(item,style,target)-1,0);
   const weapon=selectedItems.find(item=>inferEquipmentSlot(item)==="Weapon");
   const weaponSpeed=weapon ? valueOf(weapon,["attack_speed","attackSpeed","speed","ticks"]) : null;
