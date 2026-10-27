@@ -18,7 +18,7 @@ const iconUrl=value=>{if(typeof value!=="string"||!value.trim())return "";const 
 export default function CombatStudioPage({items=[],account,onSelect}){
  const [style,setStyle]=useState("Ranged"),[boss,setBoss]=useState("Vorkath"),[bossQuery,setBossQuery]=useState(""),[targetOpen,setTargetOpen]=useState(false);
  const [budget,setBudget]=useState("150000000"),[accountAware,setAccountAware]=useState(true),[showUpgrades,setShowUpgrades]=useState(true),[alternative,setAlternative]=useState("Current"),[saved,setSaved]=useState(false);
- const [username,setUsername]=useState(account?.name||""),[busy,setBusy]=useState(false),[status,setStatus]=useState(""),[error,setError]=useState(false),[loadedTargets,setLoadedTargets]=useState([]);
+ const [username,setUsername]=useState(account?.name||""),[busy,setBusy]=useState(false),[status,setStatus]=useState(""),[error,setError]=useState(false),[loadedTargets,setLoadedTargets]=useState([]),[catalogItems,setCatalogItems]=useState([]);
  const fileRef=useRef(null),targetRef=useRef(null),excludeRef=useRef(null);
  const [result,setResult]=useState(null),[detailItem,setDetailItem]=useState(null),[excludeOpen,setExcludeOpen]=useState(false),[questCatalog,setQuestCatalog]=useState([]),[questOverrides,setQuestOverrides]=useState(()=>{try{return JSON.parse(localStorage.getItem("osrshub-combat-quest-overrides")||"{}")}catch{return {}}}),[questFilter,setQuestFilter]=useState("");
  const [slots,setSlots]=useState(()=>STYLE_SLOTS.Ranged.map(x=>[...x]));
@@ -35,10 +35,9 @@ export default function CombatStudioPage({items=[],account,onSelect}){
  const normalizedItems=useMemo(()=>{const map=new Map();for(const it of [...catalogItems,...(Array.isArray(items)?items:[])]){if(!it||typeof it!=="object")continue;const id=String(it.id??it.item_id??it.itemId??"");const name=String(it._name||it.name||it.item_name||it.title||"");const k=id||keyName(name);if(!k||!name)continue;const prev=map.get(k)||{};map.set(k,{...prev,...it,_name:name,_id:it.id??it.item_id??it.itemId??prev._id??null,_price:Number(it.sell??it.high??it.price??it.buy??it._price??prev._price??0),_icon:iconUrl(it.icon_url||it.wiki_image||it.image||it.icon||prev._icon||"")})}return [...map.values()]},[items,catalogItems]);
  const findItem=name=>normalizedItems.find(it=>keyName(it._name)===keyName(name));
  const priceFor=name=>{if(name==="—")return null;const x=findItem(name);if(!x)return null;return Number(x.sell??x.high??x.price??x.buy??0)||null};
- const cost=slots.reduce((sum,[,name])=>sum+(priceFor(name)||0),0);
- const slotStats=useMemo(()=>estimateLoadout({items:normalizedItems,target:boss,style,budget:Number(budget||0),stats,quests,accountAware,excluded:manualExcluded,questOverrides,scoreOnly:true,forcedSlots:slots}),[normalizedItems,boss,style,budget,stats,quests,accountAware,manualExcluded,questOverrides,slots]);
- const targetInfo=useMemo(()=>targetProfile(boss),[boss]);
  const stats=account?.stats||{},quests=Array.isArray(account?.quests)?account.quests:[];
+ const cost=slots.reduce((sum,[,name])=>sum+(priceFor(name)||0),0);
+ const targetInfo=useMemo(()=>targetProfile(boss),[boss]);
  const targets=useMemo(()=>{const all=[...new Set([...loadedTargets,...COMMON_TARGETS])];const q=bossQuery.trim().toLowerCase();return (q?all.filter(n=>n.toLowerCase().includes(q)):all).slice(0,60)},[loadedTargets,bossQuery]);
  const excludedKeys=useMemo(()=>new Set(manualExcluded.map(keyName)),[manualExcluded]);
  const exclusionOptions=useMemo(()=>{const q=excludeInput.trim().toLowerCase();return normalizedItems.filter(it=>!excludedKeys.has(keyName(it._name))&&(!q||it._name.toLowerCase().includes(q))).slice(0,12)},[normalizedItems,excludeInput,excludedKeys]);
