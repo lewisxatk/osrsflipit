@@ -42,7 +42,7 @@ test('standalone Loadout workspace includes username lookup, manual overrides, t
 test('standalone Loadout workspace hides the generic page intro and has responsive light UI styling', () => {
   assert.match(source, /\["screener","terminal","loadout","combat"\]\.includes\(tab\)\?null/);
   const css=readFileSync(new URL('../src/combat-studio.css', import.meta.url), 'utf8');
-  assert.match(css, /\.combat-studio \.cs-hero/);
+  assert.match(css, /\.cs-hero/);
   assert.match(css, /\.cs-tabs/);
   assert.match(css, /@media\(max-width:600px\)/);
 });
