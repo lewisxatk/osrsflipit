@@ -84,12 +84,44 @@ const priceOf = item => {
   const direct = num(item?._price,item?.sell,item?.high,item?.price,item?.buy,item?.latest_price,item?.last_price);
   return direct !== null && direct > 0 ? direct : null;
 };
-export function targetProfile(name) {
-  const n=key(name);
-  if (/vorkath|dragon|wyvern|galvek|elvarg|hydra|olm/.test(n)) return {recommendedStyle:/vorkath|dragon|wyvern|galvek|elvarg/.test(n)?"Ranged":"Ranged",weakness:"Dragon/monster-specific bonuses depend on the selected weapon and target form",confidence:"Hint only",summary:"Dragon-bane weapons can be strong against eligible dragon targets; target-specific rules still need verified records."};
-  if (/zulrah|kraken|whisperer|phantommuspah/.test(n)) return {recommendedStyle:"Ranged",weakness:"Style depends on phase/form; one style may not work for every phase",confidence:"Hint only",summary:"Some bosses change defence or style weaknesses between phases. Treat this as a starting point, not a phase-accurate result."};
-  if (/cerberus|kalphitequeen|dagannothrex|scurrius|sarachnis|mole/.test(n)) return {recommendedStyle:"Melee",weakness:"Melee style depends on defensive bonuses",confidence:"Hint only",summary:"Melee is a general candidate; compare actual stab/slash/crush defence records before declaring a best style."};
-  return {recommendedStyle:null,weakness:null,confidence:"Target stats not verified",summary:"No verified target defence/weakness profile is available in this page-level dataset."};
+export function targetProfile(name, records = []) {
+  const n = key(name);
+  const record = (Array.isArray(records) ? records : []).find(row => key(row?.name) === n) ?? null;
+  const defensive = record?.defensiveBonuses ?? record?.defensive_bonuses ?? record?.defensive ?? null;
+  const weaknessRaw = record?.weakness ?? record?.weaknesses ?? null;
+  const weakness = Array.isArray(weaknessRaw) ? weaknessRaw.join(", ") : (typeof weaknessRaw === "string" ? weaknessRaw : null);
+  let recordStyle = null;
+  if (defensive && typeof defensive === "object" && !Array.isArray(defensive)) {
+    const bonusKeys = [
+      ["Melee / Stab", ["stab", "attack_stab", "defence_stab"]],
+      ["Melee / Slash", ["slash", "attack_slash", "defence_slash"]],
+      ["Melee / Crush", ["crush", "attack_crush", "defence_crush"]],
+      ["Ranged", ["ranged", "range", "attack_ranged", "defence_ranged"]],
+      ["Magic", ["magic", "attack_magic", "defence_magic"]]
+    ];
+    const values = bonusKeys.map(([label, keys]) => ({label, value: keys.map(k => Number(defensive[k])).find(v => Number.isFinite(v))})).filter(x => x.value !== undefined);
+    if (values.length) recordStyle = values.sort((a, b) => a.value - b.value)[0].label;
+  }
+  const combatLevel = Number(record?.combatLevel ?? record?.combat_level ?? record?.combat) || null;
+  const hp = Number(record?.hitpoints ?? record?.hp) || null;
+  const recordSummary = record ? (" Source record" + (combatLevel ? " (combat " + combatLevel : "") + (hp ? ", " + hp + " HP" : "") + (combatLevel ? ")" : "") + ".") : "";
+  const base = (() => {
+    if (/vorkath|dragon|wyvern|galvek|elvarg|hydra|olm/.test(n)) return {recommendedStyle:"Ranged",weakness:"Dragon-bane bonus may apply only to eligible target variants",confidence:"Heuristic hint",summary:"Dragon-bane weapons can be strong against eligible dragon targets; the exact NPC/phase bonus must be source-verified."};
+    if (/zulrah|kraken|whisperer|phantommuspah/.test(n)) return {recommendedStyle:"Compare styles / phases",weakness:"The best style can change by phase/form",confidence:"Phase-dependent hint",summary:"This target may change form or phase; a single-style recommendation is not a phase-accurate result."};
+    if (/cerberus|kalphitequeen|dagannothrex|scurrius|sarachnis|mole/.test(n)) return {recommendedStyle:"Melee candidate",weakness:"Compare the source-backed stab/slash/crush defence fields",confidence:"Heuristic hint",summary:"Melee is only a starting candidate; weapon attack type and target defence values determine the better option."};
+    return {recommendedStyle:null,weakness:null,confidence:"Target weaknesses not verified",summary:"No confirmed target-specific weakness data is available for this name in the current source catalogue."};
+  })();
+  if (record) {
+    return {
+      ...base,
+      recommendedStyle: recordStyle || base.recommendedStyle,
+      weakness: weakness || (recordStyle ? "Lowest recorded defensive value: " + recordStyle : base.weakness),
+      confidence: weakness || recordStyle ? "Source field present; needs rule validation" : base.confidence,
+      combatLevel, hitpoints: hp, recordId: record.id ?? null,
+      summary: (recordSummary || " A source monster record is available.") + (weakness ? " Recorded weakness: " + weakness + "." : " The ingested record does not establish a verified style weakness.")
+    };
+  }
+  return {...base, combatLevel:null, hitpoints:null, recordId:null, summary:base.summary + recordSummary};
 }
 const gearScore = (item, style, target = "") => {
   const a=attackBonus(item,style),s=strengthBonus(item,style),speed=valueOf(item,["attack_speed","attackSpeed","speed","ticks"]);
