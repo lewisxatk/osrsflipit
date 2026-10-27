@@ -418,11 +418,43 @@ async function dataApi(request,env){
   const slot=String(u.searchParams.get('slot')||'').toLowerCase();
   if(slot&&!allowed.has(slot))return json({ok:false,error:'Unsupported equipment slot.'},400);
   const limit=Math.min(600,Math.max(1,Number.parseInt(u.searchParams.get('limit')||'350',10)||350));
+  const offset=Math.min(50000,Math.max(0,Number.parseInt(u.searchParams.get('offset')||'0',10)||0));
   try{
-   const rows=await env.DB.prepare(`SELECT e.item_id AS id,COALESCE(i.name,d.name,m.name) AS name,COALESCE(i.icon,json_extract(d.data_json,'$.icon')) AS icon,COALESCE(e.slot,json_extract(d.data_json,'$.equipment.slot')) AS slot,e.equipable,e.weapon,e.two_handed,e.attack_speed,e.requirements_json,e.bonuses_json,d.data_json AS item_json,m.low AS buy,m.high AS sell,m.high_volume,m.low_volume,COALESCE(i.ge_limit,0) AS limit_qty,COALESCE(i.high_alch,0) AS high_alch,COALESCE(i.members,0) AS members FROM osrs_equipment_catalog e LEFT JOIN osrs_items i ON i.item_id=e.item_id LEFT JOIN osrs_item_data d ON d.item_id=e.item_id LEFT JOIN market_current m ON m.item_id=e.item_id WHERE e.equipable=1 AND (?1='' OR lower(COALESCE(e.slot,''))= ?1) ORDER BY COALESCE(i.name,d.name,m.name) LIMIT ?2`).bind(slot,limit).all();
+   const rows=await env.DB.prepare(`SELECT e.item_id AS id,COALESCE(i.name,d.name,m.name) AS name,COALESCE(i.icon,json_extract(d.data_json,'$.icon')) AS icon,COALESCE(e.slot,json_extract(d.data_json,'$.equipment.slot')) AS slot,e.equipable,e.weapon,e.two_handed,e.attack_speed,e.requirements_json,e.bonuses_json,d.data_json AS item_json,m.low AS buy,m.high AS sell,m.high_volume,m.low_volume,COALESCE(i.ge_limit,0) AS limit_qty,COALESCE(i.high_alch,0) AS high_alch,COALESCE(i.members,0) AS members FROM osrs_equipment_catalog e LEFT JOIN osrs_items i ON i.item_id=e.item_id LEFT JOIN osrs_item_data d ON d.item_id=e.item_id LEFT JOIN market_current m ON m.item_id=e.item_id WHERE e.equipable=1 AND (?1='' OR lower(COALESCE(e.slot,''))= ?1) ORDER BY COALESCE(i.name,d.name,m.name) LIMIT ?2 OFFSET ?3`).bind(slot,limit,offset).all();
    const results=(rows.results||[]).map(row=>{let item={},equipment={},requirements={};try{item=JSON.parse(row.item_json||'{}')}catch{}try{equipment=JSON.parse(row.bonuses_json||'{}')}catch{}try{requirements=JSON.parse(row.requirements_json||'{}')}catch{};if(!Object.keys(equipment).length)equipment=item.equipment||{};if(!Object.keys(requirements).length)requirements=item.requirements||{};return {id:Number(row.id),name:String(row.name||item.name||row.id),icon:row.icon||item.icon||null,slot:row.slot||item.equipment_slot||item.slot||'',equipable_by_player:row.equipable!==0,requirements,equipment:{...equipment,attack_speed:Number(row.attack_speed||equipment.attack_speed||item.attack_speed||0)},weapon: item.weapon||equipment.weapon||null,buy:Number(row.buy||0),sell:Number(row.sell||0),volume:Number(row.high_volume||0)+Number(row.low_volume||0),limit:Number(row.limit_qty||0),alch:Number(row.high_alch||0),members:!!Number(row.members||0),source:'OSRS Hub stored OSRSBox catalogue'}});
    return json({ok:true,slot,count:results.length,results,source:'OSRS Hub stored OSRSBox catalogue joined to market cache',readOnly:true},200,{'Cache-Control':'public, max-age=60'});
   }catch(e){return json({ok:false,error:'Stored equipment catalogue is not ready yet.',detail:String(e?.message||'query failed').slice(0,160),results:[],readOnly:true},200,{'Cache-Control':'no-store'});}
+ }
+ if(u.pathname==='/api/data/quests'){
+  if(request.method!=='GET')return json({ok:false,error:'Use GET for quest catalogue reads.'},405,{'Allow':'GET'});
+  const limit=Math.min(1000,Math.max(1,Number.parseInt(u.searchParams.get('limit')||'500',10)||500));
+  const merged=new Map();
+  try{
+   const rows=await env.DB.prepare("SELECT entity_id,name,data_json,updated_at FROM osrs_catalog WHERE entity_type IN ('quests','quest') AND searchable=1 ORDER BY name LIMIT ?1").bind(limit).all();
+   for(const row of rows.results||[]){let data={};try{data=JSON.parse(row.data_json||'{}')}catch{}const name=String(row.name||data.name||'').trim();if(name)merged.set(name.toLowerCase(),{key:String(row.entity_id||name),name,source:'OSRS Hub structured quest catalogue',updatedAt:Number(row.updated_at||0),requirements:data.requirements||data.quest_requirements||[],rewards:data.rewards||[]})}
+  }catch{}
+  try{
+   const rows=await env.DB.prepare("SELECT id,name,data_json,updated_at FROM osrs_content_catalog WHERE content_type IN ('quests','quest') ORDER BY name LIMIT ?1").bind(limit).all();
+   for(const row of rows.results||[]){let data={};try{data=JSON.parse(row.data_json||'{}')}catch{}const names=Array.isArray(data.quests)?data.quests:[];const own=String(row.name||'').trim();for(const q of [...names,{name:own,key:row.id}]){const name=String(typeof q==='string'?q:q?.name||q?.quest||'').trim();if(name&&name.length<100)merged.set(name.toLowerCase(),{key:String(q?.key||q?.id||name),name,source:'OSRS Hub Wiki quest catalogue',updatedAt:Number(row.updated_at||0),requirements:q?.requirements||[],rewards:q?.rewards||[]})}}
+  }catch{}
+  const results=[...merged.values()].sort((a,b)=>a.name.localeCompare(b.name)).slice(0,limit);
+  return json({ok:true,count:results.length,results,readOnly:true,notice:results.length?'Quest names reflect currently ingested records; missing quests may still need ingestion.':'No structured quest records are currently available in the stored catalogue. The UI will keep a useful manual checklist rather than treating absent records as completed.'},200,{'Cache-Control':'public, max-age=60'});
+ }
+ if(u.pathname==='/api/data/monsters'){
+  // Read-only monster/boss search. Returns only stored source records and explicitly
+  // exposes gaps rather than inventing target stats or weaknesses.
+  if(request.method!=='GET')return json({ok:false,error:'Use GET for monster catalogue reads.'},405,{'Allow':'GET'});
+  const q=String(u.searchParams.get('q')||'').trim().slice(0,80);
+  const limit=Math.min(1000,Math.max(1,Number.parseInt(u.searchParams.get('limit')||'500',10)||500));
+  const offset=Math.min(50000,Math.max(0,Number.parseInt(u.searchParams.get('offset')||'0',10)||0));
+  try{
+   let sql='SELECT monster_id,name,data_json,updated_at FROM osrs_monster_data',args=[];
+   if(q.length>=2){sql+=' WHERE lower(name) LIKE lower(?1)';args.push('%'+q+'%')}
+   sql+=' ORDER BY name LIMIT ?'+(args.length+1)+' OFFSET ?'+(args.length+2);args.push(limit,offset);
+   const rows=await env.DB.prepare(sql).bind(...args).all();
+   const results=(rows.results||[]).map(row=>{let data={};try{data=JSON.parse(row.data_json||'{}')}catch{}return {id:Number(row.monster_id),name:String(row.name||data.name||row.monster_id),combatLevel:Number(data.combat_level??data.combat??0)||null,hitpoints:Number(data.hitpoints??data.hp??0)||null,defence:Number(data.defence??data.defence_level??0)||null,attackStyles:Array.isArray(data.attack_styles)?data.attack_styles:[],weakness:data.weakness??data.weaknesses??null,defensiveBonuses:data.defensive??data.defensive_bonuses??null,immunities:data.immunities??null,source:'Stored OSRSBox monster record',updatedAt:Number(row.updated_at||0),rawDataStatus:data.detailStatus||null}});
+   return json({ok:true,count:results.length,query:q||null,offset,limit,hasMore:results.length===limit,results,readOnly:true,notice:'Targets are limited to currently ingested source records. Missing stats and weaknesses remain unknown; target variants and boss phases may require separate records.'},200,{'Cache-Control':'public, max-age=60'});
+  }catch(e){return json({ok:false,error:'Stored monster catalogue is not ready yet.',detail:String(e?.message||'query failed').slice(0,160),results:[],readOnly:true},200,{'Cache-Control':'no-store'});}
  }
  if(u.pathname==='/api/data/knowledge'){
   // Read-only cross-source Brain search across structured OSRSBox records and indexed Wiki reference pages.

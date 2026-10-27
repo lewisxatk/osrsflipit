@@ -34,3 +34,42 @@ html[data-theme="comfort"] .combat-studio{--cs-accent:#a65b38;--cs-bg:#fffaf4;--
 .combat-studio .cs-import-help ol{padding-left:20px}
 .combat-studio .cs-import-help li{padding:3px 0}
 .combat-studio .cs-import-help a{color:var(--cs-accent);text-decoration:underline}
+
+
+/* Functional Combat Studio additions */
+.cs-remove-slot{border:1px solid var(--cs-line);background:var(--cs-bg2);border-radius:5px;min-width:24px;height:24px;font-size:18px;line-height:1;color:var(--cs-muted);margin-left:6px}
+.cs-remove-slot:hover{border-color:var(--cs-accent);color:var(--cs-accent)}
+.cs-calculation-note{display:block;color:var(--cs-muted);font-size:10px;line-height:1.5;margin-top:12px}
+.cs-target-profile{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:8px;padding:10px 0}
+.cs-target-profile span{color:var(--cs-muted)}
+.cs-target-profile b{font-weight:650;text-align:right}
+.cs-quest-panel{margin:12px 0}
+.cs-quest-search{width:100%;margin:10px 0;padding:10px;border:1px solid var(--cs-line);border-radius:7px;background:var(--cs-bg2);color:var(--cs-text)}
+.cs-quest-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.cs-quest-row{display:flex;align-items:center;justify-content:space-between;gap:12px;min-width:0;padding:8px;border:1px solid var(--cs-line);border-radius:7px;background:var(--cs-bg2)}
+.cs-quest-row>span{min-width:0;overflow-wrap:anywhere;font-weight:650}
+.cs-quest-row small{display:block;color:var(--cs-muted);font-size:10px;font-weight:400;margin-top:3px}
+.cs-quest-row select{max-width:150px;min-width:115px;padding:7px;border:1px solid var(--cs-line);border-radius:6px;background:var(--cs-bg);color:var(--cs-text)}
+.cs-exclude-picker{position:relative;display:flex;flex:1;min-width:0}
+.cs-exclude-picker>input{width:100%;min-width:0;padding:10px;border:1px solid var(--cs-line);border-radius:7px;background:var(--cs-bg2);color:var(--cs-text)}
+.cs-exclude-options{position:absolute;z-index:30;top:calc(100% + 5px);left:0;right:0;max-height:300px;overflow:auto;background:var(--cs-bg);border:1px solid var(--cs-line);border-radius:8px;box-shadow:0 12px 28px #0002}
+.cs-exclude-options button{display:flex;align-items:center;gap:9px;width:100%;text-align:left;padding:8px 10px;border:0;border-bottom:1px solid var(--cs-line);background:transparent}
+.cs-exclude-options button:hover{background:var(--cs-bg2)}
+.cs-exclude-options img{width:28px;height:28px;object-fit:contain;flex-shrink:0}
+.cs-exclude-options span{min-width:0;font-weight:650}
+.cs-exclude-options small{display:block;color:var(--cs-muted);font-size:10px;font-weight:400;margin-top:3px}
+.cs-item-overlay{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;padding:18px;background:#111a}
+.cs-item-detail{position:relative;width:min(620px,100%);max-height:min(82vh,760px);overflow:auto;padding:22px;border:1px solid var(--cs-line);border-radius:14px;background:var(--cs-bg);color:var(--cs-text);box-shadow:0 18px 60px #0004}
+.cs-item-close{position:absolute;right:12px;top:12px;width:32px;height:32px;border:1px solid var(--cs-line);border-radius:8px;background:var(--cs-bg2);font-size:22px;line-height:1}
+.cs-item-detail-head{display:flex;align-items:center;gap:14px;padding:4px 36px 16px 0;border-bottom:1px solid var(--cs-line)}
+.cs-item-detail-head img{width:58px;height:58px;object-fit:contain}
+.cs-item-detail-head small{color:var(--cs-accent);font-size:10px;font-weight:800;letter-spacing:.12em}
+.cs-item-detail-head h2{margin:4px 0;font-size:20px}
+.cs-item-detail-head span{color:var(--cs-muted)}
+.cs-item-detail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:14px}
+.cs-item-detail-grid>div{min-width:0;padding:10px;border:1px solid var(--cs-line);border-radius:7px;background:var(--cs-bg2)}
+.cs-item-detail-grid small{display:block;color:var(--cs-muted);font-size:10px;margin-bottom:5px}
+.cs-item-detail-grid b{display:block;overflow-wrap:anywhere;font-size:12px}
+.cs-excluded em{font-size:10px;color:var(--cs-muted);font-style:normal}
+@media(max-width:760px){.cs-quest-list{grid-template-columns:1fr}.cs-quest-row{align-items:flex-start}.cs-item-detail{padding:16px}.cs-item-detail-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:440px){.cs-item-detail-grid{grid-template-columns:1fr}.cs-quest-row{flex-direction:column}.cs-quest-row select{max-width:none;width:100%}.cs-target-profile{grid-template-columns:1fr}.cs-target-profile b{text-align:left}}
