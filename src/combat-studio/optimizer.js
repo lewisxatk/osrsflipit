@@ -152,7 +152,7 @@ export function estimateLoadout({items=[],target="",style="Ranged",budget=0,stat
   if (budgetN <= 0) return {slots:slots.map(slot=>[slot,"—"]),gearScoreEstimate:null,candidateCount:0,totalCost:0,remainingBudget:0,weaponSpeed:null,weaponAttack:null,weaponDamage:null,targetMeta,warnings};
   const results=slots.map(slot=>{
     const pool=equipment.filter(item=>{
-      if (inferEquipmentSlot(item)!==slot) return false;
+      if (inferEquipmentSlot(item)!==slot) return false;\n      const itemNameKey = key(item?._name ?? item?.name);\n      if (slot === "Ammo" && style !== "Ranged") return false;\n      if (slot === "Weapon") {\n        if (style === "Melee" && /bow|crossbow|blowpipe|chinchompa|ballista|shortbow|longbow|staff|wand|trident|sceptre|tome/.test(itemNameKey)) return false;\n        if (style === "Ranged" && !/bow|crossbow|blowpipe|ballista|chinchompa|dart|javelin|throwingknife/.test(itemNameKey)) return false;\n        if (style === "Magic" && !/staff|wand|trident|sceptre|battlestaff|mystic/.test(itemNameKey)) return false;\n      }
       const name=String(item._name??item.name??"");
       if (exclude.has(key(name)) || item.tradeable===false || item.tradable===false || item.members===false && item?.equipable!==true) return false;
       const p=priceOf(item);
