@@ -17,7 +17,11 @@ export default function CombatStudioPage({items=[],account,onSelect}){
  const [budget,setBudget]=useState("150000000"),[accountAware,setAccountAware]=useState(true),[showUpgrades,setShowUpgrades]=useState(true),[alternative,setAlternative]=useState("Current"),[saved,setSaved]=useState(false);
  const [username,setUsername]=useState(account?.name||""),[busy,setBusy]=useState(false),[status,setStatus]=useState(""),[error,setError]=useState(false),[loadedTargets,setLoadedTargets]=useState([]);
  const fileRef=useRef(null),targetRef=useRef(null);
- const [slots,setSlots]=useState(()=>STYLE_SLOTS.Ranged.map(x=>[...x]));\n const [manualExcluded,setManualExcluded]=useState(()=>{try{return JSON.parse(localStorage.getItem("osrshub-combat-exclusions")||"[]")}catch{return []}});\n const [excludeInput,setExcludeInput]=useState("");\n const [guideOpen,setGuideOpen]=useState(false);\n useEffect(()=>{setSlots(STYLE_SLOTS[style].map(x=>[...x]))},[style]);
+ const [slots,setSlots]=useState(()=>STYLE_SLOTS.Ranged.map(x=>[...x]));
+ const [manualExcluded,setManualExcluded]=useState(()=>{try{return JSON.parse(localStorage.getItem("osrshub-combat-exclusions")||"[]")}catch{return []}});
+ const [excludeInput,setExcludeInput]=useState("");
+ const [guideOpen,setGuideOpen]=useState(false);
+ useEffect(()=>{setSlots(STYLE_SLOTS[style].map(x=>[...x]))},[style]);
  useEffect(()=>{setUsername(account?.name||"")},[account?.name]);
  useEffect(()=>{let active=true;const load=async()=>{for(const url of ["/data/monsters-combat.json","/data/monsters.json"]){try{const r=await fetch(url);if(!r.ok)continue;const j=await r.json();const list=Array.isArray(j)?j:(j.monsters||j.records||j.data||[]);const names=list.map(m=>typeof m==="string"?m:(m.name||m.monster_name||m.display_name)).filter(Boolean);if(active&&names.length){setLoadedTargets([...new Set(names)].sort((a,b)=>a.localeCompare(b)));return}}catch{}}};load();return()=>{active=false}},[]);
  const normalizedItems=useMemo(()=>items.map(it=>({...it,_name:it.name||it.item_name||it.title||"",_price:Number(it.sell??it.high??it.price??it.buy??0),_icon:(()=>{const raw=it.icon_url||it.image||it.icon||"";if(!raw)return "";if(/^https?:\\/\\//i.test(raw)||raw.startsWith("/"))return raw;return "https://oldschool.runescape.wiki/images/"+encodeURIComponent(String(raw).replace(/ /g,"_"))})()})),[items]);
