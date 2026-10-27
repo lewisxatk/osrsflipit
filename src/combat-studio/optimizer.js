@@ -84,7 +84,6 @@ const priceOf = item => {
   const direct = num(item?._price,item?.sell,item?.high,item?.price,item?.buy,item?.latest_price,item?.last_price);
   return direct !== null && direct > 0 ? direct : null;
 };
-const styleTag = style => style === "Ranged" ? /range|ranged|bow|crossbow|bolt|arrow|dart|blowpipe|chinchompa/.test : style === "Magic" ? /magic|spell|staff|wand|trident/.test : /melee|slash|stab|crush|sword|lance|scimitar|whip|dagger|mace/.test;
 export function targetProfile(name) {
   const n=key(name);
   if (/vorkath|dragon|wyvern|galvek|elvarg|hydra|olm/.test(n)) return {recommendedStyle:/vorkath|dragon|wyvern|galvek|elvarg/.test(n)?"Ranged":"Ranged",weakness:"Dragon/monster-specific bonuses depend on the selected weapon and target form",confidence:"Hint only",summary:"Dragon-bane weapons can be strong against eligible dragon targets; target-specific rules still need verified records."};
@@ -109,14 +108,13 @@ const gearScore = (item, style, target = "") => {
 export function estimateLoadout({items=[],target="",style="Ranged",budget=0,stats={},quests=[],accountAware=true,excluded=[],questOverrides={},scoreOnly=false,forcedSlots=null}={}) {
   const targetMeta=targetProfile(target), exclude=new Set(excluded.map(key));
   const equipment=(Array.isArray(items)?items:[]).filter(it=>it&&typeof it==="object"&&String(it._name??it.name??it.item_name??"").trim());
-  const knownCosts=equipment.map(priceOf).filter(v=>v!==null).sort((a,b)=>a-b);
   const budgetN=Math.max(0,Number(budget)||0);
   const warnings=[];
   if (budgetN <= 0) warnings.push("Enter a budget greater than zero GP before generating a loadout.");
   if (!equipment.length) warnings.push("The page has no connected item records; confirm the items dataset is loading.");
   if (accountAware && !Object.keys(stats||{}).length) warnings.push("No account stats are available, so skill requirements cannot be fully verified.");
   if (accountAware && !quests?.length) warnings.push("Quest progress is unavailable. Quest-restricted items are excluded unless manually marked done in the local quest checklist.");
-  if (budgetN <= 0) return {slots:slots.map(slot=>[slot,"—"]),estimatedDps:null,candidateCount:0,totalCost:0,remainingBudget:0,weaponSpeed:null,weaponAttack:null,weaponDamage:null,targetMeta,warnings};
+  if (budgetN <= 0) return {slots:slots.map(slot=>[slot,"—"]),gearScoreEstimate:null,candidateCount:0,totalCost:0,remainingBudget:0,weaponSpeed:null,weaponAttack:null,weaponDamage:null,targetMeta,warnings};
   const results=slots.map(slot=>{
     const pool=equipment.filter(item=>{
       if (inferEquipmentSlot(item)!==slot) return false;
@@ -160,12 +158,11 @@ export function estimateLoadout({items=[],target="",style="Ranged",budget=0,stat
   }
   const selectedItems=chosen.map(([slot,name])=>equipment.find(x=>key(x._name??x.name)===key(name))).filter(Boolean);
   const currentScore=selectedItems.reduce((sum,item)=>sum+gearScore(item,style,target)-1,0);
-  const speeds=selectedItems.map(item=>valueOf(item,["attack_speed","attackSpeed","speed","ticks"])).filter(v=>v!==null);
   const weapon=selectedItems.find(item=>inferEquipmentSlot(item)==="Weapon");
   const weaponSpeed=weapon ? valueOf(weapon,["attack_speed","attackSpeed","speed","ticks"]) : null;
   const weaponDamage=strengthBonus(weapon||{},style);
   const weaponAttack=attackBonus(weapon||{},style);
   const score=Math.max(0,currentScore+(targetMeta.recommendedStyle===style?0.2:0));
-  const result={slots:chosen,estimatedDps:score>0?Number(score.toFixed(2)):null,candidateCount:results.reduce((n,row)=>n+row.pool.length,0),totalCost:spent,remainingBudget:Math.max(0,budgetN-spent),weaponSpeed,weaponAttack,weaponDamage,targetMeta,warnings:[...warnings]};
+  const result={slots:chosen,gearScoreEstimate:score>0?Number(score.toFixed(2)):null,candidateCount:results.reduce((n,row)=>n+row.pool.length,0),totalCost:spent,remainingBudget:Math.max(0,budgetN-spent),weaponSpeed,weaponAttack,weaponDamage,targetMeta,warnings:[...warnings]};
   return scoreOnly?result:result;
 }
