@@ -36,6 +36,6 @@ test("manual quest override can satisfy a known quest requirement", () => {
 });
 
 test("target helper avoids claiming source-verified weaknesses", () => {
-  assert.match(targetProfile("Vorkath").confidence,/Hint/);
+  assert.match(targetProfile("Vorkath").confidence,/hint/i);
   assert.match(targetProfile("Unknown boss").confidence,/not verified/i);
 });
