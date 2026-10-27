@@ -424,6 +424,21 @@ async function dataApi(request,env){
    return json({ok:true,slot,count:results.length,results,source:'OSRS Hub stored OSRSBox catalogue joined to market cache',readOnly:true},200,{'Cache-Control':'public, max-age=60'});
   }catch(e){return json({ok:false,error:'Stored equipment catalogue is not ready yet.',detail:String(e?.message||'query failed').slice(0,160),results:[],readOnly:true},200,{'Cache-Control':'no-store'});}
  }
+ if(u.pathname==='/api/data/quests'){
+  if(request.method!=='GET')return json({ok:false,error:'Use GET for quest catalogue reads.'},405,{'Allow':'GET'});
+  const limit=Math.min(1000,Math.max(1,Number.parseInt(u.searchParams.get('limit')||'500',10)||500));
+  const merged=new Map();
+  try{
+   const rows=await env.DB.prepare("SELECT entity_id,name,data_json,updated_at FROM osrs_catalog WHERE entity_type IN ('quests','quest') AND searchable=1 ORDER BY name LIMIT ?1").bind(limit).all();
+   for(const row of rows.results||[]){let data={};try{data=JSON.parse(row.data_json||'{}')}catch{}const name=String(row.name||data.name||'').trim();if(name)merged.set(name.toLowerCase(),{key:String(row.entity_id||name),name,source:'OSRS Hub structured quest catalogue',updatedAt:Number(row.updated_at||0),requirements:data.requirements||data.quest_requirements||[],rewards:data.rewards||[]})}
+  }catch{}
+  try{
+   const rows=await env.DB.prepare("SELECT id,name,data_json,updated_at FROM osrs_content_catalog WHERE content_type IN ('quests','quest') ORDER BY name LIMIT ?1").bind(limit).all();
+   for(const row of rows.results||[]){let data={};try{data=JSON.parse(row.data_json||'{}')}catch{}const names=Array.isArray(data.quests)?data.quests:[];const own=String(row.name||'').trim();for(const q of [...names,{name:own,key:row.id}]){const name=String(typeof q==='string'?q:q?.name||q?.quest||'').trim();if(name&&name.length<100)merged.set(name.toLowerCase(),{key:String(q?.key||q?.id||name),name,source:'OSRS Hub Wiki quest catalogue',updatedAt:Number(row.updated_at||0),requirements:q?.requirements||[],rewards:q?.rewards||[]})}}
+  }catch{}
+  const results=[...merged.values()].sort((a,b)=>a.name.localeCompare(b.name)).slice(0,limit);
+  return json({ok:true,count:results.length,results,readOnly:true,notice:results.length?'Quest names reflect currently ingested records; missing quests may still need ingestion.':'No structured quest records are currently available in the stored catalogue. The UI will keep a useful manual checklist rather than treating absent records as completed.'},200,{'Cache-Control':'public, max-age=60'});
+ }
  if(u.pathname==='/api/data/monsters'){
   // Read-only monster/boss search. Returns only stored source records and explicitly
   // exposes gaps rather than inventing target stats or weaknesses.
