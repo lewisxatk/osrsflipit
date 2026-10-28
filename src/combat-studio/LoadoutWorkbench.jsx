@@ -7,7 +7,7 @@ const SLOT_ORDER = ["Head", "Cape", "Neck", "Ammo", "Weapon", "Body", "Legs", "S
 const money = value => Number.isFinite(Number(value)) ? Math.round(Number(value)).toLocaleString("en-GB") + " gp" : "—";
 const normal = value => String(value ?? "").toLowerCase().replace(/[^a-z0-9]/g, "");
 const itemName = item => String(item?._name ?? item?.name ?? item?.item_name ?? "");
-const iconSource = item => { const raw = String(item?.icon_url ?? item?.wiki_image ?? item?.icon ?? "").trim(); if (!raw) return ""; if (/^(https?:)?\\//i.test(raw) || raw.startsWith("data:")) return raw; return "https://oldschool.runescape.wiki/images/" + encodeURIComponent(raw.replace(/ /g, "_")); };
+const iconSource = item => { const raw = String(item?.icon_url ?? item?.wiki_image ?? item?.icon ?? "").trim(); if (!raw) return ""; if (raw.startsWith("http://") || raw.startsWith("https://") || raw.startsWith("/") || raw.startsWith("data:")) return raw; return "https://oldschool.runescape.wiki/images/" + encodeURIComponent(raw.replace(/ /g, "_")); };
 const itemPrice = item => {
   for (const value of [item?._price, item?.sell, item?.high, item?.price, item?.buy]) {
     const price = Number(value);
