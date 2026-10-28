@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Activity, CheckCircle2, AlertCircle, RefreshCw, Server } from "lucide-react";
 import { buildLiveCalculationRequest } from "./live-calculation-request.js";
 import LoadoutWorkbench from "./LoadoutWorkbench.jsx";
@@ -30,6 +30,7 @@ const format = value => Number(value).toLocaleString("en-GB", { maximumFractionD
 
 export default function LiveCombatPanel({ account, slots = [], items = [], targetRecords = [], targetName = "" }) {
   const [draftSlots, setDraftSlots] = useState(() => slots.map(pair => [...pair]));
+  useEffect(() => { setDraftSlots(slots.map(pair => [...pair])); }, [slots]);
   const [attackType, setAttackType] = useState("");
   const [stance, setStance] = useState("");
   const [busy, setBusy] = useState(false);
