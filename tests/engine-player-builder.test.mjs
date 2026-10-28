@@ -16,7 +16,7 @@ const whip = {
 const blankEquipment = () => Object.fromEntries(ENGINE_EQUIPMENT_SLOTS.map((slot) => [slot, null]));
 const baseInput = () => ({
   name: "OSRS Hub test account",
-  skills,
+  skills: { ...skills },
   equipment: { ...blankEquipment(), weapon: whip },
   style: { name: "Flick", type: "slash", stance: "Accurate" },
   attackSpeed: 4,
