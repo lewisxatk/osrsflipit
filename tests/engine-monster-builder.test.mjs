@@ -77,7 +77,7 @@ test("requires a valid canonical identity and explicit engine structures", () =>
   const record = monsterRecord();
   record.id = -1;
   record.skills.hp = "150";
-  record.weakness = undefined;
+  delete record.weakness;
   const result = buildEngineMonster(record);
   assert.equal(result.status, "review-required");
   assert.ok(result.issues.some(issue => issue.includes("positive canonical monster ID")));
