@@ -53,9 +53,10 @@ test("does not submit a calculation if health check fails", async () => {
 
 test("rejects malformed and non-finite successful payloads", async () => {
   const bad = new Response(JSON.stringify({ status: "calculated", result: { dps: "4", maxHit: 3 } }), { status: 200 });
+  let calls = 0;
   const result = await calculateLiveCombat({
     baseUrl: "https://example.workers.dev", request: validRequest,
-    fetchImpl: async () => arguments.length ? health() : bad,
+    fetchImpl: async () => (++calls === 1 ? health() : bad),
   });
   assert.notEqual(result.status, "calculated");
 });
