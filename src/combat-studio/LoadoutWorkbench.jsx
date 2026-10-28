@@ -99,6 +99,11 @@ export default function LoadoutWorkbench({ account, items = [], currentSlots = [
     onDraftChange?.(next);
   };
   const currentNames = new Map(draft.map(([slot, name]) => [slot, name]));
+  const recommendedSlots = selectedEstimate?.estimate?.slots ?? [];
+  const recommendedNames = new Map(recommendedSlots.map(([slot, name]) => [slot, name]));
+  const priceForName = name => { const match = items.find(item => normal(itemName(item)) === normal(name)); return itemPrice(match); };
+  const comparisonRows = SLOT_ORDER.map(slot => ({ slot, current: currentNames.get(slot) || "—", recommended: recommendedNames.get(slot) || "—" })).filter(row => row.current !== row.recommended);
+  const applyRecommendedSlot = (slot, name) => { const next = draft.map(([currentSlot, currentName]) => currentSlot === slot ? [currentSlot, name] : [currentSlot, currentName]); setDraft(next); setActiveBuild("custom"); onDraftChange?.(next); };
   const missingPrices = draft.filter(([, name]) => name && name !== "—" && !items.some(item => normal(itemName(item)) === normal(name) && itemPrice(item) !== null));
 
   return <section className="cs-workbench cs-panel" aria-labelledby="cs-workbench-title">
@@ -120,6 +125,13 @@ export default function LoadoutWorkbench({ account, items = [], currentSlots = [
         <button type="button" onClick={() => applyEstimate(option)} disabled={!option.estimate.slots?.length}><Check size={14}/> Use this setup</button>
       </article>)}
       {!options.length && <p className="cs-workbench-empty">Enter a budget and wait for the equipment catalogue to load to compare setups.</p>}
+    </div>
+    <div className="cs-workbench-compare">
+      <div className="cs-workbench-editor-head"><div><h3><ArrowRightLeft size={16}/> Slot-by-slot comparison</h3><p>Compare your draft with the selected budget recommendation before applying it.</p></div><span>{comparisonRows.length} slot changes</span></div>
+      {comparisonRows.length ? <div className="cs-workbench-compare-table" role="table" aria-label="Loadout slot comparison">
+        <div className="cs-workbench-compare-row heading" role="row"><span>Slot</span><span>Current draft</span><span>Recommended</span><span>Cost change</span><span/></div>
+        {comparisonRows.map(row => { const oldPrice = priceForName(row.current); const newPrice = priceForName(row.recommended); const delta = oldPrice == null || newPrice == null ? null : newPrice - oldPrice; return <div className="cs-workbench-compare-row" role="row" key={row.slot}><strong>{row.slot}</strong><span title={row.current}>{row.current}</span><span title={row.recommended}>{row.recommended}</span><b className={delta == null ? "" : delta > 0 ? "up" : delta < 0 ? "down" : ""}>{delta == null ? "Price unknown" : (delta > 0 ? "+" : "") + money(delta)}</b><button type="button" onClick={() => applyRecommendedSlot(row.slot, row.recommended)} disabled={row.recommended === "—"}>Apply</button></div>; })}
+      </div> : <p className="cs-workbench-empty">Your draft matches the selected recommendation in every slot, or no recommendation is available yet.</p>}
     </div>
     <div className="cs-workbench-editor">
       <div className="cs-workbench-editor-head"><div><h3><Swords size={16}/> Gear by slot</h3><p>Choose an item to update the draft used by the live calculation panel.</p></div><span>{draft.filter(([, name]) => name && name !== "—").length} slots filled</span></div>
