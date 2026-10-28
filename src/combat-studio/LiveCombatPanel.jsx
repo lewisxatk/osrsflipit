@@ -1,6 +1,7 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Activity, CheckCircle2, AlertCircle, RefreshCw, Server } from "lucide-react";
 import { buildLiveCalculationRequest } from "./live-calculation-request.js";
+import LoadoutWorkbench from "./LoadoutWorkbench.jsx";
 import { calculateLiveCombat } from "./live-calculation-client.js";
 import "./live-calculation-panel.css";
 
@@ -28,6 +29,8 @@ const finite = value => Number.isFinite(Number(value)) ? Number(value) : null;
 const format = value => Number(value).toLocaleString("en-GB", { maximumFractionDigits: 3 });
 
 export default function LiveCombatPanel({ account, slots = [], items = [], targetRecords = [], targetName = "" }) {
+  const [draftSlots, setDraftSlots] = useState(() => slots.map(pair => [...pair]));
+  useEffect(() => { setDraftSlots(slots.map(pair => [...pair])); }, [slots]);
   const [attackType, setAttackType] = useState("");
   const [stance, setStance] = useState("");
   const [busy, setBusy] = useState(false);
@@ -43,7 +46,7 @@ export default function LiveCombatPanel({ account, slots = [], items = [], targe
   }, [targetRecords, targetName]);
   const targetId = finite(target?.id ?? target?.monster_id ?? target?.monsterId);
   const accountStats = account?.stats ?? {};
-  const canAttempt = Boolean(account?.name && targetId && attackType && stance && slots.length);
+  const canAttempt = Boolean(account?.name && targetId && attackType && stance && draftSlots.length);
 
   const runCalculation = async () => {
     setBusy(true);
@@ -53,7 +56,7 @@ export default function LiveCombatPanel({ account, slots = [], items = [], targe
       const built = buildLiveCalculationRequest({
         playerName: account?.name,
         stats: accountStats,
-        slots,
+        slots: draftSlots,
         items,
         target: targetId ? { id: targetId, name: targetName } : null,
         style,
@@ -76,7 +79,9 @@ export default function LiveCombatPanel({ account, slots = [], items = [], targe
   };
 
   const result = outcome?.result;
-  return <section className="cs-live-runtime cs-panel" aria-labelledby="cs-live-runtime-title">
+  return <>
+    <LoadoutWorkbench account={account} items={items} currentSlots={draftSlots} targetName={targetName} onDraftChange={setDraftSlots} />
+    <section className="cs-live-runtime cs-panel" aria-labelledby="cs-live-runtime-title">
     <header>
       <div>
         <h2 id="cs-live-runtime-title"><Activity size={17}/> Live combat engine</h2>
@@ -103,7 +108,7 @@ export default function LiveCombatPanel({ account, slots = [], items = [], targe
       <span><b>Account</b>{account?.name || "Import an account first"}</span>
       <span><b>Target</b>{targetName || "Choose a target above"}</span>
       <span><b>Canonical target ID</b>{targetId ?? "Not resolved"}</span>
-      <span><b>Equipped slots</b>{slots.length}</span>
+      <span><b>Equipped slots</b>{draftSlots.length}</span>
     </div>
     <button className="cs-primary" onClick={runCalculation} disabled={busy || !canAttempt}>
       {busy ? <RefreshCw size={14} className="cs-spin"/> : <Activity size={14}/>}
@@ -123,5 +128,6 @@ export default function LiveCombatPanel({ account, slots = [], items = [], targe
       </div>
       {Array.isArray(result.issues) && result.issues.length > 0 && <p className="cs-live-hint">Engine notes: {result.issues.map(issue => typeof issue === "string" ? issue : issue?.message ?? JSON.stringify(issue)).join(" · ")}</p>}
     </div>}
-  </section>;
+  </section>
+  </>;
 }
