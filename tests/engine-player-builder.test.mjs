@@ -68,7 +68,7 @@ test("supports explicit boosts, prayers and buffs without modifying inputs", () 
   input.prayers = [13];
   input.buffs = { onSlayerTask: true, soulreaperStacks: 3 };
   const result = buildEnginePlayer(input);
-  assert.equal(result.status, "ready");
+  assert.equal(result.status, "ready", result.issues.join("; "));
   assert.deepEqual(result.player.prayers, [13]);
   assert.equal(result.player.buffs.onSlayerTask, true);
   assert.equal(result.player.buffs.soulreaperStacks, 3);
@@ -77,6 +77,6 @@ test("supports explicit boosts, prayers and buffs without modifying inputs", () 
 
 test("all engine equipment slots are present even when empty", () => {
   const result = buildEnginePlayer({ ...baseInput(), equipment: blankEquipment() });
-  assert.equal(result.status, "ready");
+  assert.equal(result.status, "ready", result.issues.join("; "));
   assert.deepEqual(Object.keys(result.player.equipment), ENGINE_EQUIPMENT_SLOTS);
 });
