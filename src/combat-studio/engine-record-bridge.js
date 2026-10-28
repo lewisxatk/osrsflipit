@@ -43,7 +43,7 @@ const ATTACK_FIELDS = ["stab", "slash", "crush", "magic", "ranged"];
 const DEFENCE_FIELDS = ["stab", "slash", "crush", "magic", "ranged"];
 const MONSTER_FIELDS = [
   "name", "size", "speed", "style", "skills", "offensive", "defensive",
-  "attributes", "weakness", "immunities", "is_slayer_monster", "inputs"
+  "attributes", "immunities", "is_slayer_monster", "inputs"
 ];
 
 function validateEquipment(row) {
@@ -59,6 +59,8 @@ function validateEquipment(row) {
 
 function validateMonster(row) {
   const missing = missingFields(row, MONSTER_FIELDS);
+  // A null weakness is a valid canonical value; only require the property to exist.
+  if (!Object.prototype.hasOwnProperty.call(row, "weakness")) missing.push("weakness");
   for (const [group, fields] of Object.entries({
     skills: ["atk", "def", "hp", "magic", "ranged", "str"],
     offensive: ["atk", "magic", "magic_str", "ranged", "ranged_str", "str"],
