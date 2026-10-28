@@ -23,6 +23,10 @@ const SKILLS = Object.freeze({
   herblore: ["Herblore", "herblore"],
   farming: ["Farming", "farming"],
 });
+const VALID_STANCES = new Set([
+  null, "Accurate", "Aggressive", "Autocast", "Controlled", "Defensive",
+  "Defensive Autocast", "Longrange", "Rapid", "Manual Cast",
+]);
 const ZERO_BOOSTS = Object.freeze(Object.fromEntries(Object.keys(SKILLS).map(key => [key, 0])));
 const DEFAULT_BUFFS = Object.freeze({
   potions: [], onSlayerTask: false, inWilderness: false, forinthrySurge: false,
@@ -72,8 +76,8 @@ export function buildLiveCalculationRequest({
 
   if (!isRecord(style) || typeof style.name !== "string" || !style.name.trim()
     || !["stab", "slash", "crush", "magic", "ranged", null].includes(style.type)
-    || !(style.stance === null || typeof style.stance === "string")) {
-    issues.push("An explicit engine-native combat style (name, type and stance) is required; it is never guessed from the broad combat category.");
+    || !VALID_STANCES.has(style.stance)) {
+    issues.push("An explicit engine-native combat style (name, type and supported stance) is required; it is never guessed from the broad combat category.");
   }
 
   if (!target || !Number.isInteger(Number(target.id)) || Number(target.id) <= 0) {
@@ -121,7 +125,23 @@ export function buildLiveCalculationRequest({
   if (!Array.isArray(prayers) || prayers.some(value => !Number.isInteger(value) || value < 0 || value > 21)) {
     issues.push("Prayers must be an array of valid engine Prayer enum values (0–21).");
   }
-  if (!isRecord(buffs)) issues.push("Buffs must be an explicit object.");
+  if (!isRecord(buffs)) {
+    issues.push("Buffs must be an explicit object.");
+  } else {
+    if (!Array.isArray(buffs.potions ?? [])) issues.push("buffs.potions must be an array.");
+    for (const key of [
+      "onSlayerTask", "inWilderness", "forinthrySurge", "kandarinDiary", "chargeSpell",
+      "markOfDarknessSpell", "usingSunfireRunes", "fragmentOfWind", "fragmentOfWater",
+      "fragmentOfEarth", "fragmentOfFire",
+    ]) {
+      if (buffs[key] !== undefined && typeof buffs[key] !== "boolean") issues.push(`buffs.${key} must be boolean.`);
+    }
+    for (const key of ["soulreaperStacks", "baAttackerLevel", "chinchompaDistance"]) {
+      if (buffs[key] !== undefined && (!Number.isFinite(buffs[key]) || buffs[key] < 0)) {
+        issues.push(`buffs.${key} must be a non-negative number.`);
+      }
+    }
+  }
   if (spell !== null && !isRecord(spell)) issues.push("Spell must be an engine spell object or null.");
   if (monsterInputs !== undefined && !isRecord(monsterInputs)) issues.push("Monster inputs must be an object when supplied.");
 
@@ -134,7 +154,7 @@ export function buildLiveCalculationRequest({
     boosts: { ...boosts },
     equipment,
     prayers: [...prayers],
-    buffs: { ...DEFAULT_BUFFS, ...buffs, potions: Array.isArray(buffs.potions) ? [...buffs.potions] : buffs.potions },
+    buffs: { ...DEFAULT_BUFFS, ...buffs, potions: [...(buffs.potions ?? [])] },
     spell,
   };
   return {
