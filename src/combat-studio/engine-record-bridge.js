@@ -66,11 +66,15 @@ function validateMonster(row) {
     offensive: ["atk", "magic", "magic_str", "ranged", "ranged_str", "str"],
     inputs: ["isFromCoxCm", "toaInvocationLevel", "toaPathLevel", "partyMaxCombatLevel",
       "partySumMiningLevel", "partyMaxHpLevel", "partySize", "monsterCurrentHp", "defenceReductions"],
-    immunities: ["burn"],
   })) {
     if (isRecord(row[group])) missing.push(...missingFields(row[group], fields).map(x => group + "." + x));
     else missing.push(group + " (object)");
   }
+  // Canonical engine rows may represent nullable optional subrecords (for
+  // example immunities) as null. Require the field, not an object shape.
+  if (!Object.prototype.hasOwnProperty.call(row, "immunities")) missing.push("immunities");
+  else if (row.immunities !== null && !isRecord(row.immunities)) missing.push("immunities (object or null)");
+  else if (isRecord(row.immunities) && row.immunities.burn === undefined) missing.push("immunities.burn");
   if (isRecord(row.defensive) && row.defensive.flat_armour === undefined) missing.push("defensive.flat_armour");
   if (!Array.isArray(row.attributes)) missing.push("attributes (array)");
   return [...new Set(missing)];
