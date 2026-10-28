@@ -63,7 +63,7 @@ export default function CombatStudioPage({items=[],account,onSelect}){
    {[
     {name:"Melee",hint:"Strength & accuracy",icon:Swords},
     {name:"Ranged",hint:"Distance & bolts",icon:Target},
-    {name:"Magic",hint:"Spell damage",icon:Sparkles}
+    {name:"Magic",hint:"Spell damage",icon:Activity}
    ].map(({name,hint,icon:Icon})=><button key={name} type="button" className={style===name?"active":""} aria-pressed={style===name} onClick={()=>{setStyle(name);setResult(null)}}><span className="cs-command-preset-icon"><Icon size={18}/></span><span><b>{name}</b><small>{hint}</small></span><span className="cs-command-check">{style===name?"Selected":"Choose"}</span></button>)}
   </div>
   <div className="cs-command-bottom">
