@@ -13,7 +13,7 @@ test("compares verified combat results and computes relative DPS change", () => 
   assert.equal(summary.deltaDps, 1);
   assert.equal(summary.deltaPercent, 20);
   assert.equal(summary.deltaMaxHit, 4);
-  assert.equal(summary.deltaAccuracy, 0.05);
+  assert.ok(Math.abs(summary.deltaAccuracy - 0.05) < 1e-12, "accuracy delta should be 0.05 within floating-point tolerance");
   assert.equal(summary.deltaAttackSpeed, 1);
 });
 
