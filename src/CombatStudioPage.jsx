@@ -4,6 +4,7 @@ import LiveCombatPanel from "./combat-studio/LiveCombatPanel.jsx";
 import {Swords,Shield,Target,TrendingUp,LockKeyhole,ArrowRight,Save,Activity,Coins,BookOpen,ArrowLeftRight,Upload,Search,RefreshCw,UserRound,CheckCircle2,AlertCircle,ChevronDown} from "lucide-react";
 import "./combat-studio.css";
 import "./combat-studio-visual.css";
+import "./combat-studio-v2.css";
 
 const STYLE_SLOTS={
  Ranged:[["Head","Masori mask"],["Cape","Ava’s assembler"],["Neck","Salve amulet (e)"],["Ammo","Ruby dragon bolts (e)"],["Weapon","Dragon hunter crossbow"],["Body","Masori body"],["Legs","Masori chaps"],["Shield","—"],["Hands","Barrows gloves"],["Feet","Pegasian boots"],["Ring","Archer ring (i)"]],
