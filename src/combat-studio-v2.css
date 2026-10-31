@@ -1,0 +1,98 @@
+/* Combat Studio V2 — RuneScape-inspired dark stone and gold skin.
+   Scoped to Combat Studio only; the rest of OSRS Hub is untouched. */
+.combat-studio{
+  --cs-bg:#0b1115;--cs-bg2:#111a20;--cs-line:#57482b;--cs-text:#e8e1d2;
+  --cs-muted:#a99d87;--cs-accent:#d6a443;--cs-gold:#f0c66b;
+  color:var(--cs-text);color-scheme:dark;max-width:1900px;
+  padding:8px 0 34px;
+  background:radial-gradient(ellipse at 50% 0%,rgba(164,119,48,.12),transparent 42%);
+}
+.combat-studio *{box-sizing:border-box}
+.combat-studio .cs-hero,.combat-studio .cs-panel,.combat-studio .cs-account,
+.combat-studio .cs-controls,.combat-studio .cs-tabs,.combat-studio .cs-import{
+  color:var(--cs-text)!important;border:1px solid #6c562f!important;
+  background:linear-gradient(145deg,rgba(22,31,36,.98),rgba(10,16,20,.98))!important;
+  border-radius:12px!important;box-shadow:inset 0 1px rgba(255,224,155,.045),0 12px 28px rgba(0,0,0,.25)!important;
+}
+.combat-studio .cs-hero{min-height:154px;padding:24px 28px!important;position:relative;overflow:hidden}
+.combat-studio .cs-hero:after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.2;background:repeating-linear-gradient(135deg,transparent 0 17px,rgba(214,164,67,.055) 18px,transparent 19px 36px)}
+.combat-studio .cs-intro h1{font-family:Georgia,serif;color:#f2d18a;letter-spacing:.015em;font-size:clamp(30px,3vw,43px)}
+.combat-studio .cs-intro h1 em{color:#d6a443}
+.combat-studio .cs-intro p{color:#e9dfcc}
+.combat-studio .cs-intro span,.combat-studio .cs-panel p,.combat-studio .cs-account small{color:#b9ad97!important}
+.combat-studio .cs-hero-art{color:#d6a443;opacity:.16}
+.combat-studio .cs-account{background:linear-gradient(145deg,#1a252b,#10171b)!important}
+.combat-studio .cs-account>div{border-color:#403723}
+.combat-studio .cs-tabs{padding:7px;gap:7px}
+.combat-studio .cs-tabs button,.combat-studio .cs-controls select,
+.combat-studio .cs-controls input:not([type=checkbox]),.combat-studio .cs-import-controls input:not([type=file]),
+.combat-studio .cs-target-input,.combat-studio .cs-exclude-picker>input{
+  color:#e8e1d2!important;background:#0c1419!important;border:1px solid #51452e!important;border-radius:7px!important
+}
+.combat-studio .cs-tabs button{font-weight:700}
+.combat-studio .cs-tabs button.active,.combat-studio .cs-alt-tabs button.active{
+  color:#ffe2a0!important;border-color:#d6a443!important;
+  background:linear-gradient(180deg,rgba(214,164,67,.22),rgba(128,88,27,.12))!important;
+  box-shadow:inset 0 0 0 1px rgba(240,198,107,.16)
+}
+.combat-studio .cs-controls{grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;padding:15px}
+.combat-studio .cs-controls label{color:#c7b99e}
+.combat-studio .cs-main{grid-template-columns:minmax(0,1.28fr) minmax(300px,.72fr);gap:14px;align-items:start}
+.combat-studio .cs-panel h2,.combat-studio .cs-panel h3{color:#f1d18d;font-family:Georgia,serif;letter-spacing:.01em}
+.combat-studio .cs-panel h2 svg,.combat-studio .cs-panel h3 svg,.combat-studio .cs-tabs svg{color:#d6a443}
+.combat-studio .cs-panel header{border-bottom:1px solid rgba(214,164,67,.18);padding-bottom:10px}
+.combat-studio .cs-gear-layout{grid-template-columns:minmax(220px,.8fr) minmax(0,1.2fr);gap:12px}
+.combat-studio .cs-paperdoll{
+  border:1px solid #6c562f;border-radius:10px;
+  background:radial-gradient(ellipse at 50% 44%,rgba(163,119,49,.18),transparent 58%),linear-gradient(145deg,#1a2529,#0b1216);
+}
+.combat-studio .cs-avatar{color:#e7bd68;border-color:#806331;background:rgba(7,12,15,.55)}
+.combat-studio .cs-slot{background:linear-gradient(145deg,#253037,#111a1f)!important;border:1px solid #7c6337!important;color:#e8dfce!important;border-radius:8px!important}
+.combat-studio .cs-slot:hover{border-color:#f0c66b!important;box-shadow:0 0 16px rgba(214,164,67,.18)}
+.combat-studio .cs-slot small,.combat-studio .cs-table-head,.combat-studio .cs-gear-row>small{color:#b9ad97!important}
+.combat-studio .cs-table{border:1px solid #55472e;border-radius:9px;background:#0e171c}
+.combat-studio .cs-table-head,.combat-studio .cs-gear-row,.combat-studio .cs-table footer{background:#121d22!important;border-color:#3d3526!important;color:#e8e1d2}
+.combat-studio .cs-gear-row{border-top:1px solid #302d25}
+.combat-studio .cs-item-name{color:#e8e1d2!important}
+.combat-studio .cs-primary,.combat-studio .cs-command-build{
+  color:#211708!important;background:linear-gradient(180deg,#f0c66b,#bd8730)!important;
+  border:1px solid #f4d58e!important;border-radius:7px!important;font-weight:800;
+  box-shadow:0 5px 14px rgba(0,0,0,.22)
+}
+.combat-studio .cs-secondary,.combat-studio .cs-panel header button,
+.combat-studio .cs-upgrade button,.combat-studio .cs-alt button,
+.combat-studio .cs-table footer button,.combat-studio .cs-remove-slot{
+  color:#e8dfce!important;background:#182329!important;border:1px solid #5b4b30!important;border-radius:7px
+}
+.combat-studio .cs-metrics>span,.combat-studio .cs-stats>div,
+.combat-studio .cs-target-profile,.combat-studio .cs-calculation-note,
+.combat-studio .cs-note,.combat-studio .cs-upgrade-grid{
+  color:#e8e1d2!important;background:#101a1f!important;border:1px solid #413927!important;border-radius:8px
+}
+.combat-studio .cs-metrics small,.combat-studio .cs-stats small,
+.combat-studio .cs-target-profile span,.combat-studio .cs-calculation-note,
+.combat-studio .cs-note{color:#b9ad97!important}
+.combat-studio .cs-ok{background:rgba(61,143,94,.16);color:#9fddb3}
+.combat-studio .cs-ok-pending{background:rgba(214,164,67,.12);color:#e4c27b}
+.combat-studio .cs-target-results,.combat-studio .cs-exclude-options{
+  background:#111b20!important;border:1px solid #66532f!important;color:#e8e1d2;
+  box-shadow:0 14px 30px rgba(0,0,0,.45)
+}
+.combat-studio .cs-target-results button,.combat-studio .cs-exclude-options button{color:#e8e1d2}
+.combat-studio .cs-target-results button:hover,.combat-studio .cs-exclude-options button:hover{background:#263137}
+.combat-studio .cs-quest-row,.combat-studio .cs-excluded,.combat-studio .cs-alt,
+.combat-studio .cs-upgrade{border-color:#403723;color:#e8e1d2}
+.combat-studio .cs-quest-row select,.combat-studio .cs-quest-search{
+  color:#e8e1d2;background:#0c1419;border:1px solid #51452e;border-radius:6px;padding:7px
+}
+.combat-studio .cs-quest-summary{color:#f1d18d}
+.combat-studio .cs-item-detail{background:#111b20;color:#e8e1d2;border:1px solid #806331}
+.combat-studio .cs-item-detail-grid>div{background:#0c1419;border:1px solid #413927}
+.combat-studio .cs-live-runtime,.combat-studio .cs-live-runtime *{--cs-live-bg:#111b20}
+.combat-studio .cs-live-runtime{background:linear-gradient(145deg,#1a252b,#0d151a)!important;border:1px solid #6c562f!important;color:#e8e1d2}
+.combat-studio .cs-live-runtime input,.combat-studio .cs-live-runtime select{background:#0b1318!important;color:#e8e1d2!important;border-color:#57482b!important}
+.combat-studio .cs-live-runtime h2{color:#f1d18d}
+.combat-studio a{color:#e5bd68}
+@media(max-width:1100px){.combat-studio .cs-main{grid-template-columns:minmax(0,1fr)}.combat-studio .cs-performance{position:static}.combat-studio .cs-gear-layout{grid-template-columns:minmax(190px,.7fr) minmax(0,1.3fr)}}
+@media(max-width:760px){.combat-studio .cs-hero{padding:18px!important}.combat-studio .cs-controls{grid-template-columns:repeat(2,minmax(0,1fr))}.combat-studio .cs-gear-layout{grid-template-columns:1fr}.combat-studio .cs-paperdoll{min-height:310px}.combat-studio .cs-tabs{overflow-x:auto}.combat-studio .cs-lower{grid-template-columns:1fr}.combat-studio .cs-command-bottom{grid-template-columns:1fr}.combat-studio .cs-command-presets{grid-template-columns:1fr}}
+@media(max-width:460px){.combat-studio .cs-controls{grid-template-columns:1fr}.combat-studio .cs-import-controls{flex-wrap:wrap}.combat-studio .cs-import-controls>*{min-width:100%}.combat-studio .cs-metrics{flex-wrap:wrap}.combat-studio .cs-upgrade{grid-template-columns:22px minmax(0,1fr) auto}.combat-studio .cs-upgrade>*:nth-child(n+4){grid-column:2/-1}}
