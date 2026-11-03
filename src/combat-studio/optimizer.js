@@ -55,19 +55,50 @@ const itemReqOk = (item, stats) => {
   }
   return saw ? true : null;
 };
-export function isQuestAvailable(item, quests, overrides = {}) {
-  const required = item?.quest_requirements ?? item?.questRequirements ?? item?.quests_required ?? item?.required_quests ?? [];
-  const list = Array.isArray(required) ? required : typeof required === "string" ? [required] : [];
-  if (!list.length) return null;
-  for (const quest of list) {
+const KNOWN_ITEM_QUESTS = Object.freeze({
+  barrowsgloves: ["Recipe for Disaster"],
+  avalsassembler: ["Animal Magnetism"],
+  neitiznotfaceguard: ["The Fremennik Exiles"],
+  salveamulete: ["Haunted Mine"],
+});
+
+export function itemQuestRequirements(item) {
+  const supplied = item?.quest_requirements ?? item?.questRequirements ?? item?.quests_required ?? item?.required_quests;
+  const list = Array.isArray(supplied) ? supplied : typeof supplied === "string" ? [supplied] : [];
+  if (list.length) return list;
+  const name = key(item?._name ?? item?.name ?? item?.item_name);
+  return KNOWN_ITEM_QUESTS[name] ?? [];
+}
+
+const importedQuestState = imported => {
+  if (!imported || typeof imported !== "object") return null;
+  if (typeof imported.completed === "boolean") return imported.completed;
+  if (typeof imported.done === "boolean") return imported.done;
+  const state = key(imported.state ?? imported.status ?? imported.progress);
+  if (/^(complete|completed|done|finished)$/.test(state)) return true;
+  if (/^(notstarted|incomplete|started|inprogress|locked|notdone)$/.test(state)) return false;
+  return null;
+};
+
+export function questAccessStatus(item, quests = [], overrides = {}) {
+  const required = itemQuestRequirements(item);
+  if (!required.length) return "available";
+  let unknown = false;
+  for (const quest of required) {
     const name = typeof quest === "string" ? quest : quest?.name ?? quest?.quest ?? quest?.key;
     if (!name) continue;
-    const override = overrides[key(name)];
-    const imported = (Array.isArray(quests) ? quests : []).find(q => key(typeof q === "string" ? q : q?.name ?? q?.quest ?? q?.key) === key(name));
-    const done = override ?? (typeof imported === "object" ? (imported.completed ?? imported.done ?? imported.state === "completed") : false);
-    if (!done) return false;
+    const questKey = key(name);
+    const override = Object.prototype.hasOwnProperty.call(overrides ?? {}, questKey) ? overrides[questKey] : undefined;
+    const imported = (Array.isArray(quests) ? quests : []).find(q => key(typeof q === "string" ? q : q?.name ?? q?.quest ?? q?.key) === questKey);
+    const state = typeof override === "boolean" ? override : importedQuestState(imported);
+    if (state === false) return "locked";
+    if (state !== true) unknown = true;
   }
-  return true;
+  return unknown ? "unknown" : "available";
+}
+
+export function isQuestAvailable(item, quests, overrides = {}) {
+  return questAccessStatus(item, quests, overrides) === "available";
 }
 const attackBonus = (item, style) => {
   if (style === "Ranged") return valueOf(item,["ranged_attack","rangedAttack","attack_ranged","ranged_bonus","ranged"]);
@@ -140,9 +171,37 @@ const gearScore = (item, style, target = "") => {
   const bane = baneWeapon ? (styleFit ? 0.8 : 0.45) : 0;
   return 1+attack+strength+speedFactor+bane;
 };
-export function estimateLoadout({items=[],target="",style="Ranged",budget=0,stats={},quests=[],accountAware=true,excluded=[],questOverrides={},scoreOnly=false,forcedSlots=null}={}) {
-  const targetMeta=targetProfile(target), exclude=new Set(excluded.map(key));
-  const equipment=(Array.isArray(items)?items:[]).filter(it=>it&&typeof it==="object"&&String(it._name??it.name??it.item_name??"").trim());
+const twoHanded = item => {
+  if (item?.two_handed === true || item?.twoHanded === true || item?.equipment?.two_handed === true) return true;
+  const name = key(item?._name ?? item?.name ?? item?.item_name);
+  return /^(?:twistedbow|longbow|shortbow|ballista|blowpipe|toxicblowpipe|darkbow|crystalbow|shadow|eldermaul|greataxe|godsword|halberd|scytheofvitur|soulreaperaxe|bowoffaerdhinen|tbow|2h)/.test(name)
+    || /(?:twosword|twohanded)/.test(name);
+};
+const ammoCompatible = (weapon, ammo) => {
+  if (!weapon || !ammo) return true;
+  const w = key(weapon?._name ?? weapon?.name ?? "");
+  const a = key(ammo?._name ?? ammo?.name ?? "");
+  if (/blowpipe/.test(w)) return /dart/.test(a);
+  if (/crossbow/.test(w)) return /bolt/.test(a);
+  if (/bow/.test(w) || /ballista/.test(w)) return /arrow|javelin/.test(a);
+  return !inferEquipmentSlot(ammo) || inferEquipmentSlot(ammo) !== "Ammo";
+};
+const validEquipmentRecord = item => {
+  if (!item || item.equipable === false || item.equippable === false || item.is_equippable === false) return false;
+  const slot = inferEquipmentSlot(item);
+  if (!slot) return false;
+  const type = key(item.item_type ?? item.type ?? item.category ?? "");
+  if (/^(food|fish|potion|logs?|ores?|rawfood|cookedfood|misc|junk|questitem)$/.test(type)) return false;
+  return true;
+};
+
+export function estimateItemScore(item, style, target = "") {
+  return gearScore(item, style, target);
+}
+
+export function estimateLoadout({items=[],target="",style="Ranged",budget=0,stats={},quests=[],accountAware=true,excluded=[],allowedItems=[],questOverrides={},scoreOnly=false,forcedSlots=null,targetRecords=[]}={}) {
+  const targetMeta=targetProfile(target,targetRecords), exclude=new Set(excluded.map(key)), allowed=new Set(allowedItems.map(key));
+  const equipment=(Array.isArray(items)?items:[]).filter(it=>it&&typeof it==="object"&&String(it._name??it.name??it.item_name??"").trim()&&validEquipmentRecord(it));
   const budgetN=Math.max(0,Number(budget)||0);
   const warnings=[];
   if (budgetN <= 0) warnings.push("Enter a budget greater than zero GP before generating a loadout.");
@@ -155,6 +214,7 @@ export function estimateLoadout({items=[],target="",style="Ranged",budget=0,stat
       if (inferEquipmentSlot(item)!==slot) return false;
       const itemNameKey = key(item?._name ?? item?.name);
       if (slot === "Ammo" && style !== "Ranged") return false;
+      if (slot === "Shield" && twoHanded(item)) return false;
       if (slot === "Weapon") {
         if (style === "Melee" && /bow|crossbow|blowpipe|chinchompa|ballista|shortbow|longbow|staff|wand|trident|sceptre|tome/.test(itemNameKey)) return false;
         if (style === "Ranged" && !/bow|crossbow|blowpipe|ballista|chinchompa|dart|javelin|throwingknife/.test(itemNameKey)) return false;
@@ -167,7 +227,7 @@ export function estimateLoadout({items=[],target="",style="Ranged",budget=0,stat
       if (p>budgetN && budgetN>0) return false;
       if (accountAware) {
         if (itemReqOk(item,stats)===false) return false;
-        if (isQuestAvailable(item,quests,questOverrides)===false) return false;
+        if (questAccessStatus(item,quests,questOverrides)!=="available" && !allowed.has(key(name))) return false;
       }
       const reqType=key(item?.item_type??item?.type??item?.category??"");
       if (/food|fish|potion|logs|ore|rawfood|cookedfood|misc|junk/.test(reqType) || /rawherring|cookedherring|rawtrout|rawsalmon|rawanchovies|rawsardine|rawmackerel|rawcod|rawtuna|rawshark|rawmonkfish|rawlobster|rawswordfish/.test(key(name))) return false;
@@ -193,16 +253,23 @@ export function estimateLoadout({items=[],target="",style="Ranged",budget=0,stat
       spent += pick._price;
     }
   }
+  const startingWeapon = chosenBySlot.get("Weapon");
+  if (twoHanded(startingWeapon) && chosenBySlot.has("Shield")) {
+    spent -= chosenBySlot.get("Shield")._price ?? 0;
+    chosenBySlot.delete("Shield");
+  }
   // Upgrade one slot at a time, preferring the largest score gain per extra GP.
   // Each selected item is replaced, never double-counted.
-  for (let guard=0; guard<equipment.length; guard++) {
+  for (let guard=0; guard<Math.min(equipment.length, 120); guard++) {
     let best = null;
     for (const row of results) {
       const current = chosenBySlot.get(row.slot) ?? null;
       for (const candidate of row.pool) {
         if (current && key(candidate._name)===key(current._name)) continue;
-        const costDelta = (candidate._price??Infinity) - (current?._price??0);
-        const scoreDelta = candidate._estimatedScore - (current?._estimatedScore??0);
+        if (row.slot === "Shield" && twoHanded(chosenBySlot.get("Weapon"))) continue;
+        const displacedShield = row.slot === "Weapon" && twoHanded(candidate) ? chosenBySlot.get("Shield") ?? null : null;
+        const costDelta = (candidate._price??Infinity) - (current?._price??0) - (displacedShield?._price??0);
+        const scoreDelta = candidate._estimatedScore - (current?._estimatedScore??0) - (displacedShield ? (displacedShield._estimatedScore-1) : 0);
         if (!Number.isFinite(costDelta) || !Number.isFinite(scoreDelta) || scoreDelta<=0) continue;
         if (costDelta>budgetN-spent) continue;
         const efficiency = costDelta<=0 ? scoreDelta*1e6 : scoreDelta/costDelta;
@@ -211,7 +278,14 @@ export function estimateLoadout({items=[],target="",style="Ranged",budget=0,stat
     }
     if (!best) break;
     chosenBySlot.set(best.slot,best.candidate);
+    if (best.slot === "Weapon" && twoHanded(best.candidate) && chosenBySlot.has("Shield")) chosenBySlot.delete("Shield");
     spent += best.costDelta;
+  }
+  const finalWeapon = chosenBySlot.get("Weapon");
+  const finalAmmo = chosenBySlot.get("Ammo");
+  if (finalAmmo && !ammoCompatible(finalWeapon, finalAmmo)) {
+    spent -= finalAmmo._price ?? 0;
+    chosenBySlot.delete("Ammo");
   }
   const chosen = slots.map(slot => [slot,chosenBySlot.get(slot)?._name ?? "—"]);
   const selectedItems=chosen.map(([slot,name])=>chosenBySlot.get(slot) ?? equipment.find(x=>key(x._name??x.name)===key(name))).filter(Boolean);

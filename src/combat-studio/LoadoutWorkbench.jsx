@@ -7,6 +7,14 @@ const SLOT_ORDER = ["Head", "Cape", "Neck", "Ammo", "Weapon", "Body", "Legs", "S
 const money = value => Number.isFinite(Number(value)) ? Math.round(Number(value)).toLocaleString("en-GB") + " gp" : "—";
 const normal = value => String(value ?? "").toLowerCase().replace(/[^a-z0-9]/g, "");
 const itemName = item => String(item?._name ?? item?.name ?? item?.item_name ?? "");
+const compatibleStyle = (item, style, slot) => {
+  const name = normal(itemName(item));
+  if (slot === "Ammo") return style === "Ranged" && /arrow|bolt|javelin|dart|chinchompa|throwingknife/.test(name);
+  if (slot !== "Weapon") return true;
+  if (style === "Melee") return !/bow|crossbow|blowpipe|chinchompa|ballista|staff|wand|trident|sceptre|tome/.test(name);
+  if (style === "Ranged") return /bow|crossbow|blowpipe|ballista|chinchompa|dart|javelin|throwingknife/.test(name);
+  return /staff|wand|trident|sceptre|battlestaff|mystic/.test(name);
+};
 const iconSource = item => { const raw = String(item?.icon_url ?? item?.wiki_image ?? item?.icon ?? "").trim(); if (!raw) return ""; if (raw.startsWith("http://") || raw.startsWith("https://") || raw.startsWith("/") || raw.startsWith("data:")) return raw; return "https://oldschool.runescape.wiki/images/" + encodeURIComponent(raw.replace(/ /g, "_")); };
 const itemPrice = item => {
   for (const value of [item?._price, item?.sell, item?.high, item?.price, item?.buy]) {
@@ -24,7 +32,7 @@ const setupCost = (slots, items) => slots.reduce((sum, [, name]) => {
  * A budget-aware workbench around the existing transparent gear estimator.
  * Scores are labelled as estimates; this component never presents them as DPS.
  */
-export default function LoadoutWorkbench({ account, items = [], currentSlots = [], targetName = "", onDraftChange }) {
+export default function LoadoutWorkbench({ account, items = [], currentSlots = [], targetName = "", onDraftChange, excluded = [], allowedItems = [], questOverrides = {}, targetRecords = [], catalogLoading = false }) {
   const [budget, setBudget] = useState("5000000");
   const [style, setStyle] = useState("Melee");
   const [accountAware, setAccountAware] = useState(true);
@@ -45,7 +53,7 @@ export default function LoadoutWorkbench({ account, items = [], currentSlots = [
   const quests = Array.isArray(account?.quests) ? account.quests : [];
   const numericBudget = Math.max(0, Number(budget) || 0);
   const options = useMemo(() => {
-    if (!numericBudget || !items.length) return [];
+    if (catalogLoading || !numericBudget || !items.length) return [];
     return [
       { id: "budget", label: "Budget", detail: "Spend carefully", cap: Math.max(1, Math.round(numericBudget * 0.35)) },
       { id: "balanced", label: "Balanced", detail: "Room to upgrade", cap: Math.max(1, Math.round(numericBudget * 0.7)) },
@@ -53,16 +61,17 @@ export default function LoadoutWorkbench({ account, items = [], currentSlots = [
     ].map(tier => ({
       ...tier,
       estimate: estimateLoadout({
-        items, target: targetName, style, budget: tier.cap, stats, quests,
-        accountAware, excluded: [], questOverrides: {}, 
+        items, target: targetName, targetRecords, style, budget: tier.cap, stats, quests,
+        accountAware, excluded, allowedItems, questOverrides, 
       }),
     }));
-  }, [items, targetName, style, numericBudget, stats, quests, accountAware]);
+  }, [items, targetName, targetRecords, style, numericBudget, stats, quests, accountAware, excluded, allowedItems, questOverrides, catalogLoading]);
 
   const currentCost = setupCost(draft, items);
   const selectedEstimate = options.find(option => option.id === activeBuild);
   const filteredItems = useMemo(() => items
     .filter(item => inferEquipmentSlot(item) === activeSlot)
+    .filter(item => compatibleStyle(item, style, activeSlot))
     .filter(item => !search.trim() || itemName(item).toLowerCase().includes(search.trim().toLowerCase()))
     .filter(item => itemPrice(item) !== null && itemPrice(item) <= numericBudget)
     .sort((a, b) => (itemPrice(a) ?? Infinity) - (itemPrice(b) ?? Infinity))
@@ -108,7 +117,7 @@ export default function LoadoutWorkbench({ account, items = [], currentSlots = [
 
   return <section className="cs-workbench cs-panel" aria-labelledby="cs-workbench-title">
     <header className="cs-workbench-head">
-      <div><small>LOADOUT LAB · EXPERIMENTAL OPTIMISER</small><h2 id="cs-workbench-title"><Sparkles size={18}/> Loadout Workbench</h2><p>Compare affordable setups, inspect gear by slot and save builds. Scores are equipment estimates, not verified DPS.</p></div>
+      <div><small>LOADOUT LAB · ACCOUNT AND BUDGET AWARE</small><h2 id="cs-workbench-title"><Sparkles size={18}/> Loadout Workbench</h2><p>Compare affordable setups, inspect gear by slot and save builds. Scores are equipment estimates, not verified DPS.</p></div>
       <div className="cs-workbench-total"><small>Draft gear cost</small><strong>{money(currentCost)}</strong><span>{numericBudget ? money(Math.max(0, numericBudget - currentCost)) + " budget left" : "Set a GP budget"}</span></div>
     </header>
     <div className="cs-workbench-controls">
@@ -124,7 +133,7 @@ export default function LoadoutWorkbench({ account, items = [], currentSlots = [
         <p>{option.estimate.candidateCount} candidates reviewed · {option.estimate.warnings.length ? "Data caveats" : "Source fields available"}</p>
         <button type="button" onClick={() => applyEstimate(option)} disabled={!option.estimate.slots?.length}><Check size={14}/> Use this setup</button>
       </article>)}
-      {!options.length && <p className="cs-workbench-empty">Enter a budget and wait for the equipment catalogue to load to compare setups.</p>}
+      {!options.length && <p className="cs-workbench-empty">Enter a budget and wait for the equipment catalogue to load to compare eligible setups.</p>}
     </div>
     <div className="cs-workbench-compare">
       <div className="cs-workbench-editor-head"><div><h3><ArrowRightLeft size={16}/> Slot-by-slot comparison</h3><p>Compare your draft with the selected budget recommendation before applying it.</p></div><span>{comparisonRows.length} slot changes</span></div>
