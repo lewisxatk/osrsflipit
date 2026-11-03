@@ -29,9 +29,10 @@ const keyName = value => String(value ?? "").toLowerCase().replace(/[^a-z0-9]/g,
 const finite = value => Number.isFinite(Number(value)) ? Number(value) : null;
 const format = value => Number(value).toLocaleString("en-GB", { maximumFractionDigits: 3 });
 
-export default function LiveCombatPanel({ account, slots = [], items = [], targetRecords = [], targetName = "", onDpsResult = () => {}, excludedItems = [], allowedItems = [], questOverrides = {}, catalogLoading = false, showWorkbench = true }) {
+export default function LiveCombatPanel({ account, slots = [], items = [], targetRecords = [], targetName = "", onDpsResult = () => {}, excludedItems = [], allowedItems = [], questOverrides = {}, catalogLoading = false, showWorkbench = true, runtimeUrl, onRuntimeUrlChange = () => {}, spell = null }) {
   const [draftSlots, setDraftSlots] = useState(() => slots.map(pair => [...pair]));
   useEffect(() => { setDraftSlots(slots.map(pair => [...pair])); setOutcome(null); setComparison(null); onDpsResult(null); }, [slots, onDpsResult]);
+  useEffect(() => { if (runtimeUrl !== undefined && runtimeUrl !== selectedRuntime) setSelectedRuntime(runtimeUrl); }, [runtimeUrl]);
   useEffect(() => { setOutcome(null); setComparison(null); onDpsResult(null); }, [targetName, onDpsResult]);
   const [attackType, setAttackType] = useState("");
   const [stance, setStance] = useState("");
@@ -63,7 +64,7 @@ export default function LiveCombatPanel({ account, slots = [], items = [], targe
       boosts: { ...EMPTY_BOOSTS },
       prayers: [],
       buffs: { ...EMPTY_BUFFS, potions: [] },
-      spell: null,
+      spell,
     });
     if (built.status !== "ready") return { status: built.status, result: null, issues: built.issues ?? [] };
     return calculateLiveCombat({ baseUrl: selectedRuntime, request: built.request });
@@ -127,7 +128,7 @@ export default function LiveCombatPanel({ account, slots = [], items = [], targe
     </header>
     <div className="cs-live-config">
       <label>Combat Worker URL
-        <input value={selectedRuntime} onChange={event => { setSelectedRuntime(event.target.value); setOutcome(null); setComparison(null); }} placeholder="https://your-combat-worker.workers.dev" inputMode="url" autoComplete="url"/>
+        <input value={selectedRuntime} onChange={event => { const value=event.target.value; setSelectedRuntime(value); onRuntimeUrlChange(value); try { localStorage.setItem("osrshub-combat-runtime-url", value); } catch {} setOutcome(null); setComparison(null); }} placeholder="https://your-combat-worker.workers.dev" inputMode="url" autoComplete="url"/>
       </label>
       <label>Attack type
         <select value={attackType} onChange={event => { setAttackType(event.target.value); setOutcome(null); setComparison(null); }}>

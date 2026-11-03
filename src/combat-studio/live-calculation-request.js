@@ -93,16 +93,18 @@ export function buildLiveCalculationRequest({
         issues.push("Each equipment slot must be a [slot, itemName] pair.");
         continue;
       }
-      const [label, itemName] = entry;
+      const [label, itemName, explicitItemId] = entry;
       const slot = SLOT_MAP[label];
       if (!slot) {
         issues.push(`Unsupported equipment slot: ${String(label)}.`);
         continue;
       }
       if (!itemName || itemName === "—") continue;
+      const requestedId = Number(explicitItemId);
       const match = Array.isArray(items)
-        ? items.find(item => isRecord(item)
-          && normaliseName(item._name ?? item.name ?? item.item_name ?? item.title) === normaliseName(itemName))
+        ? items.find(item => isRecord(item) && Number.isInteger(requestedId) && requestedId > 0
+          ? Number(item.id ?? item.item_id ?? item.itemId) === requestedId
+          : isRecord(item) && normaliseName(item._name ?? item.name ?? item.item_name ?? item.title) === normaliseName(itemName))
         : null;
       const id = Number(match?.id ?? match?.item_id ?? match?.itemId);
       if (!Number.isInteger(id) || id <= 0) {
