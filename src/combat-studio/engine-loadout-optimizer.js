@@ -16,7 +16,7 @@ const itemId = item => {
 const itemPrice = item => {
   const name = key(itemName(item));
   if (name === "barrowsgloves") return 130000;
-  for (const value of [item?._price,item?.sell,item?.high,item?.price,item?.buy,item?.shop_price,item?.cost]) {
+  for (const value of [item?._enginePrice,item?._price,item?.sell,item?.high,item?.price,item?.buy,item?.shop_price,item?.cost,item?.latest_price,item?.last_price]) {
     const price = Number(value);
     if (Number.isFinite(price) && price > 0) return price;
   }
@@ -38,6 +38,14 @@ const itemRequirementsMet = (item, stats) => {
 };
 const styleCompatible = (item, style, slot) => {
   const name = key(itemName(item));
+  const values = Object.assign({},item?.equipment,item?.bonuses,item?.stats,item);
+  const has = fields => fields.some(field => Number.isFinite(Number(values[field])) && Number(values[field]) !== 0);
+  const hasMelee = has(["melee_strength","meleeStrength","strength_bonus","strengthBonus","str","stab_attack","slash_attack","crush_attack"]);
+  const hasRanged = has(["ranged_attack","rangedAttack","attack_ranged","ranged_bonus","ranged","ranged_strength","rangedStrength","ranged_str"]);
+  const hasMagic = has(["magic_attack","magicAttack","attack_magic","magic_bonus","magic","magic_damage","magicDamage","magic_strength","magicStrength"]);
+  if (style === "Ranged" && hasMagic && !hasRanged && !hasMelee) return false;
+  if (style === "Melee" && (hasMagic || hasRanged) && !hasMelee) return false;
+  if (style === "Magic" && (hasMelee || hasRanged) && !hasMagic) return false;
   if (slot === "Ammo") return style === "Ranged" && /arrow|bolt|javelin|dart|chinchompa|throwingknife/.test(name);
   if (slot !== "Weapon") return true;
   if (style === "Melee") return !/bow|crossbow|blowpipe|chinchompa|ballista|staff|wand|trident|sceptre|tome|dart|javelin/.test(name);
@@ -68,7 +76,7 @@ const compareResult = (next, previous, nextItem, previousItem, style, target) =>
 };
 const asSlotPairs = picked => SLOT_ORDER.map(slot => {
   const item = picked.get(slot);
-  return [slot, item ? itemName(item) : "—", item ? itemId(item) : null];
+  return [slot, item ? itemName(item) : "—", item ? itemId(item) : null, item ? item._enginePrice : null];
 });
 const ZERO_BOOSTS = Object.freeze({atk:0,def:0,hp:0,magic:0,prayer:0,ranged:0,str:0,mining:0,herblore:0,farming:0});
 const EMPTY_BUFFS = Object.freeze({
@@ -81,7 +89,7 @@ const EMPTY_BUFFS = Object.freeze({
 /**
  * A bounded coordinate search. Every candidate that can enter a recommendation is
  * evaluated by the canonical combat engine; item stats only narrow the search.
- * At most two candidate calculations are submitted for each of the 11 slots.
+ * At most two shortlisted alternatives are evaluated per slot, plus the starting setup (23 total).
  */
 export async function optimizeLoadoutWithEngine({
   items = [], playerName, stats = {}, quests = [], questOverrides = {}, accountAware = true,
@@ -167,7 +175,7 @@ export async function optimizeLoadoutWithEngine({
     calculations,rejected,skippedUnknownPrice,skippedMissingId,
   };
   currentResult = initial;
-  onProgress({checked:calculations,total:22,slot:"Weapon",dps:currentResult.result.dps});
+  onProgress({checked:calculations,total:23,slot:"Weapon",dps:currentResult.result.dps});
 
   for (const slot of SLOT_ORDER) {
     const pool = pools.get(slot);
@@ -196,7 +204,7 @@ export async function optimizeLoadoutWithEngine({
       return better?option:selected;
     },null);
     if (best) { picked.clear(); for (const [keyName,item] of best.draft) picked.set(keyName,item); currentResult=best.response; }
-    onProgress({checked:calculations,total:22,slot,dps:currentResult.result.dps});
+    onProgress({checked:calculations,total:23,slot,dps:currentResult.result.dps});
   }
 
   const outputSlots=asSlotPairs(picked);
@@ -206,10 +214,11 @@ export async function optimizeLoadoutWithEngine({
   if (skippedUnknownPrice) warnings.push(`${skippedUnknownPrice} eligible equipment records had no usable price and were not considered.`);
   if (skippedMissingId) warnings.push(`${skippedMissingId} equipment records had no canonical item ID and were not considered.`);
   if (rejected) warnings.push(`${rejected} candidate calculation(s) were rejected by the canonical engine and were skipped.`);
-  warnings.push("The returned DPS is engine-calculated with zero boosts and no prayers. Change those settings in the DPS workspace to compare that scenario.");
+  warnings.push("The returned DPS is engine-calculated with zero boosts and no prayers.");
+  warnings.push("The search tests at most two shortlisted alternatives per slot. It returns the best verified setup it checked, not a proof of the global best combination.");
   return {
     status:"calculated",slots:outputSlots,totalCost,remainingBudget:Math.max(0,budgetGp-totalCost),
-    engineResult:currentResult.result,calculations,candidateCount:pools.size?SLOT_ORDER.reduce((n,slot)=>n+pools.get(slot).length,0):0,
+    engineResult:currentResult.result,calculations,eligibleItemCount:SLOT_ORDER.reduce((n,slot)=>n+pools.get(slot).length,0),
     warnings,selectedItemIds:selectedItems.map(item=>item._engineId),
     skippedUnknownPrice,skippedMissingId,
   };
