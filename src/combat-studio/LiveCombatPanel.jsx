@@ -31,7 +31,7 @@ const format = value => Number(value).toLocaleString("en-GB", { maximumFractionD
 
 export default function LiveCombatPanel({ account, slots = [], items = [], targetRecords = [], targetName = "", onDpsResult = () => {}, excludedItems = [], allowedItems = [], questOverrides = {}, catalogLoading = false }) {
   const [draftSlots, setDraftSlots] = useState(() => slots.map(pair => [...pair]));
-  useEffect(() => { setDraftSlots(slots.map(pair => [...pair])); setOutcome(null); setComparison(null); }, [slots]);
+  useEffect(() => { setDraftSlots(slots.map(pair => [...pair])); setOutcome(null); setComparison(null); onDpsResult(null); }, [slots, onDpsResult]);
   useEffect(() => { setOutcome(null); setComparison(null); onDpsResult(null); }, [targetName, onDpsResult]);
   const [attackType, setAttackType] = useState("");
   const [stance, setStance] = useState("");
