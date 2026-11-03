@@ -8,8 +8,8 @@ test('Combat Studio has a dedicated route while legacy loadout URLs remain suppo
   assert.ok(source.includes('PATH_TABS["/combat-studio"]="combat"'));
   assert.ok(source.includes('PATH_TABS["/loadout"]="combat"'));
   assert.ok(source.includes('navigateTab("combat")}>Combat Studio</button>'));
-  assert.ok(source.includes('import CombatStudioPage from "./CombatStudioPage.jsx"'));
-  assert.ok(source.includes('(tab==="loadout"||tab==="combat")&&<CombatStudioPage'));
+  assert.ok(source.includes('const CombatStudioPage = React.lazy(() => import("./CombatStudioPage.jsx"))') || source.includes('import CombatStudioPage from "./CombatStudioPage.jsx"'));
+  assert.ok(source.includes('(tab==="loadout"||tab==="combat")&&<React.Suspense') || source.includes('(tab==="loadout"||tab==="combat")&&<CombatStudioPage'));
   assert.ok(source.includes('quests:"/quest-pathway"'));
   assert.ok(source.includes('tab==="quests"&&<QuestPathway'));
 });
