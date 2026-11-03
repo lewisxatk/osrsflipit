@@ -137,7 +137,7 @@ export default function LoadoutWorkbench({ account, items = [], currentSlots = [
         <p>{option.estimate.candidateCount} candidates reviewed · {option.estimate.warnings.length ? "Data caveats" : "Source fields available"}</p>
         <button type="button" onClick={() => applyEstimate(option)} disabled={!option.estimate.slots?.length}><Check size={14}/> Use this setup</button>
       </article>)}
-      {!options.length && <p className="cs-workbench-empty">Enter a budget and wait for the equipment catalogue to load to compare eligible setups.</p>}
+      {!options.length && <p className="cs-workbench-empty">Select “Calculate budget suggestions” to compare ranked setups when you need them.</p>}
     </div>
     <div className="cs-workbench-compare">
       <div className="cs-workbench-editor-head"><div><h3><ArrowRightLeft size={16}/> Slot-by-slot comparison</h3><p>Compare your draft with the selected budget recommendation before applying it.</p></div><span>{comparisonRows.length} slot changes</span></div>
