@@ -11,7 +11,7 @@ import { ResponsiveContainer, LineChart, Line, Area, Tooltip, CartesianGrid, XAx
 import "./styles.css";
 import "./upgrade.css";
 import "./osrshub2.css";
-import CombatStudioPage from "./CombatStudioPage.jsx";
+const CombatStudioPage = React.lazy(() => import("./CombatStudioPage.jsx"));
 import LevellingPage from "./LevellingPage.jsx";
 import { simulateHistoricalStrategy, compareHistoricalStrategies } from "./backtest.js";
 import { buildRadarRows, radarMetricLabel } from "./market-radar.js";
@@ -769,7 +769,7 @@ function App() {
       {tab==="intelligence"&&<IntelligencePage items={items} onSelect={selectItem}/>}{tab==="admin"&&<AdminControlRoom/>}
       {tab==="highalch"&&<JustHighAlch items={items} onSelect={selectItem} marketLoading={loading}/>}{tab==="spotlight"&&<MarketSpotlight items={items} onSelect={selectItem}/>}
       {tab==="terminal"&&<TradingTerminal items={items} onSelect={selectItem} siteTheme={theme} watchlists={watchlists} activeWatchlistId={activeWatchlist?.id} setActiveWatchlistId={setActiveWatchlistId} toggleWatchInList={toggleWatchInList} alertRules={alertRules} onCreateAlert={item=>{setEditRule({id:crypto.randomUUID(),name:item?.name||"",itemId:item?.id,metric:"sell",direction:"above",value:item?.sell||0});setRuleModal(true)}}/>}
-      {(tab==="loadout"||tab==="combat")&&<CombatStudioPage items={items} account={safeRead("osrshub-account",null)} onSelect={selectItem}/>}
+      {(tab==="loadout"||tab==="combat")&&<React.Suspense fallback={<div aria-live="polite" style={{padding:"32px",fontWeight:700}}>Loading Combat Studio…</div>}><CombatStudioPage items={items} account={safeRead("osrshub-account",null)} onSelect={selectItem}/></React.Suspense>}
       {tab==="quests"&&<QuestPathway account={safeRead("osrshub-account",null)} navigateTab={navigateTab}/>}
       {tab==="levelling"&&<LevellingPage/>}
       {tab==="backtest"&&<HistoricalBacktester items={items} onSelect={selectItem}/>}
