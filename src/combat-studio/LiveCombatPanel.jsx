@@ -29,10 +29,10 @@ const keyName = value => String(value ?? "").toLowerCase().replace(/[^a-z0-9]/g,
 const finite = value => Number.isFinite(Number(value)) ? Number(value) : null;
 const format = value => Number(value).toLocaleString("en-GB", { maximumFractionDigits: 3 });
 
-export default function LiveCombatPanel({ account, slots = [], items = [], targetRecords = [], targetName = "" }) {
+export default function LiveCombatPanel({ account, slots = [], items = [], targetRecords = [], targetName = "", onDpsResult = () => {}, excludedItems = [], allowedItems = [], questOverrides = {}, catalogLoading = false }) {
   const [draftSlots, setDraftSlots] = useState(() => slots.map(pair => [...pair]));
   useEffect(() => { setDraftSlots(slots.map(pair => [...pair])); setOutcome(null); setComparison(null); }, [slots]);
-  useEffect(() => { setOutcome(null); setComparison(null); }, [targetName]);
+  useEffect(() => { setOutcome(null); setComparison(null); onDpsResult(null); }, [targetName, onDpsResult]);
   const [attackType, setAttackType] = useState("");
   const [stance, setStance] = useState("");
   const [busy, setBusy] = useState(false);
@@ -71,11 +71,14 @@ export default function LiveCombatPanel({ account, slots = [], items = [], targe
 
   const runCalculation = async () => {
     setBusy(true);
+    onDpsResult(null);
     setOutcome(null);
     setComparison(null);
     try {
       try { localStorage.setItem("osrshub-combat-runtime-url", selectedRuntime); } catch {}
-      setOutcome(await calculateSlots(draftSlots));
+      const calculated = await calculateSlots(draftSlots);
+      setOutcome(calculated);
+      onDpsResult(calculated.status === "calculated" ? calculated.result : null);
     } catch {
       setOutcome({ status: "error", result: null, issues: ["Live calculation could not be prepared safely. Check the account, target and equipment selections."] });
     } finally {
@@ -85,6 +88,7 @@ export default function LiveCombatPanel({ account, slots = [], items = [], targe
 
   const runComparison = async () => {
     setBusy(true);
+    onDpsResult(null);
     setOutcome(null);
     setComparison(null);
     try {
@@ -102,6 +106,7 @@ export default function LiveCombatPanel({ account, slots = [], items = [], targe
       setComparison(summary.ok
         ? { status: "calculated", baseline: baseline.result, candidate: candidate.result, summary }
         : { status: "review-required", issues: summary.issues });
+      onDpsResult(summary.ok ? candidate.result : null);
     } catch {
       setComparison({ status: "error", issues: ["The live comparison could not be completed. No estimated result has been substituted."] });
     } finally {
@@ -111,8 +116,8 @@ export default function LiveCombatPanel({ account, slots = [], items = [], targe
 
   const result = outcome?.result;
   return <>
-    <LoadoutWorkbench account={account} items={items} currentSlots={draftSlots} targetName={targetName} onDraftChange={next => { setDraftSlots(next); setOutcome(null); setComparison(null); }} />
-    <section className="cs-live-runtime cs-panel" aria-labelledby="cs-live-runtime-title">
+    <LoadoutWorkbench account={account} items={items} currentSlots={draftSlots} targetName={targetName} onDraftChange={next => { setDraftSlots(next); setOutcome(null); setComparison(null); }} excluded={excludedItems} allowedItems={allowedItems} questOverrides={questOverrides} targetRecords={targetRecords} catalogLoading={catalogLoading} />
+    <section className="cs-live-runtime cs-panel" id="cs-live-runtime" aria-labelledby="cs-live-runtime-title">
     <header>
       <div>
         <h2 id="cs-live-runtime-title"><Activity size={17}/> Live combat engine</h2>
