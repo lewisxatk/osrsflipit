@@ -29,7 +29,7 @@ const keyName = value => String(value ?? "").toLowerCase().replace(/[^a-z0-9]/g,
 const finite = value => Number.isFinite(Number(value)) ? Number(value) : null;
 const format = value => Number(value).toLocaleString("en-GB", { maximumFractionDigits: 3 });
 
-export default function LiveCombatPanel({ account, slots = [], items = [], targetRecords = [], targetName = "", onDpsResult = () => {}, excludedItems = [], allowedItems = [], questOverrides = {}, catalogLoading = false }) {
+export default function LiveCombatPanel({ account, slots = [], items = [], targetRecords = [], targetName = "", onDpsResult = () => {}, excludedItems = [], allowedItems = [], questOverrides = {}, catalogLoading = false, showWorkbench = true }) {
   const [draftSlots, setDraftSlots] = useState(() => slots.map(pair => [...pair]));
   useEffect(() => { setDraftSlots(slots.map(pair => [...pair])); setOutcome(null); setComparison(null); onDpsResult(null); }, [slots, onDpsResult]);
   useEffect(() => { setOutcome(null); setComparison(null); onDpsResult(null); }, [targetName, onDpsResult]);
@@ -116,7 +116,7 @@ export default function LiveCombatPanel({ account, slots = [], items = [], targe
 
   const result = outcome?.result;
   return <>
-    <LoadoutWorkbench account={account} items={items} currentSlots={draftSlots} targetName={targetName} onDraftChange={next => { setDraftSlots(next); setOutcome(null); setComparison(null); }} excluded={excludedItems} allowedItems={allowedItems} questOverrides={questOverrides} targetRecords={targetRecords} catalogLoading={catalogLoading} />
+    {showWorkbench && <LoadoutWorkbench account={account} items={items} currentSlots={draftSlots} targetName={targetName} onDraftChange={next => { setDraftSlots(next); setOutcome(null); setComparison(null); }} excluded={excludedItems} allowedItems={allowedItems} questOverrides={questOverrides} targetRecords={targetRecords} catalogLoading={catalogLoading} />}
     <section className="cs-live-runtime cs-panel" id="cs-live-runtime" aria-labelledby="cs-live-runtime-title">
     <header>
       <div>

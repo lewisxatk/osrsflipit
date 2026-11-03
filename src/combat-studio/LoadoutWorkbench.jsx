@@ -32,9 +32,12 @@ const setupCost = (slots, items) => slots.reduce((sum, [, name]) => {
  * A budget-aware workbench around the existing transparent gear estimator.
  * Scores are labelled as estimates; this component never presents them as DPS.
  */
-export default function LoadoutWorkbench({ account, items = [], currentSlots = [], targetName = "", onDraftChange, excluded = [], allowedItems = [], questOverrides = {}, targetRecords = [], catalogLoading = false }) {
-  const [budget, setBudget] = useState("5000000");
-  const [style, setStyle] = useState("Melee");
+export default function LoadoutWorkbench({ account, items = [], currentSlots = [], targetName = "", onDraftChange, excluded = [], allowedItems = [], questOverrides = {}, targetRecords = [], catalogLoading = false, styleValue, budgetValue, onStyleChange, onBudgetChange }) {
+  const [budget, setBudget] = useState(String(budgetValue ?? "5000000"));
+  const [style, setStyle] = useState(styleValue ?? "Melee");
+  const [showRecommendations, setShowRecommendations] = useState(false);
+  useEffect(() => { if (styleValue && styleValue !== style) setStyle(styleValue); }, [styleValue]);
+  useEffect(() => { if (budgetValue != null && String(budgetValue) !== budget) setBudget(String(budgetValue)); }, [budgetValue]);
   const [accountAware, setAccountAware] = useState(true);
   const [search, setSearch] = useState("");
   const [activeSlot, setActiveSlot] = useState("Weapon");
@@ -53,7 +56,7 @@ export default function LoadoutWorkbench({ account, items = [], currentSlots = [
   const quests = Array.isArray(account?.quests) ? account.quests : [];
   const numericBudget = Math.max(0, Number(budget) || 0);
   const options = useMemo(() => {
-    if (catalogLoading || !numericBudget || !items.length) return [];
+    if (!showRecommendations || catalogLoading || !numericBudget || !items.length) return [];
     return [
       { id: "budget", label: "Budget", detail: "Spend carefully", cap: Math.max(1, Math.round(numericBudget * 0.35)) },
       { id: "balanced", label: "Balanced", detail: "Room to upgrade", cap: Math.max(1, Math.round(numericBudget * 0.7)) },
@@ -65,7 +68,7 @@ export default function LoadoutWorkbench({ account, items = [], currentSlots = [
         accountAware, excluded, allowedItems, questOverrides, 
       }),
     }));
-  }, [items, targetName, targetRecords, style, numericBudget, stats, quests, accountAware, excluded, allowedItems, questOverrides, catalogLoading]);
+  }, [items, targetName, targetRecords, style, numericBudget, stats, quests, accountAware, excluded, allowedItems, questOverrides, catalogLoading, showRecommendations]);
 
   const currentCost = setupCost(draft, items);
   const selectedEstimate = options.find(option => option.id === activeBuild);
@@ -121,10 +124,11 @@ export default function LoadoutWorkbench({ account, items = [], currentSlots = [
       <div className="cs-workbench-total"><small>Draft gear cost</small><strong>{money(currentCost)}</strong><span>{numericBudget ? money(Math.max(0, numericBudget - currentCost)) + " budget left" : "Set a GP budget"}</span></div>
     </header>
     <div className="cs-workbench-controls">
-      <label>Combat style<select value={style} onChange={event => { setStyle(event.target.value); setActiveBuild("custom"); }}><option>Melee</option><option>Ranged</option><option>Magic</option></select></label>
-      <label>Budget (GP)<input inputMode="numeric" value={budget} onChange={event => setBudget(event.target.value.replace(/[^0-9]/g, ""))} placeholder="5000000"/></label>
+      <label>Combat style<select value={style} onChange={event => { setStyle(event.target.value); onStyleChange?.(event.target.value); setActiveBuild("custom"); }}><option>Melee</option><option>Ranged</option><option>Magic</option></select></label>
+      <label>Budget (GP)<input inputMode="numeric" value={budget} onChange={event => { const next = event.target.value.replace(/[^0-9]/g, ""); setBudget(next); onBudgetChange?.(next); }} placeholder="5000000"/></label>
       <label className="cs-workbench-toggle"><input type="checkbox" checked={accountAware} onChange={event => setAccountAware(event.target.checked)}/> Respect known account requirements</label>
     </div>
+    <div className="cs-workbench-recommend-toggle"><span>Budget gear suggestions run only when requested to keep style changes responsive.</span><button type="button" onClick={() => setShowRecommendations(value => !value)}>{showRecommendations ? "Hide budget suggestions" : "Calculate budget suggestions"}</button></div>
     <div className="cs-workbench-builds" aria-label="Suggested loadouts">
       {options.map(option => <article className={activeBuild === option.id ? "active" : ""} key={option.id}>
         <div className="cs-workbench-build-top"><span>{option.id === "budget" ? "01" : option.id === "balanced" ? "02" : "03"}</span><small>{option.detail}</small></div>
@@ -133,7 +137,7 @@ export default function LoadoutWorkbench({ account, items = [], currentSlots = [
         <p>{option.estimate.candidateCount} candidates reviewed · {option.estimate.warnings.length ? "Data caveats" : "Source fields available"}</p>
         <button type="button" onClick={() => applyEstimate(option)} disabled={!option.estimate.slots?.length}><Check size={14}/> Use this setup</button>
       </article>)}
-      {!options.length && <p className="cs-workbench-empty">Enter a budget and wait for the equipment catalogue to load to compare eligible setups.</p>}
+      {!options.length && <p className="cs-workbench-empty">Select “Calculate budget suggestions” to compare ranked setups when you need them.</p>}
     </div>
     <div className="cs-workbench-compare">
       <div className="cs-workbench-editor-head"><div><h3><ArrowRightLeft size={16}/> Slot-by-slot comparison</h3><p>Compare your draft with the selected budget recommendation before applying it.</p></div><span>{comparisonRows.length} slot changes</span></div>
