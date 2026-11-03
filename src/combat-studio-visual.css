@@ -97,3 +97,27 @@
 @media(max-width:1050px){.combat-studio .cs-command-bottom{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.combat-studio .cs-command-build{grid-column:1/-1}.combat-studio .cs-controls{grid-template-columns:repeat(2,minmax(0,1fr))}.combat-studio .cs-main{grid-template-columns:minmax(0,1fr)}.combat-studio .cs-performance{position:static}}
 @media(max-width:650px){.combat-studio .cs-hero{padding:18px;border-radius:20px}.combat-studio .cs-command-heading{display:grid}.combat-studio .cs-command-account{justify-self:start}.combat-studio .cs-command-presets{grid-template-columns:1fr}.combat-studio .cs-command-presets>button{padding:10px}.combat-studio .cs-command-bottom{grid-template-columns:minmax(0,1fr)}.combat-studio .cs-command-build{grid-column:auto;width:100%}.combat-studio .cs-controls{grid-template-columns:minmax(0,1fr);padding:12px}.combat-studio .cs-gear-layout{grid-template-columns:minmax(0,1fr)}.combat-studio .cs-table-head,.combat-studio .cs-gear-row{grid-template-columns:50px minmax(0,1fr) 80px 22px;padding:9px 8px;gap:6px}.combat-studio .cs-gear-row .cs-item-name{font-size:11px}.combat-studio .cs-target-profile{grid-template-columns:1fr 1fr}.combat-studio .cs-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.combat-studio .cs-upgrade-grid{display:none}.combat-studio .cs-upgrade{grid-template-columns:24px minmax(0,1fr);align-items:start}.combat-studio .cs-upgrade>*{min-width:0}.combat-studio .cs-upgrade-next,.combat-studio .cs-upgrade-current{grid-column:2}.combat-studio .cs-upgrade em,.combat-studio .cs-upgrade small,.combat-studio .cs-upgrade button{grid-column:2}.combat-studio .cs-alt{gap:9px}.combat-studio .cs-panel header{flex-wrap:wrap}}
 @media(prefers-reduced-motion:reduce){.combat-studio *{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+
+/* Compact tabbed workspace: controls stay at the top while each tool owns the main canvas. */
+.combat-studio{gap:12px}
+.combat-studio .cs-tabs{position:sticky;top:8px;z-index:20;gap:6px;padding:6px;border-radius:14px;box-shadow:0 8px 26px rgba(12,16,28,.13);backdrop-filter:blur(12px)}
+.combat-studio .cs-tabs button{min-height:40px;padding-inline:clamp(9px,1.2vw,15px);color:var(--cs-ink)}
+.combat-studio .cs-tabs button.active{background:var(--cs-accent);border-color:var(--cs-accent);color:#fff;box-shadow:0 6px 18px var(--cs-glow)}
+.combat-studio .cs-controls{grid-template-columns:repeat(4,minmax(0,1fr));padding:12px;gap:10px}
+.combat-studio .cs-controls .cs-toggle{grid-column:1/-1;display:flex;align-items:center;gap:8px}
+.combat-studio .cs-workspace-controls{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:42px;padding:7px 12px;border:1px solid var(--cs-border);border-radius:12px;background:var(--cs-card);color:var(--cs-muted);font-size:11px}
+.combat-studio .cs-workspace-controls .cs-primary{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:34px;padding:0 12px;border:0;border-radius:9px;background:var(--cs-accent);color:#fff;font-weight:800;cursor:pointer}
+.combat-studio .cs-workspace-controls .cs-primary:disabled{opacity:.6;cursor:wait}
+.combat-studio .cs-account-settings{border:1px solid var(--cs-border);border-radius:14px;background:var(--cs-card);overflow:hidden}
+.combat-studio .cs-account-settings>summary{display:flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;color:var(--cs-ink);font-size:12px;font-weight:800;cursor:pointer}
+.combat-studio .cs-account-settings[open]{padding-bottom:12px}
+.combat-studio .cs-account-settings .cs-import{margin:0;border:0!important;box-shadow:none!important}
+.combat-studio .cs-saved-workspace{padding:clamp(16px,2vw,24px)!important}
+.combat-studio .cs-saved-list{display:grid;gap:10px;margin-top:16px}
+.combat-studio .cs-saved-list article{display:grid;grid-template-columns:minmax(150px,.8fr) minmax(0,1.8fr) auto;align-items:center;gap:14px;padding:13px;border:1px solid var(--cs-border);border-radius:13px;background:var(--cs-card-2)}
+.combat-studio .cs-saved-list article>span,.combat-studio .cs-saved-list article>div{display:grid;gap:5px;min-width:0}
+.combat-studio .cs-saved-list article strong{overflow-wrap:anywhere}
+.combat-studio .cs-saved-list article small{color:var(--cs-muted);font-size:10px}
+.combat-studio .cs-saved-list article button{min-height:36px;padding:0 13px;border:1px solid var(--cs-border);border-radius:9px;background:var(--cs-card);color:var(--cs-ink);font-weight:750;cursor:pointer}
+@media(max-width:900px){.combat-studio .cs-controls{grid-template-columns:repeat(2,minmax(0,1fr))}.combat-studio .cs-saved-list article{grid-template-columns:minmax(0,1fr) auto}.combat-studio .cs-saved-list article>div{grid-column:1/-1;grid-row:2}}
+@media(max-width:620px){.combat-studio .cs-tabs{position:static}.combat-studio .cs-tabs button{flex:0 0 auto;font-size:11px}.combat-studio .cs-controls{grid-template-columns:1fr}.combat-studio .cs-workspace-controls{align-items:flex-start;flex-direction:column}.combat-studio .cs-workspace-controls .cs-primary{width:100%}}
