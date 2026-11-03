@@ -121,3 +121,10 @@
 .combat-studio .cs-saved-list article button{min-height:36px;padding:0 13px;border:1px solid var(--cs-border);border-radius:9px;background:var(--cs-card);color:var(--cs-ink);font-weight:750;cursor:pointer}
 @media(max-width:900px){.combat-studio .cs-controls{grid-template-columns:repeat(2,minmax(0,1fr))}.combat-studio .cs-saved-list article{grid-template-columns:minmax(0,1fr) auto}.combat-studio .cs-saved-list article>div{grid-column:1/-1;grid-row:2}}
 @media(max-width:620px){.combat-studio .cs-tabs{position:static}.combat-studio .cs-tabs button{flex:0 0 auto;font-size:11px}.combat-studio .cs-controls{grid-template-columns:1fr}.combat-studio .cs-workspace-controls{align-items:flex-start;flex-direction:column}.combat-studio .cs-workspace-controls .cs-primary{width:100%}}
+
+.combat-studio .cs-workspace-editor{margin-top:14px}
+.combat-studio .cs-workspace-editor .cs-workbench-controls{display:none}
+.combat-studio .cs-workspace-editor .cs-workbench{margin:0}
+.combat-studio .cs-workbench-recommend-toggle{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:12px 0;padding:10px 12px;border:1px solid var(--cs-border);border-radius:11px;background:var(--cs-card-2);color:var(--cs-muted);font-size:11px}
+.combat-studio .cs-workbench-recommend-toggle button{min-height:34px;padding:0 11px;border:1px solid var(--cs-border);border-radius:9px;background:var(--cs-card);color:var(--cs-ink);font-weight:750;cursor:pointer}
+@media(max-width:620px){.combat-studio .cs-workbench-recommend-toggle{align-items:stretch;flex-direction:column}}
