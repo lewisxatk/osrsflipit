@@ -3,6 +3,13 @@
  * The runtime URL is explicit configuration; no fake or estimated result is
  * ever returned when the service is missing or unavailable.
  */
+const healthCache = new WeakMap();
+const resultCache = new WeakMap();
+const HEALTH_CACHE_MS = 5 * 60 * 1000;
+const RESULT_CACHE_MS = 60 * 1000;
+const cacheFor = (cache, fetchImpl) => { let value=cache.get(fetchImpl); if(!value){value=new Map();cache.set(fetchImpl,value)} return value; };
+const copy = value => JSON.parse(JSON.stringify(value));
+
 export function normaliseRuntimeUrl(value) {
   const raw = String(value ?? "").trim();
   return raw ? raw.replace(/\/+$/, "") : "";
@@ -29,20 +36,29 @@ export async function calculateLiveCombat({
     return { status: "review-required", result: null, issues: ["A validated player and canonical monster ID are required."] };
   }
 
+  const healthMemo = cacheFor(healthCache, fetchImpl);
+  const resultsMemo = cacheFor(resultCache, fetchImpl);
+  const resultKey = base + "\\n" + JSON.stringify(request);
+  const cachedResult = resultsMemo.get(resultKey);
+  if (cachedResult && Date.now() - cachedResult.at < RESULT_CACHE_MS) return copy(cachedResult.value);
   const controller = typeof AbortController === "function" ? new AbortController() : null;
   const timer = controller ? setTimeout(() => controller.abort(), timeoutMs) : null;
   try {
-    const health = await fetchImpl(`${base}/health`, {
-      method: "GET",
-      headers: { Accept: "application/json" },
-      ...(controller ? { signal: controller.signal } : {}),
-    });
-    if (!health.ok) {
-      return { status: "unavailable", result: null, issues: [`Combat runtime health check failed (${health.status}).`] };
-    }
-    const healthBody = await health.json().catch(() => null);
-    if (healthBody?.status !== "ok" || healthBody?.service !== "osrshub-combat-runtime") {
-      return { status: "unavailable", result: null, issues: ["Combat runtime health response was not recognised."] };
+    const healthAt = healthMemo.get(base);
+    if (!healthAt || Date.now() - healthAt > HEALTH_CACHE_MS) {
+      const health = await fetchImpl(`${base}/health`, {
+        method: "GET",
+        headers: { Accept: "application/json" },
+        ...(controller ? { signal: controller.signal } : {}),
+      });
+      if (!health.ok) {
+        return { status: "unavailable", result: null, issues: [`Combat runtime health check failed (${health.status}).`] };
+      }
+      const healthBody = await health.json().catch(() => null);
+      if (healthBody?.status !== "ok" || healthBody?.service !== "osrshub-combat-runtime") {
+        return { status: "unavailable", result: null, issues: ["Combat runtime health response was not recognised."] };
+      }
+      healthMemo.set(base, Date.now());
     }
 
     const response = await fetchImpl(`${base}/api/calculate`, {
@@ -72,7 +88,10 @@ export async function calculateLiveCombat({
           : ["Runtime response did not contain a complete, finite calculation result."],
       };
     }
-    return { status: "calculated", result: payload.result, issues: [] };
+    const completed = { status: "calculated", result: payload.result, issues: [] };
+    resultsMemo.set(resultKey, { at: Date.now(), value: completed });
+    if (resultsMemo.size > 160) resultsMemo.delete(resultsMemo.keys().next().value);
+    return completed;
   } catch (error) {
     const timedOut = error?.name === "AbortError";
     return {
