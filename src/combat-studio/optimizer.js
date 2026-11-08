@@ -118,44 +118,66 @@ const priceOf = item => {
   }
   return null;
 };
-export function targetProfile(name, records = []) {
-  const n = key(name);
-  const record = (Array.isArray(records) ? records : []).find(row => key(row?.name) === n) ?? null;
-  const defensive = record?.defensiveBonuses ?? record?.defensive_bonuses ?? record?.defensive ?? null;
-  const weaknessRaw = record?.weakness ?? record?.weaknesses ?? null;
-  const weakness = Array.isArray(weaknessRaw) ? weaknessRaw.join(", ") : (typeof weaknessRaw === "string" ? weaknessRaw : null);
-  let recordStyle = null;
-  if (defensive && typeof defensive === "object" && !Array.isArray(defensive)) {
-    const bonusKeys = [
-      ["Melee / Stab", ["stab", "attack_stab", "defence_stab"]],
-      ["Melee / Slash", ["slash", "attack_slash", "defence_slash"]],
-      ["Melee / Crush", ["crush", "attack_crush", "defence_crush"]],
-      ["Ranged", ["ranged", "range", "attack_ranged", "defence_ranged"]],
-      ["Magic", ["magic", "attack_magic", "defence_magic"]]
-    ];
-    const values = bonusKeys.map(([label, keys]) => ({label, value: keys.map(k => Number(defensive[k])).find(v => Number.isFinite(v))})).filter(x => x.value !== undefined);
-    if (values.length) recordStyle = values.sort((a, b) => a.value - b.value)[0].label;
-  }
-  const combatLevel = Number(record?.combatLevel ?? record?.combat_level ?? record?.combat) || null;
-  const hp = Number(record?.hitpoints ?? record?.hp) || null;
-  const recordSummary = record ? (" Source record" + (combatLevel ? " (combat " + combatLevel : "") + (hp ? ", " + hp + " HP" : "") + (combatLevel ? ")" : "") + ".") : "";
-  const base = (() => {
-    if (/vorkath|dragon|wyvern|galvek|elvarg|hydra|olm/.test(n)) return {recommendedStyle:"Ranged",weakness:"Dragon-bane bonus may apply only to eligible target variants",confidence:"Heuristic hint",summary:"Dragon-bane weapons can be strong against eligible dragon targets; the exact NPC/phase bonus must be source-verified."};
-    if (/zulrah|kraken|whisperer|phantommuspah/.test(n)) return {recommendedStyle:"Compare styles / phases",weakness:"The best style can change by phase/form",confidence:"Phase-dependent hint",summary:"This target may change form or phase; a single-style recommendation is not a phase-accurate result."};
-    if (/cerberus|kalphitequeen|dagannothrex|scurrius|sarachnis|mole/.test(n)) return {recommendedStyle:"Melee candidate",weakness:"Compare the source-backed stab/slash/crush defence fields",confidence:"Heuristic hint",summary:"Melee is only a starting candidate; weapon attack type and target defence values determine the better option."};
-    return {recommendedStyle:null,weakness:null,confidence:"Target weaknesses not verified",summary:"No confirmed target-specific weakness data is available for this name in the current source catalogue."};
-  })();
-  if (record) {
+export function targetProfile(name, records = [], selectedRecordIndex = null) {
+  const wanted = key(name);
+  const matches = (Array.isArray(records) ? records : []).filter(row => key(row?.name ?? row?.monster_name ?? row?.display_name) === wanted);
+  const record = selectedRecordIndex == null
+    ? (matches.length === 1 ? matches[0] : null)
+    : matches.find(row => Number(row?.recordIndex ?? row?.record_index) === Number(selectedRecordIndex)) ?? null;
+  if (!record) {
     return {
-      ...base,
-      recommendedStyle: recordStyle || base.recommendedStyle,
-      weakness: weakness || (recordStyle ? "Lowest recorded defensive value: " + recordStyle : base.weakness),
-      confidence: weakness || recordStyle ? "Source field present; needs rule validation" : base.confidence,
-      combatLevel, hitpoints: hp, recordId: record.id ?? null,
-      summary: (recordSummary || " A source monster record is available.") + (weakness ? " Recorded weakness: " + weakness + "." : " The ingested record does not establish a verified style weakness.")
+      recordId: null, recordIndex: null, version: null,
+      variantRequired: matches.length > 1,
+      variants: matches.map(row => ({ recordIndex: row.recordIndex ?? row.record_index, id: row.id, name: row.name, version: row.version ?? "", level: row.level ?? row.combat_level ?? null })),
+      recommendedStyle: null, elementalWeakness: null, weakness: null,
+      defensive: null, attributes: [], confidence: matches.length > 1 ? "Select exact canonical NPC variant" : "Target record not loaded",
+      summary: matches.length > 1
+        ? "This display name has multiple canonical engine records or phases. Select the exact variant before calculating DPS."
+        : "No canonical engine record is available for this exact target. Select a listed monster; no guessed target profile is used."
     };
   }
-  return {...base, combatLevel:null, hitpoints:null, recordId:null, summary:base.summary + recordSummary};
+
+  const defensive = record.defensive && typeof record.defensive === "object" ? record.defensive : {};
+  const defenceValues = [
+    ["Stab", defensive.stab], ["Slash", defensive.slash], ["Crush", defensive.crush],
+    ["Magic", defensive.magic],
+    ["Ranged / Light", defensive.light], ["Ranged / Standard", defensive.standard], ["Ranged / Heavy", defensive.heavy],
+  ].filter(([, value]) => typeof value === "number" && Number.isFinite(value));
+  const lowest = [...defenceValues].sort((a, b) => a[1] - b[1])[0] ?? null;
+  const weaknessRaw = record.weakness;
+  const elementalWeakness = weaknessRaw && typeof weaknessRaw === "object"
+    && typeof weaknessRaw.element === "string" && weaknessRaw.element !== "none"
+    ? { element: weaknessRaw.element, severity: Number(weaknessRaw.severity) || null }
+    : null;
+  const attributes = Array.isArray(record.attributes) ? record.attributes : [];
+  const combatLevel = Number(record.level ?? record.combat_level ?? record.combatLevel) || null;
+  const hp = Number(record.skills?.hp ?? record.hitpoints ?? record.hp) || null;
+  const defensiveSummary = defenceValues.length
+    ? "Lowest recorded base defence: " + lowest[0] + " (" + lowest[1] + "). This is a comparison input, not a guaranteed fight strategy."
+    : "No complete style-defence comparison is available in this record.";
+  const elementalSummary = elementalWeakness
+    ? "Elemental spell weakness: " + elementalWeakness.element + " (" + elementalWeakness.severity + "% engine severity)."
+    : "No elemental spell weakness is recorded for this NPC variant.";
+  const versionSummary = record.version ? " Variant: " + record.version + "." : "";
+  return {
+    recordId: record.id ?? null,
+    recordIndex: record.recordIndex ?? record.record_index ?? null,
+    version: record.version ?? "",
+    variantRequired: false,
+    variants: matches.map(row => ({ recordIndex: row.recordIndex ?? row.record_index, id: row.id, name: row.name, version: row.version ?? "", level: row.level ?? row.combat_level ?? null })),
+    recommendedStyle: lowest?.[0] ?? null,
+    lowestDefence: lowest ? { style: lowest[0], value: lowest[1] } : null,
+    elementalWeakness,
+    weakness: elementalWeakness ? elementalSummary : null,
+    defensive: { ...defensive },
+    attributes,
+    combatLevel,
+    hitpoints: hp,
+    isSlayerMonster: record.is_slayer_monster === true,
+    confidence: "Canonical combat-engine record selected",
+    summary: "Canonical NPC " + (record.name || name) + versionSummary + " " + defensiveSummary + " " + elementalSummary
+      + (attributes.length ? " Engine attributes: " + attributes.join(", ") + "." : " No special engine attributes are recorded.")
+  };
 }
 const gearScore = (item, style, target = "") => {
   const a=attackBonus(item,style),s=strengthBonus(item,style),speed=valueOf(item,["attack_speed","attackSpeed","speed","ticks"]);
