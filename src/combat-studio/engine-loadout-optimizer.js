@@ -189,7 +189,7 @@ export async function optimizeLoadoutWithEngine({
   const budgetGp = Math.max(0, Number(budget) || 0);
   if (!playerName) return { status:"review-required", issues:["Import an account with public combat levels before requesting a verified build."] };
   if (!target || !Number.isInteger(Number(target.id)) || Number(target.id) <= 0) return { status:"review-required", issues:["Choose a monster with a canonical combat-engine ID and exact variant."] };
-  if (target.recordIndex === undefined && target.monsterIndex === undefined) return { status:"review-required", issues:["Select the exact canonical NPC variant before building; duplicate monster names and IDs must not be guessed."] };
+  if (target.variantRequired && target.recordIndex === undefined && target.monsterIndex === undefined) return { status:"review-required", issues:["Select the exact canonical NPC variant before building; duplicate monster names and IDs must not be guessed."] };
   if (!budgetGp) return { status:"review-required", issues:["Enter a budget greater than 0 GP."] };
   if (!runtimeUrl) return { status:"unavailable", issues:["The combat Worker is not configured. Open DPS Calculator and set its Worker URL first."] };
   if (!["Melee","Ranged","Magic"].includes(style) || !attackType || !stance) return { status:"review-required", issues:["Choose a combat style, attack type and stance."] };
