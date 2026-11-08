@@ -15,7 +15,7 @@ const num = (...values) => {
 };
 const valueOf = (item, keys) => num(...keys.map(k => item?.[k] ?? item?.equipment?.[k] ?? item?.bonuses?.[k] ?? item?.stats?.[k]));
 export function inferEquipmentSlot(item) {
-  const itemName = key(item?.name ?? item?.item_name ?? "");
+  const itemName = key(item?._name ?? item?.name ?? item?.item_name ?? item?.itemName ?? "");
   if (/rawherring|cookedherring|rawtrout|rawsalmon|rawanchovies|rawsardine|rawmackerel|rawcod|rawtuna|rawshark|rawmonkfish|rawlobster|rawswordfish|potato|logs|ores|runes$/.test(itemName)) return null;
   const raw = String(item?.equipment_slot ?? item?.equipmentSlot ?? item?.slot ?? item?.equip_slot ?? item?.slot_name ?? "").trim();
   const canon = key(raw);
@@ -32,7 +32,7 @@ export function inferEquipmentSlot(item) {
   if (/(amulet|necklace|scarf|pendant)$/.test(name)) return "Neck";
   if (/(arrow|bolt|dart|javelin|throwingknife|chinchompa|tokkul|rune pouch)$/.test(name)) return "Ammo";
   if (/(platebody|chainbody|hauberk|top|body|robe top|shirt|brassard)$/.test(name)) return "Body";
-  if (/(platelegs|plateskirt|chaps|trousers|robe bottom|legs)$/.test(name)) return "Legs";
+  if (/(platelegs|plateskirt|chaps|trousers|robe(?: bottom)?|legs)$/.test(name)) return "Legs";
   if (/(shield|defender|book|ward|tome)$/.test(name)) return "Shield";
   if (/(gloves|gauntlets|vambraces|bracers|bracelet|grips)$/.test(name)) return "Hands";
   if (/(boots|shoes|sandals|greaves)$/.test(name)) return "Feet";
