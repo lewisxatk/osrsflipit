@@ -32,7 +32,7 @@ const setupCost = (slots, items) => slots.reduce((sum, [, name]) => {
  * A budget-aware workbench around the existing transparent gear estimator.
  * Scores are labelled as estimates; this component never presents them as DPS.
  */
-export default function LoadoutWorkbench({ account, items = [], currentSlots = [], targetName = "", onDraftChange, excluded = [], allowedItems = [], questOverrides = {}, targetRecords = [], catalogLoading = false, styleValue, budgetValue, onStyleChange, onBudgetChange }) {
+export default function LoadoutWorkbench({ account, items = [], currentSlots = [], targetName = "", onDraftChange, excluded = [], allowedItems = [], questOverrides = {}, targetRecords = [], catalogLoading = false, styleValue, budgetValue, onStyleChange, onBudgetChange, ownedItems = [], onOwnedItemsChange = () => {} }) {
   const [budget, setBudget] = useState(String(budgetValue ?? "5000000"));
   const [style, setStyle] = useState(styleValue ?? "Melee");
   const [showRecommendations, setShowRecommendations] = useState(false);
@@ -116,6 +116,14 @@ export default function LoadoutWorkbench({ account, items = [], currentSlots = [
     setActiveBuild("custom");
     onDraftChange?.(next);
   };
+  const ownedKeys = new Set((Array.isArray(ownedItems) ? ownedItems : []).map(normal));
+  const toggleOwned = item => {
+    const itemKey = normal(itemName(item));
+    const next = ownedKeys.has(itemKey)
+      ? ownedItems.filter(name => normal(name) !== itemKey)
+      : [...ownedItems, itemName(item)];
+    onOwnedItemsChange(next);
+  };
   const currentNames = new Map(draft.map(([slot, name]) => [slot, name]));
   const recommendedSlots = selectedEstimate?.estimate?.slots ?? [];
   const recommendedNames = new Map(recommendedSlots.map(([slot, name]) => [slot, name]));
@@ -156,7 +164,10 @@ export default function LoadoutWorkbench({ account, items = [], currentSlots = [
       <div className="cs-workbench-editor-head"><div><h3><Swords size={16}/> Gear by slot</h3><p>Choose an item to update the draft used by the live calculation panel.</p></div><span>{draft.filter(([, name]) => name && name !== "—").length} slots filled</span></div>
       <div className="cs-workbench-slots">{SLOT_ORDER.map(slot => <button type="button" key={slot} className={activeSlot === slot ? "active" : ""} onClick={() => { setActiveSlot(slot); setSearch(""); }}><small>{slot}</small><strong>{currentNames.get(slot) || "Empty"}</strong></button>)}</div>
       <label className="cs-workbench-search"><Search size={15}/><input value={search} onChange={event => setSearch(event.target.value)} placeholder={"Search " + activeSlot.toLowerCase() + " equipment"}/></label>
-      <div className="cs-workbench-item-list">{filteredItems.map(item => <button type="button" key={item.id ?? itemName(item)} onClick={() => chooseItem(item)}><span className="cs-workbench-item-icon">{iconSource(item) ? <img src={iconSource(item)} alt="" onError={event => { event.currentTarget.style.display = "none"; }}/> : <ShieldCheck size={16}/>}</span><span><strong>{itemName(item)}</strong><small>{item.requirements ? "Requirements recorded" : "Requirements not fully recorded"} · {item.members === false ? "F2P" : "Membership data as supplied"}</small></span><b>{itemPrice(item) == null ? "Price unavailable" : money(itemPrice(item))}</b><ChevronDown size={14}/></button>)}{!filteredItems.length && <p className="cs-workbench-empty">No priced equipment found for this slot and search.</p>}</div>
+      <div className="cs-workbench-item-list">{filteredItems.map(item => <div className="cs-workbench-item-row" key={item.id ?? itemName(item)}>
+        <button type="button" className="cs-workbench-item-choice" onClick={() => chooseItem(item)}><span className="cs-workbench-item-icon">{iconSource(item) ? <img src={iconSource(item)} alt="" onError={event => { event.currentTarget.style.display = "none"; }}/> : <ShieldCheck size={16}/>}</span><span><strong>{itemName(item)}</strong><small>{item.version ? "Engine variant: " + item.version + " · " : ""}{item.requirements ? "Requirements recorded" : "Requirements not fully recorded"} · {item.members === false ? "F2P" : "Membership data as supplied"}</small></span><b>{itemPrice(item) == null ? "Price unavailable" : money(itemPrice(item))}</b><ChevronDown size={14}/></button>
+        <button type="button" className={"cs-workbench-owned" + (ownedKeys.has(normal(itemName(item))) ? " active" : "")} onClick={() => toggleOwned(item)} aria-pressed={ownedKeys.has(normal(itemName(item)))}>{ownedKeys.has(normal(itemName(item))) ? "Owned ✓" : "Mark owned"}</button>
+      </div>)}{!filteredItems.length && <p className="cs-workbench-empty">No equipment found for this slot and search.</p>}</div>
       {missingPrices.length > 0 && <p className="cs-workbench-warning"><Coins size={14}/> {missingPrices.length} selected item(s) have no usable price record. Total cost may be incomplete.</p>}
     </div>
     <div className="cs-workbench-saved">
