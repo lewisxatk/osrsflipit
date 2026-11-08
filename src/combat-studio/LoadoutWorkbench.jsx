@@ -73,12 +73,18 @@ export default function LoadoutWorkbench({ account, items = [], currentSlots = [
   const currentCost = setupCost(draft, items);
   const selectedEstimate = options.find(option => option.id === activeBuild);
   const filteredItems = useMemo(() => items
-    .filter(item => inferEquipmentSlot(item) === activeSlot)
+    .filter(item => inferEquipmentSlot({ ...item, name: itemName(item) }) === activeSlot)
     .filter(item => compatibleStyle(item, style, activeSlot))
     .filter(item => !search.trim() || itemName(item).toLowerCase().includes(search.trim().toLowerCase()))
-    .filter(item => itemPrice(item) !== null && itemPrice(item) <= numericBudget)
-    .sort((a, b) => (itemPrice(a) ?? Infinity) - (itemPrice(b) ?? Infinity))
-    .slice(0, 80), [items, activeSlot, search, numericBudget]);
+    // Manual selection must show the full slot catalogue. Budget and missing prices
+    // affect recommendations and cost estimates, never whether an item is selectable.
+    .sort((a, b) => {
+      const ap = itemPrice(a), bp = itemPrice(b);
+      if (ap == null && bp == null) return itemName(a).localeCompare(itemName(b));
+      if (ap == null) return 1;
+      if (bp == null) return -1;
+      return ap - bp;
+    }), [items, activeSlot, search, style]);
 
   const applyEstimate = option => {
     const next = (option?.estimate?.slots ?? []).map(pair => [...pair]);
