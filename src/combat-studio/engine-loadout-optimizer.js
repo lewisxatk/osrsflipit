@@ -311,26 +311,30 @@ export async function optimizeLoadoutWithEngine({
   };
   onProgress({checked:calculations,total:maxScenarios,slot:"Weapon search",dps:bestResponse.result.dps});
 
-  // Explicitly test complete Void sets before the slot-by-slot pass. The engine
-  // only grants its set effects when all matching pieces are worn together.
+  // Explicitly test complete Elite and regular Void sets before slot-by-slot
+  // optimisation. The engine requires the matching style helm, top, robe and
+  // Void knight gloves; testing individual pieces alone misses the set effect.
   const voidHelmet = style==="Ranged"?"Void ranger helm":style==="Melee"?"Void melee helm":"Void mage helm";
-  const eliteBundleNames = [voidHelmet,"Elite void top","Elite void robe","Void knight gloves"];
-  const eliteBundle = eliteBundleNames.map(name => pools.get(name==="Elite void top"?"Body":name==="Elite void robe"?"Legs":name===voidHelmet?"Head":"Hands")
-    .find(item=>key(itemName(item))===key(name))).filter(Boolean);
-  if (eliteBundle.length===4) {
+  const voidBundles = [
+    {label:"Elite Void",top:"Elite void top",legs:"Elite void robe"},
+    {label:"Regular Void",top:"Void knight top",legs:"Void knight robe"},
+  ];
+  let completeVoidBundleTested = false;
+  for (const bundle of voidBundles) {
+    const wanted = [["Head",voidHelmet],["Body",bundle.top],["Legs",bundle.legs],["Hands","Void knight gloves"]];
+    const resolved = wanted.map(([slot,name]) => pools.get(slot).find(item=>key(itemName(item))===key(name)));
+    if (resolved.some(item=>!item)) continue;
     const draft=new Map(bestPicked);
-    for (const [slot,name] of [["Head",voidHelmet],["Body","Elite void top"],["Legs","Elite void robe"],["Hands","Void knight gloves"]]) {
-      const item=pools.get(slot).find(x=>key(itemName(x))===key(name));
-      if (item) draft.set(slot,item);
+    wanted.forEach(([slot],index)=>draft.set(slot,resolved[index]));
+    if (costOf(draft)>budgetGp) continue;
+    completeVoidBundleTested = true;
+    const response=await evaluate(draft);
+    if (response.status==="calculated"&&compareResult(response,bestResponse,costOf(draft),bestCost)) {
+      bestPicked=draft;bestResponse=response;bestCost=costOf(draft);
     }
-    if (costOf(draft)<=budgetGp) {
-      const response=await evaluate(draft);
-      if (response.status==="calculated"&&compareResult(response,bestResponse,costOf(draft),bestCost)) {
-        bestPicked=draft;bestResponse=response;bestCost=costOf(draft);
-      }
-    }
-  } else {
-    warnings.push("Elite Void bundle was not tested completely. Mark Elite Void top, robe, matching style helmet and Void knight gloves as owned, or supply reliable prices.");
+  }
+  if (!completeVoidBundleTested) {
+    warnings.push("A complete Void set was not eligible for testing. Mark the matching style helmet, body, robe and Void knight gloves as owned or provide reliable prices.");
   }
   onProgress({checked:calculations,total:maxScenarios,slot:"Set bonuses",dps:bestResponse.result.dps});
 
