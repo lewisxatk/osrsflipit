@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { ArrowDownRight, ArrowRightLeft, Bookmark, Check, ChevronDown, Coins, Search, ShieldCheck, Sparkles, Swords } from "lucide-react";
 import { estimateLoadout, inferEquipmentSlot } from "./optimizer.js";
+import { getLiveAmmoCompatibility } from "./live-calculation-client.js";
 import "./loadout-workbench.css";
 
 const SLOT_ORDER = ["Head", "Cape", "Neck", "Ammo", "Weapon", "Body", "Legs", "Shield", "Hands", "Feet", "Ring"];
@@ -32,7 +33,7 @@ const setupCost = (slots, items) => slots.reduce((sum, [, name]) => {
  * A budget-aware workbench around the existing transparent gear estimator.
  * Scores are labelled as estimates; this component never presents them as DPS.
  */
-export default function LoadoutWorkbench({ account, items = [], currentSlots = [], targetName = "", onDraftChange, excluded = [], allowedItems = [], questOverrides = {}, targetRecords = [], catalogLoading = false, styleValue, budgetValue, onStyleChange, onBudgetChange, ownedItems = [], onOwnedItemsChange = () => {} }) {
+export default function LoadoutWorkbench({ account, items = [], currentSlots = [], targetName = "", onDraftChange, excluded = [], allowedItems = [], questOverrides = {}, targetRecords = [], catalogLoading = false, styleValue, budgetValue, onStyleChange, onBudgetChange, ownedItems = [], onOwnedItemsChange = () => {}, runtimeUrl = "" }) {
   const [budget, setBudget] = useState(String(budgetValue ?? "5000000"));
   const [style, setStyle] = useState(styleValue ?? "Melee");
   const [showRecommendations, setShowRecommendations] = useState(false);
@@ -54,6 +55,27 @@ export default function LoadoutWorkbench({ account, items = [], currentSlots = [
 
   const stats = account?.stats ?? {};
   const quests = Array.isArray(account?.quests) ? account.quests : [];
+  const activeWeaponName = draft.find(([slot]) => slot === "Weapon")?.[1] ?? "";
+  const activeWeapon = useMemo(() => items.find(item => normal(itemName(item)) === normal(activeWeaponName)) ?? null, [items, activeWeaponName]);
+  const [ammoCompatibility, setAmmoCompatibility] = useState({status:"idle",compatibleAmmoIds:[],issues:[]});
+  useEffect(() => {
+    let active = true;
+    if (activeSlot !== "Ammo") return () => { active = false; };
+    if (style !== "Ranged") {
+      setAmmoCompatibility({status:"not-required",compatibleAmmoIds:[],issues:[]});
+      return () => { active = false; };
+    }
+    const weaponId = Number(activeWeapon?.id ?? activeWeapon?.item_id ?? activeWeapon?.itemId);
+    if (!Number.isInteger(weaponId) || weaponId <= 0 || !runtimeUrl) {
+      setAmmoCompatibility({status:"unavailable",compatibleAmmoIds:[],issues:["Select a weapon and configure the combat Worker to validate ammunition."]});
+      return () => { active = false; };
+    }
+    setAmmoCompatibility({status:"loading",compatibleAmmoIds:[],issues:[]});
+    getLiveAmmoCompatibility({baseUrl:runtimeUrl,weaponId}).then(value => {
+      if (active) setAmmoCompatibility(value);
+    });
+    return () => { active = false; };
+  }, [activeSlot, style, activeWeapon?.id, activeWeapon?.item_id, activeWeapon?.itemId, runtimeUrl]);
   const numericBudget = Math.max(0, Number(budget) || 0);
   const options = useMemo(() => {
     if (!showRecommendations || catalogLoading || !numericBudget || !items.length) return [];
@@ -75,6 +97,10 @@ export default function LoadoutWorkbench({ account, items = [], currentSlots = [
   const filteredItems = useMemo(() => items
     .filter(item => inferEquipmentSlot({ ...item, name: itemName(item) }) === activeSlot)
     .filter(item => compatibleStyle(item, style, activeSlot))
+    .filter(item => activeSlot !== "Ammo" || (
+      ammoCompatibility.status === "required"
+      && ammoCompatibility.compatibleAmmoIds.includes(Number(item.id ?? item.item_id ?? item.itemId))
+    ))
     .filter(item => !search.trim() || itemName(item).toLowerCase().includes(search.trim().toLowerCase()))
     // Manual selection must show the full slot catalogue. Budget and missing prices
     // affect recommendations and cost estimates, never whether an item is selectable.
@@ -84,7 +110,7 @@ export default function LoadoutWorkbench({ account, items = [], currentSlots = [
       if (ap == null) return 1;
       if (bp == null) return -1;
       return ap - bp;
-    }), [items, activeSlot, search, style]);
+    }), [items, activeSlot, search, style, ammoCompatibility]);
 
   const applyEstimate = option => {
     const next = (option?.estimate?.slots ?? []).map(pair => [...pair]);
@@ -164,6 +190,7 @@ export default function LoadoutWorkbench({ account, items = [], currentSlots = [
       <div className="cs-workbench-editor-head"><div><h3><Swords size={16}/> Gear by slot</h3><p>Choose an item to update the draft used by the live calculation panel.</p></div><span>{draft.filter(([, name]) => name && name !== "—").length} slots filled</span></div>
       <div className="cs-workbench-slots">{SLOT_ORDER.map(slot => <button type="button" key={slot} className={activeSlot === slot ? "active" : ""} onClick={() => { setActiveSlot(slot); setSearch(""); }}><small>{slot}</small><strong>{currentNames.get(slot) || "Empty"}</strong></button>)}</div>
       <label className="cs-workbench-search"><Search size={15}/><input value={search} onChange={event => setSearch(event.target.value)} placeholder={"Search " + activeSlot.toLowerCase() + " equipment"}/></label>
+      {activeSlot === "Ammo" && <p className="cs-workbench-empty">{ammoCompatibility.status === "not-required" ? "This weapon does not require an ammunition-slot item. Leave the slot empty." : ammoCompatibility.status === "loading" ? "Checking compatible ammunition against the canonical combat engine…" : ammoCompatibility.status === "unavailable" ? (ammoCompatibility.issues?.[0] || "Ammunition compatibility is not available.") : "Only ammunition IDs accepted by the selected weapon are shown."}</p>}
       <div className="cs-workbench-item-list">{filteredItems.map(item => <div className="cs-workbench-item-row" key={item.id ?? itemName(item)}>
         <button type="button" className="cs-workbench-item-choice" onClick={() => chooseItem(item)}><span className="cs-workbench-item-icon">{iconSource(item) ? <img src={iconSource(item)} alt="" onError={event => { event.currentTarget.style.display = "none"; }}/> : <ShieldCheck size={16}/>}</span><span><strong>{itemName(item)}</strong><small>{item.version ? "Engine variant: " + item.version + " · " : ""}{item.requirements ? "Requirements recorded" : "Requirements not fully recorded"} · {item.members === false ? "F2P" : "Membership data as supplied"}</small></span><b>{itemPrice(item) == null ? "Price unavailable" : money(itemPrice(item))}</b><ChevronDown size={14}/></button>
         <button type="button" className={"cs-workbench-owned" + (ownedKeys.has(normal(itemName(item))) ? " active" : "")} onClick={() => toggleOwned(item)} aria-pressed={ownedKeys.has(normal(itemName(item)))}>{ownedKeys.has(normal(itemName(item))) ? "Owned ✓" : "Mark owned"}</button>
