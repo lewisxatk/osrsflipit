@@ -73,12 +73,18 @@ export default function LoadoutWorkbench({ account, items = [], currentSlots = [
   const currentCost = setupCost(draft, items);
   const selectedEstimate = options.find(option => option.id === activeBuild);
   const filteredItems = useMemo(() => items
-    .filter(item => inferEquipmentSlot(item) === activeSlot)
+    .filter(item => inferEquipmentSlot({ ...item, name: itemName(item) }) === activeSlot)
     .filter(item => compatibleStyle(item, style, activeSlot))
     .filter(item => !search.trim() || itemName(item).toLowerCase().includes(search.trim().toLowerCase()))
-    .filter(item => itemPrice(item) !== null && itemPrice(item) <= numericBudget)
-    .sort((a, b) => (itemPrice(a) ?? Infinity) - (itemPrice(b) ?? Infinity))
-    .slice(0, 80), [items, activeSlot, search, numericBudget]);
+    // Manual selection must show the full slot catalogue. Budget and missing prices
+    // affect recommendations and cost estimates, never whether an item is selectable.
+    .sort((a, b) => {
+      const ap = itemPrice(a), bp = itemPrice(b);
+      if (ap == null && bp == null) return itemName(a).localeCompare(itemName(b));
+      if (ap == null) return 1;
+      if (bp == null) return -1;
+      return ap - bp;
+    }), [items, activeSlot, search, style]);
 
   const applyEstimate = option => {
     const next = (option?.estimate?.slots ?? []).map(pair => [...pair]);
@@ -126,7 +132,7 @@ export default function LoadoutWorkbench({ account, items = [], currentSlots = [
     <div className="cs-workbench-controls">
       <label>Combat style<select value={style} onChange={event => { setStyle(event.target.value); onStyleChange?.(event.target.value); setActiveBuild("custom"); }}><option>Melee</option><option>Ranged</option><option>Magic</option></select></label>
       <label>Budget (GP)<input inputMode="numeric" value={budget} onChange={event => { const next = event.target.value.replace(/[^0-9]/g, ""); setBudget(next); onBudgetChange?.(next); }} placeholder="5000000"/></label>
-      <label className="cs-workbench-toggle"><input type="checkbox" checked={accountAware} onChange={event => setAccountAware(event.target.checked)}/> Respect known account requirements</label>
+      <label className="cs-workbench-toggle"><input type="checkbox" checked={accountAware} onChange={event => setAccountAware(event.target.checked)}/> Respect known account requirements for recommendations</label>
     </div>
     <div className="cs-workbench-recommend-toggle"><span>Budget gear suggestions run only when requested to keep style changes responsive.</span><button type="button" onClick={() => setShowRecommendations(value => !value)}>{showRecommendations ? "Hide budget suggestions" : "Calculate budget suggestions"}</button></div>
     <div className="cs-workbench-builds" aria-label="Suggested loadouts">
@@ -150,7 +156,7 @@ export default function LoadoutWorkbench({ account, items = [], currentSlots = [
       <div className="cs-workbench-editor-head"><div><h3><Swords size={16}/> Gear by slot</h3><p>Choose an item to update the draft used by the live calculation panel.</p></div><span>{draft.filter(([, name]) => name && name !== "—").length} slots filled</span></div>
       <div className="cs-workbench-slots">{SLOT_ORDER.map(slot => <button type="button" key={slot} className={activeSlot === slot ? "active" : ""} onClick={() => { setActiveSlot(slot); setSearch(""); }}><small>{slot}</small><strong>{currentNames.get(slot) || "Empty"}</strong></button>)}</div>
       <label className="cs-workbench-search"><Search size={15}/><input value={search} onChange={event => setSearch(event.target.value)} placeholder={"Search " + activeSlot.toLowerCase() + " equipment"}/></label>
-      <div className="cs-workbench-item-list">{filteredItems.map(item => <button type="button" key={item.id ?? itemName(item)} onClick={() => chooseItem(item)}><span className="cs-workbench-item-icon">{iconSource(item) ? <img src={iconSource(item)} alt="" onError={event => { event.currentTarget.style.display = "none"; }}/> : <ShieldCheck size={16}/>}</span><span><strong>{itemName(item)}</strong><small>{item.requirements ? "Requirements recorded" : "Requirements not fully recorded"} · {item.members === false ? "F2P" : "Membership data as supplied"}</small></span><b>{money(itemPrice(item))}</b><ChevronDown size={14}/></button>)}{!filteredItems.length && <p className="cs-workbench-empty">No priced equipment found for this slot and search.</p>}</div>
+      <div className="cs-workbench-item-list">{filteredItems.map(item => <button type="button" key={item.id ?? itemName(item)} onClick={() => chooseItem(item)}><span className="cs-workbench-item-icon">{iconSource(item) ? <img src={iconSource(item)} alt="" onError={event => { event.currentTarget.style.display = "none"; }}/> : <ShieldCheck size={16}/>}</span><span><strong>{itemName(item)}</strong><small>{item.requirements ? "Requirements recorded" : "Requirements not fully recorded"} · {item.members === false ? "F2P" : "Membership data as supplied"}</small></span><b>{itemPrice(item) == null ? "Price unavailable" : money(itemPrice(item))}</b><ChevronDown size={14}/></button>)}{!filteredItems.length && <p className="cs-workbench-empty">No priced equipment found for this slot and search.</p>}</div>
       {missingPrices.length > 0 && <p className="cs-workbench-warning"><Coins size={14}/> {missingPrices.length} selected item(s) have no usable price record. Total cost may be incomplete.</p>}
     </div>
     <div className="cs-workbench-saved">
