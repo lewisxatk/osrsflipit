@@ -21,7 +21,7 @@ const itemPrice = (item, ownedKeys = new Set()) => {
   if (name === "barrowsgloves") return 130000;
   for (const value of [item?._enginePrice,item?._price,item?.sell,item?.high,item?.price,item?.buy,item?.shop_price,item?.cost,item?.latest_price,item?.last_price]) {
     const price = Number(value);
-    if (value !== null && value !== undefined && value !== "" && Number.isFinite(price) && price >= 0) return price;
+    if (value !== null && value !== undefined && value !== "" && Number.isFinite(price) && price > 0) return price;
   }
   return null;
 };
