@@ -299,6 +299,18 @@ export async function optimizeLoadoutWithEngine({
     const response=await evaluate(scenario.picked);
     return response.status==="calculated"?{...scenario,response,cost:costOf(scenario.picked)}:null;
   });
+  const weaponComparisons = evaluateWeaponScenarios.filter(Boolean)
+    .map(result => ({
+      weapon: itemName(result.weapon),
+      weaponId: result.weapon._engineId,
+      weaponVersion: result.weapon.version ?? "",
+      ammo: result.ammo ? itemName(result.ammo) : "No ammo required",
+      dps: Number(result.response.result.dps),
+      totalCost: result.cost,
+      attackSpeed: result.response.result.attackSpeed,
+      maxHit: result.response.result.maxHit,
+    }))
+    .sort((a,b)=>b.dps-a.dps || a.totalCost-b.totalCost);
   for (const result of evaluateWeaponScenarios.filter(Boolean)) {
     if (compareResult(result.response,bestResponse,result.cost,bestCost)) {
       bestPicked=new Map(result.picked);bestResponse=result.response;bestCost=result.cost;
@@ -320,6 +332,7 @@ export async function optimizeLoadoutWithEngine({
     {label:"Regular Void",top:"Void knight top",legs:"Void knight robe"},
   ];
   let completeVoidBundleTested = false;
+  const setEvaluations = [];
   for (const bundle of voidBundles) {
     const wanted = [["Head",voidHelmet],["Body",bundle.top],["Legs",bundle.legs],["Hands","Void knight gloves"]];
     const resolved = wanted.map(([slot,name]) => pools.get(slot).find(item=>key(itemName(item))===key(name)));
@@ -329,8 +342,11 @@ export async function optimizeLoadoutWithEngine({
     if (costOf(draft)>budgetGp) continue;
     completeVoidBundleTested = true;
     const response=await evaluate(draft);
-    if (response.status==="calculated"&&compareResult(response,bestResponse,costOf(draft),bestCost)) {
-      bestPicked=draft;bestResponse=response;bestCost=costOf(draft);
+    if (response.status==="calculated") {
+      setEvaluations.push({set:bundle.label,dps:Number(response.result.dps),totalCost:costOf(draft)});
+      if (compareResult(response,bestResponse,costOf(draft),bestCost)) {
+        bestPicked=draft;bestResponse=response;bestCost=costOf(draft);
+      }
     }
   }
   if (!completeVoidBundleTested) {
@@ -389,5 +405,9 @@ export async function optimizeLoadoutWithEngine({
     ownedItemCount:selectedItems.filter(item=>item._owned).length,
     skippedUnknownPrice:missingPrices,skippedMissingId:0,
     searchMode:"weapon-first + canonical ammo + complete-set evaluation",
+    weaponCandidatesTested:weaponScenarios.length,
+    weaponComparisons:weaponComparisons.slice(0,8).map(row=>({...row,selected:row.weaponId===bestPicked.get("Weapon")?._engineId})),
+    setEvaluations,
+    selectedWeapon:{name:itemName(bestPicked.get("Weapon")),id:itemId(bestPicked.get("Weapon")),version:bestPicked.get("Weapon")?.version??"",attackSpeed:bestResponse.result.attackSpeed,maxHit:bestResponse.result.maxHit,dps:bestResponse.result.dps},
   };
 }
