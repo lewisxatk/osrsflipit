@@ -13,7 +13,13 @@ const num = (...values) => {
   }
   return null;
 };
-const valueOf = (item, keys) => num(...keys.map(k => item?.[k] ?? item?.equipment?.[k] ?? item?.bonuses?.[k] ?? item?.stats?.[k]));
+const valueOf = (item, keys) => num(...keys.map(k => item?.[k]
+  ?? item?.equipment?.[k]
+  ?? item?.offensive?.[k]
+  ?? item?.defensive?.[k]
+  ?? item?.bonuses?.[k]
+  ?? item?.stats?.[k]));
+
 export function inferEquipmentSlot(item) {
   const itemName = key(item?._name ?? item?.name ?? item?.item_name ?? item?.itemName ?? "");
   if (/rawherring|cookedherring|rawtrout|rawsalmon|rawanchovies|rawsardine|rawmackerel|rawcod|rawtuna|rawshark|rawmonkfish|rawlobster|rawswordfish|potato|logs|ores|runes$/.test(itemName)) return null;
