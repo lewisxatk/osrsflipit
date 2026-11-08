@@ -55,8 +55,14 @@ export default function LoadoutWorkbench({ account, items = [], currentSlots = [
 
   const stats = account?.stats ?? {};
   const quests = Array.isArray(account?.quests) ? account.quests : [];
-  const activeWeaponName = draft.find(([slot]) => slot === "Weapon")?.[1] ?? "";
-  const activeWeapon = useMemo(() => items.find(item => normal(itemName(item)) === normal(activeWeaponName)) ?? null, [items, activeWeaponName]);
+  const activeWeaponPair = draft.find(([slot]) => slot === "Weapon") ?? null;
+  const activeWeaponName = activeWeaponPair?.[1] ?? "";
+  const activeWeapon = useMemo(() => {
+    const id = Number(activeWeaponPair?.[2]);
+    return (Number.isInteger(id) && id > 0 ? items.find(item => Number(item.id ?? item.item_id ?? item.itemId) === id) : null)
+      ?? items.find(item => normal(itemName(item)) === normal(activeWeaponName))
+      ?? null;
+  }, [items, activeWeaponName, activeWeaponPair?.[2]]);
   const [ammoCompatibility, setAmmoCompatibility] = useState({status:"idle",compatibleAmmoIds:[],issues:[]});
   useEffect(() => {
     let active = true;
@@ -120,7 +126,7 @@ export default function LoadoutWorkbench({ account, items = [], currentSlots = [
     onDraftChange?.(next);
   };
   const chooseItem = item => {
-    const next = draft.map(([slot, name]) => slot === activeSlot ? [slot, itemName(item)] : [slot, name]);
+    const next = draft.map(pair => pair[0] === activeSlot ? [pair[0], itemName(item), Number(item.id ?? item.item_id ?? item.itemId) || null] : [...pair]);
     setDraft(next);
     setActiveBuild("custom");
     onDraftChange?.(next);
