@@ -179,6 +179,7 @@ export function targetProfile(name, records = [], selectedRecordIndex = null) {
     attributes,
     combatLevel,
     hitpoints: hp,
+    skills: record.skills && typeof record.skills === "object" ? {...record.skills} : null,
     isSlayerMonster: record.is_slayer_monster === true,
     confidence: "Canonical combat-engine record selected",
     summary: "Canonical NPC " + (record.name || name) + versionSummary + " " + defensiveSummary + " " + elementalSummary
