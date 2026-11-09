@@ -136,7 +136,7 @@ export function targetProfile(name, records = [], selectedRecordIndex = null) {
       variantRequired: matches.length > 1,
       variants: matches.map(row => ({ recordIndex: row.recordIndex ?? row.record_index, id: row.id, name: row.name, version: row.version ?? "", level: row.level ?? row.combat_level ?? null })),
       recommendedStyle: null, elementalWeakness: null, weakness: null,
-      defensive: null, attributes: [], confidence: matches.length > 1 ? "Select exact canonical NPC variant" : "Target record not loaded",
+      defensive: null, attributes: [], confidence: matches.length > 1 ? "Select exact canonical NPC variant" : "Unverified hint only — target record not loaded",
       summary: matches.length > 1
         ? "This display name has multiple canonical engine records or phases. Select the exact variant before calculating DPS."
         : "No canonical engine record is available for this exact target. Select a listed monster; no guessed target profile is used."
