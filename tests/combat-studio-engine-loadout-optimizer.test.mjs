@@ -100,3 +100,30 @@ test("weapon-first search evaluates a complete Elite Void set as a single engine
   assert.equal(result.slots.find(([slot])=>slot==="Hands")?.[1],"Void knight gloves");
   assert.equal(result.ownedItemCount,4);
 });
+
+test("exact-DPS ties prefer real combat gear over cosmetic slot fillers", async () => {
+  const items = [
+    {id:9100,name:"Dragon hunter lance",slot:"weapon",category:"Spear",isTwoHanded:false,speed:4,_price:50000000,tradeable:true,bonuses:{str:0},offensive:{stab:65},defensive:{}},
+    {id:9101,name:"Wyrmscraig villager top",slot:"body",_price:1000,tradeable:true,bonuses:{str:0,prayer:0},offensive:{stab:0},defensive:{stab:0,slash:0,crush:0,magic:0,ranged:0}},
+    {id:9102,name:"Bandos chestplate",slot:"body",_price:25000000,tradeable:true,bonuses:{str:4,prayer:0},offensive:{stab:0},defensive:{stab:90,slash:95,crush:85,magic:0,ranged:100}},
+    {id:9103,name:"Blue elegant skirt",slot:"legs",_price:1000,tradeable:true,bonuses:{str:0,prayer:0},offensive:{stab:0},defensive:{stab:0,slash:0,crush:0,magic:0,ranged:0}},
+    {id:9104,name:"Obsidian platelegs",slot:"legs",_price:1500000,tradeable:true,bonuses:{str:1,prayer:0},offensive:{stab:0},defensive:{stab:70,slash:75,crush:65,magic:0,ranged:80}},
+    {id:9105,name:"Mixed hide cape",slot:"cape",_price:1000,tradeable:true,bonuses:{str:1,prayer:0},offensive:{stab:0},defensive:{stab:0,slash:0,crush:0,magic:0,ranged:0}},
+    {id:9106,name:"Fire cape",slot:"cape",tradeable:false,bonuses:{str:4,prayer:1},offensive:{stab:0},defensive:{stab:1,slash:1,crush:1,magic:1,ranged:1}},
+    {id:9107,name:"Salve amulet (e)",slot:"neck",tradeable:false,bonuses:{str:0,prayer:3},offensive:{stab:0},defensive:{stab:3,slash:3,crush:3,magic:0,ranged:0}},
+    {id:9108,name:"Barrows gloves",slot:"hands",tradeable:false,bonuses:{str:12,prayer:0},offensive:{stab:12},defensive:{stab:12,slash:12,crush:12,magic:6,ranged:12}},
+  ];
+  const ownedItems=["Fire cape","Salve amulet (e)"];
+  const fetchImpl=makeFetch(()=>2.5);
+  const result=await optimizeLoadoutWithEngine({
+    items,playerName:"Test account",stats,quests:[],accountAware:true,ownedItems,
+    target:{id:1234,recordIndex:0,name:"Vorkath",version:"Post-quest",variantRequired:false,attributes:["draconic","undead"]},
+    style:"Melee",attackType:"stab",stance:"Aggressive",budget:100000000,
+    runtimeUrl:"https://combat.example.workers.dev",fetchImpl,maxScenarios:80,maxWeapons:5,slotCandidates:10
+  });
+  assert.equal(result.status,"calculated");
+  assert.equal(result.slots.find(([slot])=>slot==="Body")?.[1],"Bandos chestplate");
+  assert.equal(result.slots.find(([slot])=>slot==="Legs")?.[1],"Obsidian platelegs");
+  assert.equal(result.slots.find(([slot])=>slot==="Cape")?.[1],"Fire cape");
+  assert.equal(result.slots.find(([slot])=>slot==="Neck")?.[1],"Salve amulet (e)");
+});
