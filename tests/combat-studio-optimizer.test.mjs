@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { estimateItemScore, estimateLoadout, inferEquipmentSlot, isQuestAvailable, targetProfile } from "../src/combat-studio/optimizer.js";
+import { defaultMeleeAttackType, estimateItemScore, estimateLoadout, inferEquipmentSlot, isQuestAvailable, targetProfile } from "../src/combat-studio/optimizer.js";
 
 test("item classification does not mistake raw fish for equipment", () => {
   assert.equal(inferEquipmentSlot({name:"Raw Herring",slot:"ring"}), null);
@@ -85,4 +85,15 @@ test("target resolver requires an exact monster variant and separates spell weak
   assert.equal(phaseTwo.recordIndex,8);
   assert.equal(phaseTwo.elementalWeakness,null);
   assert.equal(phaseTwo.lowestDefence.style,"Stab");
+});
+
+test("Vorkath defaults to stab; exact NPC variants use their lowest recorded melee defence", () => {
+  assert.equal(defaultMeleeAttackType("Vorkath"), "stab");
+  const records = [
+    { name:"Example boss", recordIndex:1, defensive:{stab:30,slash:10,crush:20} },
+    { name:"Example boss", recordIndex:2, defensive:{stab:5,slash:25,crush:20} },
+  ];
+  assert.equal(defaultMeleeAttackType("Example boss", records), "slash");
+  assert.equal(defaultMeleeAttackType("Example boss", records, 2), "stab");
+  assert.equal(defaultMeleeAttackType("Unknown boss"), "slash");
 });
