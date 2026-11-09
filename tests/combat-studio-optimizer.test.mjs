@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { estimateLoadout, inferEquipmentSlot, isQuestAvailable, targetProfile } from "../src/combat-studio/optimizer.js";
+import { estimateItemScore, estimateLoadout, inferEquipmentSlot, isQuestAvailable, targetProfile } from "../src/combat-studio/optimizer.js";
 
 test("item classification does not mistake raw fish for equipment", () => {
   assert.equal(inferEquipmentSlot({name:"Raw Herring",slot:"ring"}), null);
@@ -71,7 +71,7 @@ test("canonical engine offensive bonuses are included in shortlist scoring", () 
 
 test("target resolver requires an exact monster variant and separates spell weakness from style defence", () => {
   const records = [
-    {id:42,recordIndex:7,name:"Example boss",version:"Phase 1",skills:{hp:100},attributes:["dragon"],defensive:{stab:60,slash:40,crush:20,magic:100,light:50,standard:30,heavy:10},weakness:{element:"water",severity:50}},
+    {id:42,recordIndex:7,name:"Example boss",version:"Phase 1",skills:{hp:100},attributes:["dragon"],defensive:{stab:60,slash:40,crush:20,magic:100,light:50,standard:30,heavy:40},weakness:{element:"water",severity:50}},
     {id:42,recordIndex:8,name:"Example boss",version:"Phase 2",skills:{hp:250},attributes:["dragon"],defensive:{stab:10,slash:30,crush:80,magic:200,light:80,standard:70,heavy:60},weakness:null}
   ];
   const ambiguous = targetProfile("Example boss",records);
