@@ -186,6 +186,21 @@ export function targetProfile(name, records = [], selectedRecordIndex = null) {
       + (attributes.length ? " Engine attributes: " + attributes.join(", ") + "." : " No special engine attributes are recorded.")
   };
 }
+export function defaultMeleeAttackType(targetName, records = [], selectedRecordIndex = null) {
+  const wanted = key(targetName);
+  const matches = (Array.isArray(records) ? records : []).filter(row => key(row?.name ?? row?.monster_name ?? row?.display_name) === wanted);
+  const record = selectedRecordIndex == null
+    ? (matches.length === 1 ? matches[0] : null)
+    : matches.find(row => Number(row?.recordIndex ?? row?.record_index) === Number(selectedRecordIndex)) ?? null;
+  const defensive = record?.defensive && typeof record.defensive === "object" ? record.defensive : {};
+  const styles = [["stab", defensive.stab], ["slash", defensive.slash], ["crush", defensive.crush]]
+    .filter(([, value]) => typeof value === "number" && Number.isFinite(value));
+  if (styles.length) return [...styles].sort((a, b) => a[1] - b[1])[0][0];
+  // Vorkath is documented as weak to stab; do not fall back to slash.
+  if (wanted === "vorkath" || wanted.startsWith("vorkath")) return "stab";
+  return "slash";
+}
+
 const gearScore = (item, style, target = "") => {
   const a=attackBonus(item,style),s=strengthBonus(item,style),speed=valueOf(item,["attack_speed","attackSpeed","speed","ticks"]);
   const attack=a===null?0:Math.max(-50,a)*0.018;
