@@ -77,13 +77,14 @@ const specialTargetBonus = (item, target) => {
   const name = key(itemName(item));
   const attributes = new Set((Array.isArray(target?.attributes) ? target.attributes : []).map(key));
   let bonus = 0;
-  if (attributes.has("dragon") && /dragonhunter/.test(name)) bonus += 1000;
+  if ((attributes.has("dragon") || attributes.has("draconic")) && /dragonhunter/.test(name)) bonus += 1000;
   if (attributes.has("demon") && /arclight|emberlight|silverlight|darklight|scorchingbow|boneclaws|burningclaws/.test(name)) bonus += 1000;
   if (attributes.has("kalphite") && /keris/.test(name)) bonus += 1000;
   if (attributes.has("leafy") && /leafbladed/.test(name)) bonus += 1000;
   if (attributes.has("rat") && /bonemace|boneshortbow|bonestaff/.test(name)) bonus += 1000;
   if (attributes.has("golem") && /granitehammer|barronitemace/.test(name)) bonus += 1000;
-  if (attributes.has("undead") && /salve/.test(name)) bonus += 250;
+  const undeadTarget = attributes.has("undead") || key(target?.name).startsWith("vorkath");
+  if (undeadTarget && /salve/.test(name)) bonus += 250;
   if (/^(vorkath|galvek|elvarg)$/.test(key(target?.name)) && /dragonhunter/.test(name)) bonus += 1000;
   return bonus;
 };
@@ -91,11 +92,36 @@ const preference = (item, style, target) => {
   const score = estimateItemScore(item, style, target?.name ?? "") ?? 0;
   return score + specialTargetBonus(item, target);
 };
-const compareResult = (next, previous, nextCost, previousCost) => {
+const equipmentTieBreak = (picked, style, attackType) => {
+  let strength = 0, accuracy = 0, prayer = 0, defence = 0;
+  for (const item of picked?.values?.() ?? []) {
+    const bonuses = item?.bonuses ?? {};
+    const offensive = item?.offensive ?? {};
+    const defensive = item?.defensive ?? {};
+    const numeric = value => typeof value === "number" && Number.isFinite(value) ? value : 0;
+    strength += numeric(style === "Melee" ? bonuses.str
+      : style === "Ranged" ? bonuses.ranged_str : bonuses.magic_str);
+    accuracy += numeric(offensive[attackType]);
+    prayer += numeric(bonuses.prayer);
+    for (const key of ["stab", "slash", "crush", "magic", "ranged", "light", "standard", "heavy"]) {
+      defence += numeric(defensive[key]);
+    }
+  }
+  // DPS is always decisive. These canonical bonuses only break exact DPS ties:
+  // prefer strength/damage-relevant stats, then accuracy, prayer and survivability.
+  return [strength, accuracy, prayer, defence];
+};
+const compareResult = (next, previous, nextPicked, previousPicked, nextCost, previousCost, style, attackType) => {
   if (!previous) return true;
   const delta = next.result.dps - previous.result.dps;
   if (delta > 1e-9) return true;
   if (delta < -1e-9) return false;
+  const nextVector = equipmentTieBreak(nextPicked, style, attackType);
+  const previousVector = equipmentTieBreak(previousPicked, style, attackType);
+  for (let i = 0; i < nextVector.length; i++) {
+    if (nextVector[i] > previousVector[i] + 1e-9) return true;
+    if (nextVector[i] < previousVector[i] - 1e-9) return false;
+  }
   return nextCost < previousCost;
 };
 const mapLimit = async (items, limit, mapper) => {
@@ -312,7 +338,7 @@ export async function optimizeLoadoutWithEngine({
     }))
     .sort((a,b)=>b.dps-a.dps || a.totalCost-b.totalCost);
   for (const result of evaluateWeaponScenarios.filter(Boolean)) {
-    if (compareResult(result.response,bestResponse,result.cost,bestCost)) {
+    if (compareResult(result.response,bestResponse,result.picked,bestPicked,result.cost,bestCost,style,attackType)) {
       bestPicked=new Map(result.picked);bestResponse=result.response;bestCost=result.cost;
     }
   }
@@ -344,7 +370,7 @@ export async function optimizeLoadoutWithEngine({
     const response=await evaluate(draft);
     if (response.status==="calculated") {
       setEvaluations.push({set:bundle.label,dps:Number(response.result.dps),totalCost:costOf(draft)});
-      if (compareResult(response,bestResponse,costOf(draft),bestCost)) {
+      if (compareResult(response,bestResponse,draft,bestPicked,costOf(draft),bestCost,style,attackType)) {
         bestPicked=draft;bestResponse=response;bestCost=costOf(draft);
       }
     }
@@ -379,7 +405,8 @@ export async function optimizeLoadoutWithEngine({
         return response.status==="calculated"?{draft,response,cost:costOf(draft)}:null;
       });
       const currentResult=results.filter(Boolean).reduce((selected,option)=>{
-        return compareResult(option.response,bestResponse,option.cost,bestCost)?option:selected;
+        const reference=selected??{response:bestResponse,draft:bestPicked,cost:bestCost};
+        return compareResult(option.response,reference.response,option.draft,reference.draft,option.cost,reference.cost,style,attackType)?option:selected;
       },null);
       if (currentResult) {
         bestPicked=currentResult.draft;bestResponse=currentResult.response;bestCost=currentResult.cost;
