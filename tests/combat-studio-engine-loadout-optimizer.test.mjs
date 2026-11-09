@@ -61,6 +61,7 @@ test("weapon-first search never equips javelins with a self-ammunition Webweaver
   const result = await optimizeLoadoutWithEngine({
     items,playerName:"Test account",stats,quests:[],accountAware:true,
     target:{id:1234,recordIndex:0,name:"Example boss",version:"Standard",variantRequired:false},
+    questOverrides:{"recipefordisaster":true},
     style:"Ranged",attackType:"ranged",stance:"Rapid",budget:50000000,
     runtimeUrl:"https://combat.example.workers.dev",fetchImpl,maxScenarios:80,maxWeapons:10,slotCandidates:10
   });
