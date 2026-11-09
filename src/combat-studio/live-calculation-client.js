@@ -15,6 +15,69 @@ export function normaliseRuntimeUrl(value) {
   return raw ? raw.replace(/\/+$/, "") : "";
 }
 
+const ammoCompatibilityCache = new WeakMap();
+
+export async function getLiveAmmoCompatibility({
+  baseUrl,
+  weaponId,
+  fetchImpl = globalThis.fetch,
+  timeoutMs = 8000,
+} = {}) {
+  const base = normaliseRuntimeUrl(baseUrl);
+  if (!base || !Number.isInteger(Number(weaponId)) || Number(weaponId) <= 0) {
+    return { status: "unavailable", compatibleAmmoIds: [], issues: ["A configured combat runtime and canonical weapon ID are required for ammunition compatibility."] };
+  }
+  if (typeof fetchImpl !== "function") {
+    return { status: "unavailable", compatibleAmmoIds: [], issues: ["Fetch is unavailable for engine ammunition compatibility."] };
+  }
+  let cache = ammoCompatibilityCache.get(fetchImpl);
+  if (!cache) { cache = new Map(); ammoCompatibilityCache.set(fetchImpl, cache); }
+  const cacheKey = base + ":" + Number(weaponId);
+  const cached = cache.get(cacheKey);
+  if (cached && Date.now() - cached.at < 5 * 60 * 1000) return copy(cached.value);
+
+  const controller = typeof AbortController === "function" ? new AbortController() : null;
+  const timer = controller ? setTimeout(() => controller.abort(), timeoutMs) : null;
+  try {
+    const response = await fetchImpl(base + "/api/ammo-compatibility?weaponId=" + encodeURIComponent(Number(weaponId)), {
+      method: "GET",
+      headers: { Accept: "application/json" },
+      ...(controller ? { signal: controller.signal } : {}),
+    });
+    const payload = await response.json().catch(() => null);
+    if (!response.ok) {
+      return {
+        status: "unavailable",
+        compatibleAmmoIds: [],
+        issues: [payload?.error || "Combat runtime ammunition compatibility check failed (" + response.status + "). Update the Worker before running weapon optimisation."],
+      };
+    }
+    if (!["required", "not-required", "incomplete-source"].includes(payload?.status)
+      || !Array.isArray(payload?.compatibleAmmoIds)
+      || payload.compatibleAmmoIds.some(id => !Number.isInteger(id) || id <= 0)) {
+      return { status: "unavailable", compatibleAmmoIds: [], issues: ["Combat runtime returned an invalid ammunition-compatibility record."] };
+    }
+    const value = {
+      status: payload.status,
+      weaponId: Number(weaponId),
+      compatibleAmmoIds: [...payload.compatibleAmmoIds],
+      weaponName: payload.weaponName,
+      weaponVersion: payload.weaponVersion,
+      issues: payload.status === "incomplete-source" ? ["The engine has no complete ammunition list for this weapon; it was not treated as ammo-compatible."] : [],
+    };
+    cache.set(cacheKey, { at: Date.now(), value });
+    return copy(value);
+  } catch (error) {
+    return {
+      status: "unavailable",
+      compatibleAmmoIds: [],
+      issues: [error?.name === "AbortError" ? "Engine ammunition-compatibility request timed out." : "Could not reach the combat engine ammunition catalogue."],
+    };
+  } finally {
+    if (timer !== null) clearTimeout(timer);
+  }
+}
+
 export async function calculateLiveCombat({
   baseUrl,
   request,
