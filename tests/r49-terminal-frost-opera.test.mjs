@@ -28,6 +28,13 @@ test("Watched redesign locks the test build to one black-and-orange theme", () =
   assert.ok(!app.includes("Cycle visual theme"));
   assert.ok(watched.includes("--wh-orange:#ff6a24"));
   assert.ok(watched.includes("--wh-bg:#090a0b"));
+  assert.ok(watched.includes('html[data-theme="watched"]{'));
+  assert.ok(watched.includes("--oh-surface:#141819!important"));
+  assert.ok(watched.includes(".marketPulse .pulseMain strong"));
+  assert.ok(watched.includes(".marketEvents:after"));
+  assert.ok(watched.includes("body:before"));
+  assert.ok(watched.includes(".tickerTrack button"));
+  assert.ok(watched.includes(".cs-paperdoll"));
   assert.ok(watched.includes(".recharts-cartesian-grid line"));
   assert.ok(watched.includes(".cs-paperdoll"));
   assert.ok(app.includes("const chartColors=defaultChartColors;"));
