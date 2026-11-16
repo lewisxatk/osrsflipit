@@ -29,6 +29,7 @@ test("Watched redesign locks the test build to one black-and-orange theme", () =
   assert.ok(watched.includes("--wh-bg:#090a0b"));
   assert.ok(watched.includes(".recharts-cartesian-grid line"));
   assert.ok(watched.includes(".cs-paperdoll"));
+  assert.ok(app.includes("const chartColors=defaultChartColors;"));
   assert.ok(html.includes('dataset.theme="watched"'));
 });
 
