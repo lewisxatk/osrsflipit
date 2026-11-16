@@ -18,12 +18,27 @@ test("Trading Terminal has independent persistent Custom Scanner profiles", () =
   assert.ok(app.includes('"osrshub-terminal-profiles"'));
 });
 
-test("Frost and Opera themes are selectable and have their own full theme tokens", () => {
-  assert.ok(app.includes('frost:"Aurora Frost"'));
-  assert.ok(app.includes('opera:"Opera Red"'));
-  assert.ok(app.includes('"frost","dark","comfort","aurora","void","opera"'));
-  assert.ok(styles.includes('html[data-theme="frost"]'));
-  assert.ok(styles.includes('html[data-theme="opera"]'));
+test("Watched redesign locks the test build to one black-and-orange theme", () => {
+  const watched = readFileSync(new URL("../src/watched-redesign.css", import.meta.url), "utf8");
+  const html = readFileSync(new URL("../index.html", import.meta.url), "utf8");
+  assert.ok(app.includes('[theme]=useState("watched")'));
+  assert.ok(app.includes('document.documentElement.dataset.theme="watched"'));
+  assert.ok(app.includes('import "./watched-redesign.css"'));
+  assert.ok(!app.includes("ThemePicker"));
+  assert.ok(!app.includes("Cycle visual theme"));
+  assert.ok(watched.includes("--wh-orange:#ff6a24"));
+  assert.ok(watched.includes("--wh-bg:#090a0b"));
+  assert.ok(watched.includes('html[data-theme="watched"]{'));
+  assert.ok(watched.includes("--oh-surface:#141819!important"));
+  assert.ok(watched.includes(".pulseMain strong"));
+  assert.ok(watched.includes(".marketEvents:after"));
+  assert.ok(watched.includes("body:before"));
+  assert.ok(watched.includes(".tickerTrack button"));
+  assert.ok(watched.includes(".cs-paperdoll"));
+  assert.ok(watched.includes(".recharts-cartesian-grid line"));
+  assert.ok(watched.includes(".cs-paperdoll"));
+  assert.ok(app.includes("const chartColors=defaultChartColors;"));
+  assert.ok(html.includes('dataset.theme="watched"'));
 });
 
 test("Watchlist price movement feedback is more visible and respects reduced motion", () => {

@@ -29,11 +29,11 @@ const keyName = value => String(value ?? "").toLowerCase().replace(/[^a-z0-9]/g,
 const finite = value => Number.isFinite(Number(value)) ? Number(value) : null;
 const format = value => Number(value).toLocaleString("en-GB", { maximumFractionDigits: 3 });
 
-export default function LiveCombatPanel({ account, slots = [], items = [], targetRecords = [], targetName = "", onDpsResult = () => {}, excludedItems = [], allowedItems = [], questOverrides = {}, catalogLoading = false, showWorkbench = true, runtimeUrl, onRuntimeUrlChange = () => {}, spell = null }) {
+export default function LiveCombatPanel({ account, slots = [], items = [], targetRecords = [], targetName = "", selectedTargetIndex = null, onDpsResult = () => {}, excludedItems = [], allowedItems = [], questOverrides = {}, catalogLoading = false, showWorkbench = true, runtimeUrl, onRuntimeUrlChange = () => {}, spell = null }) {
   const [draftSlots, setDraftSlots] = useState(() => slots.map(pair => [...pair]));
   useEffect(() => { setDraftSlots(slots.map(pair => [...pair])); setOutcome(null); setComparison(null); onDpsResult(null); }, [slots, onDpsResult]);
   useEffect(() => { if (runtimeUrl !== undefined && runtimeUrl !== selectedRuntime) setSelectedRuntime(runtimeUrl); }, [runtimeUrl]);
-  useEffect(() => { setOutcome(null); setComparison(null); onDpsResult(null); }, [targetName, onDpsResult]);
+  useEffect(() => { setOutcome(null); setComparison(null); onDpsResult(null); }, [targetName, selectedTargetIndex, onDpsResult]);
   const [attackType, setAttackType] = useState("");
   const [stance, setStance] = useState("");
   const [busy, setBusy] = useState(false);
@@ -46,8 +46,12 @@ export default function LiveCombatPanel({ account, slots = [], items = [], targe
 
   const target = useMemo(() => {
     const wanted = keyName(targetName);
-    return targetRecords.find(record => keyName(record?.name ?? record?.monster_name ?? record?.display_name) === wanted) ?? null;
-  }, [targetRecords, targetName]);
+    const matches = targetRecords.filter(record => keyName(record?.name ?? record?.monster_name ?? record?.display_name) === wanted);
+    if (selectedTargetIndex !== null && selectedTargetIndex !== undefined) {
+      return matches.find(record => Number(record?.recordIndex ?? record?.record_index) === Number(selectedTargetIndex)) ?? null;
+    }
+    return matches.length === 1 ? matches[0] : null;
+  }, [targetRecords, targetName, selectedTargetIndex]);
   const targetId = finite(target?.id ?? target?.monster_id ?? target?.monsterId);
   const accountStats = account?.stats ?? {};
   const canAttempt = Boolean(account?.name && targetId && attackType && stance && draftSlots.length);
@@ -59,7 +63,7 @@ export default function LiveCombatPanel({ account, slots = [], items = [], targe
       stats: accountStats,
       slots: slotSet,
       items,
-      target: targetId ? { id: targetId, name: targetName } : null,
+      target: targetId ? { id: targetId, name: targetName, recordIndex: target?.recordIndex ?? target?.record_index, version: target?.version ?? "" } : null,
       style,
       boosts: { ...EMPTY_BOOSTS },
       prayers: [],

@@ -1,0 +1,1389 @@
+/* OSRS HUB — WATCHED-INSPIRED TEST BUILD DESIGN SYSTEM
+   Single locked theme. Presentation only: existing page structure, data and interactions remain intact. */
+:root{
+ --wh-bg:#090a0b;--wh-bg2:#0e1112;--wh-panel:#141819;--wh-panel2:#1a1f20;
+ --wh-white:#f4f1ea;--wh-muted:#a6aaa6;--wh-dim:#747b76;--wh-line:#353c38;
+ --wh-line-soft:#252b28;--wh-orange:#ff6a24;--wh-orange-light:#ff8a4d;
+ --wh-green:#91c9a2;--wh-red:#ff9180;--wh-mono:"SFMono-Regular",Consolas,"Liberation Mono",monospace;
+ --wh-display:"Arial Narrow","Roboto Condensed","Franklin Gothic Medium",Impact,sans-serif;
+ color-scheme:dark;
+}
+html,html[data-theme],body,#root{background:var(--wh-bg)!important;color:var(--wh-white)!important;color-scheme:dark!important}
+html{scroll-behavior:smooth}
+body{margin:0!important;background:radial-gradient(ellipse at 50% -20%,rgba(255,106,36,.075),transparent 44%),var(--wh-bg)!important;color:var(--wh-white)!important;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;font-size:14px;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+.app{min-height:100vh;background:transparent!important;color:var(--wh-white)!important}
+main{max-width:1600px!important;padding:54px clamp(18px,4.2vw,68px) 90px!important}
+button,input,select,textarea{font:inherit}
+button{border-radius:2px!important;transition:background-color .16s ease,border-color .16s ease,color .16s ease,transform .16s ease,opacity .16s ease}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--wh-orange)!important;outline-offset:2px!important}
+a{color:var(--wh-orange-light)}
+::selection{color:#090a0b;background:var(--wh-orange)}
+::-webkit-scrollbar{width:9px;height:9px}::-webkit-scrollbar-track{background:#0b0d0e}::-webkit-scrollbar-thumb{background:#414946;border:2px solid #0b0d0e}::-webkit-scrollbar-thumb:hover{background:#68716b}
+
+/* Brand, boot and top navigation */
+#bootScreen{background:var(--wh-bg)!important;color:var(--wh-white)!important}
+#bootScreen .bootMark{border-radius:2px!important;background:var(--wh-orange)!important;color:#101112!important;box-shadow:none!important;font-family:var(--wh-display);letter-spacing:-.06em}
+#bootScreen span{color:var(--wh-muted)!important;font-family:var(--wh-mono);text-transform:uppercase;letter-spacing:.08em}
+.brand{color:var(--wh-white)!important;font-family:var(--wh-display)!important;font-size:23px!important;font-weight:900!important;letter-spacing:-.065em!important;text-transform:uppercase}
+.brand span{color:var(--wh-white)!important;font-weight:400!important}.brand b{color:var(--wh-orange)!important;font-weight:900!important}
+.nav{height:72px!important;padding:0 clamp(18px,4.2vw,68px)!important;gap:30px!important;background:rgba(9,10,11,.95)!important;border-bottom:1px solid var(--wh-line)!important;box-shadow:0 8px 28px rgba(0,0,0,.16)!important;backdrop-filter:blur(18px)!important}
+.navlinks{gap:4px!important}.navlinks button,.extrasDock>button{position:relative;border:0!important;border-radius:0!important;background:transparent!important;color:var(--wh-muted)!important;padding:12px 13px!important;font-size:11px!important;font-weight:700!important;letter-spacing:.075em!important;text-transform:uppercase!important}
+.navlinks button:after,.extrasDock>button:after{content:"";position:absolute;left:13px;right:13px;bottom:4px;height:2px;background:var(--wh-orange);transform:scaleX(0);transform-origin:left;transition:transform .18s ease}
+.navlinks button:hover,.extrasDock>button:hover,.navlinks button.active,.extrasDock>button.active{color:var(--wh-white)!important;background:transparent!important}
+.navlinks button.active:after,.extrasDock>button.active:after,.navlinks button:hover:after,.extrasDock>button:hover:after{transform:scaleX(1)}
+.navlinks b{border-radius:0!important;background:var(--wh-orange)!important;color:#111!important}
+.globalSearch{height:38px!important;border:1px solid var(--wh-line)!important;border-radius:0!important;background:var(--wh-panel)!important;box-shadow:none!important;color:var(--wh-muted)!important}
+.globalSearch input{background:transparent!important;color:var(--wh-white)!important}.globalSearch input::placeholder{color:var(--wh-dim)!important}
+.globalResults,.extrasMenu,.profileMenu,.dropdownPanel,.themePickerMenu,.commandPalette{border:1px solid var(--wh-line)!important;border-radius:2px!important;background:#151a19!important;color:var(--wh-white)!important;box-shadow:0 18px 55px rgba(0,0,0,.38)!important}
+.globalResults button,.extrasMenu button,.themePickerMenu button,.commandResults button{background:transparent!important;color:var(--wh-white)!important;border-radius:0!important}
+.globalResults button:hover,.extrasMenu button:hover,.themePickerMenu button:hover,.commandResults button:hover{background:#242a27!important}
+.iconbtn,.nav>.iconbtn,.bellbtn{width:38px!important;height:38px!important;border:1px solid var(--wh-line)!important;border-radius:0!important;background:var(--wh-panel)!important;color:var(--wh-white)!important;box-shadow:none!important}
+.iconbtn:hover,.bellbtn:hover{border-color:var(--wh-orange)!important;color:var(--wh-orange)!important;background:#1c211f!important}
+.themePicker{display:none!important}
+.loginButton{min-height:38px!important;border:1px solid var(--wh-orange)!important;border-radius:0!important;background:var(--wh-orange)!important;color:#101112!important;padding:0 14px!important;font-size:11px!important;font-weight:800!important;letter-spacing:.06em!important;text-transform:uppercase}
+.loginButton:hover{background:var(--wh-orange-light)!important;border-color:var(--wh-orange-light)!important}
+
+/* Editorial type system */
+.eyebrow,.pageIntro .eyebrow,.td-eyebrow,.combat-eyebrow{color:var(--wh-orange)!important;font-family:var(--wh-mono)!important;font-size:10px!important;font-weight:700!important;letter-spacing:.16em!important;text-transform:uppercase!important}
+.hero{align-items:flex-end!important;margin-bottom:48px!important}
+.hero h1,.pageIntro h1,.sectionhead h2,.sectionhead h1,.spotlightHero h2{color:var(--wh-white)!important;font-family:var(--wh-display)!important;font-weight:900!important;text-transform:uppercase!important;letter-spacing:-.055em!important;line-height:.96!important}
+.hero h1{font-size:clamp(48px,7vw,94px)!important}
+.hero h1 em,.sectionhead h2 em,.pageIntro h1 em{color:var(--wh-orange)!important;font-style:italic!important;font-family:Georgia,serif!important;font-weight:400!important;text-transform:none!important;letter-spacing:-.06em!important}
+.hero p,.pageIntro p,.sectionhead p,.watchPageSub{color:var(--wh-muted)!important;line-height:1.65!important}
+.status{border:1px solid var(--wh-line)!important;border-radius:0!important;background:var(--wh-panel)!important;color:var(--wh-white)!important;font-family:var(--wh-mono);font-size:10px!important;letter-spacing:.06em;text-transform:uppercase}
+.dot,.status .dot{background:var(--wh-orange)!important;box-shadow:0 0 12px rgba(255,106,36,.45)}
+.sectionhead{border-bottom:1px solid var(--wh-line);padding-bottom:16px}
+.sectionhead h2{font-size:clamp(28px,4vw,48px)!important}
+.pageIntro{border-bottom:1px solid var(--wh-line)!important;padding-bottom:22px!important;margin-bottom:26px!important}
+.pageIntro h1{font-size:clamp(32px,4.5vw,58px)!important}
+.sectionhead p,.pageIntro p{font-size:12px!important}
+
+/* Consistent panel language */
+.pageIntro,.tablewrap,.screenerTableShell,.stat,.screenerCard,.chartbox,.filterPanel,.modal,.calcCard,.financeCard,.dashboardCard,.coolCard,.analysisCard,.spotlightCard,.watchcard,.moveCard,.marketCard,.td-chart-panel,.td-left-tools,.td-stat-grid article,.td-current-price,.combatPanel,.combat-card,.loadoutWorkbench,.liveCombatPanel,.combat-studio-card,.combatStudioCard{
+ background:var(--wh-panel)!important;color:var(--wh-white)!important;border:1px solid var(--wh-line)!important;border-radius:2px!important;box-shadow:none!important
+}
+.stat,.td-stat-grid article{background:#111516!important}
+.stat small,.td-stat-grid small,.td-stat-grid em,.td-current-price small{color:var(--wh-muted)!important}
+.stat strong,.td-stat-grid strong{color:var(--wh-white)!important;font-family:var(--wh-mono)}
+.stats{border-color:var(--wh-line)!important}.stats .stat{border-right:1px solid var(--wh-line)!important;border-radius:0!important}
+.tablewrap,.screenerTableShell{overflow:hidden;box-shadow:none!important}
+table{color:var(--wh-white)!important;background:transparent!important}
+thead,th{background:#1b201e!important;color:#c4c9c4!important;border-color:var(--wh-line)!important}
+th{font-family:var(--wh-mono);font-size:10px!important;letter-spacing:.09em;text-transform:uppercase}
+td{color:var(--wh-white)!important;border-color:var(--wh-line-soft)!important}
+tbody tr{background:transparent!important}tbody tr:hover{background:#202624!important}tbody tr:last-child td{border-color:transparent!important}
+.item small,td .sub{color:var(--wh-muted)!important}.empty,.emptybox,.filterEmpty{color:var(--wh-muted)!important;border-color:var(--wh-line)!important}
+.green,.positive,.greenText{color:var(--wh-green)!important}.redtxt,.negative{color:var(--wh-red)!important}.chev{color:var(--wh-dim)!important}
+
+/* Square-cornered white controls and orange active/action states */
+.primary,.primary.small,.filterButton,.secondary,.loadMore,.rangeButtons button,.moverRangeBar button,.td-chart-tools>button,.td-range-tabs button,.td-quick-filter-grid button,.td-quick-tool,.backDetail,.itemAnalyticsTopBtn,.openItemPageBtn,.mobileAnalyticsActions button,.watchManagerActions button,.commandBottom button,.combatButton,.combat-action-button,.workbenchButton{
+ min-height:36px;border:1px solid #e9e6df!important;border-radius:0!important;background:#f4f1ea!important;color:#111415!important;box-shadow:none!important;font-size:11px!important;font-weight:800!important;letter-spacing:.045em;text-transform:uppercase
+}
+.primary,.primary.small{border-color:var(--wh-orange)!important;background:var(--wh-orange)!important;color:#101112!important}
+.primary:hover,.primary.small:hover{background:var(--wh-orange-light)!important;border-color:var(--wh-orange-light)!important;transform:translateY(-1px)}
+.secondary:hover,.filterButton:hover,.loadMore:hover,.rangeButtons button:hover,.td-chart-tools>button:hover{border-color:var(--wh-orange)!important;background:#fff!important;color:#101112!important}
+.filterButton.hasFilters,.rangeButtons button.active,.moverRangeBar button.active,.td-range-tabs button.active,.td-quick-filter-grid button.active,.td-chart-tools>button.selected{border-color:var(--wh-orange)!important;background:var(--wh-orange)!important;color:#101112!important}
+.dangerIcon,.star,.watchRemove{border-radius:0!important}.dangerIcon{background:transparent!important;color:var(--wh-muted)!important}
+.dangerIcon:hover{background:rgba(255,145,128,.12)!important;color:var(--wh-red)!important}
+.star:hover,.star.on{background:#252b28!important;color:var(--wh-orange)!important}
+.clearSearch{border-radius:0!important;background:#272d2a!important;color:var(--wh-white)!important}
+.loadMore{display:inline-flex!important;align-items:center;gap:8px}
+
+/* Inputs */
+.search,.globalSearch,.profileSave input,.condition select,.condition input,.filterPanel input,.filterPanel select,input:not([type=checkbox]):not([type=radio]):not([type=color]),select,textarea,.watchManager select,.watchManager input,.spotlightControls input,.moverFilters input,.td-left-search,.td-inline-calculator input,.combat-studio input,.combat-studio select,.combat-studio textarea{
+ border:1px solid var(--wh-line)!important;border-radius:0!important;background:#0e1112!important;color:var(--wh-white)!important;box-shadow:none!important
+}
+input::placeholder,textarea::placeholder{color:#777e79!important;opacity:1}
+select option{background:#151a19;color:var(--wh-white)}
+.search:focus-within,.globalSearch:focus-within,.td-left-search:focus-within{border-color:var(--wh-orange)!important}
+.filterPanel{background:#111516!important;padding:18px!important}.filterHeader{border-bottom:1px solid var(--wh-line);padding-bottom:12px}
+.profileMenu{background:#151a19!important}.profileRow>button:first-child,.profileRow>button:last-child{background:transparent!important;color:var(--wh-white)!important}
+.profileRow>button:first-child:hover{background:#242a27!important}.profileSave{border-color:var(--wh-line)!important}
+.chips span{border:1px solid var(--wh-line)!important;border-radius:0!important;color:var(--wh-muted)!important;background:#121716!important;font-family:var(--wh-mono)}
+.screenerTopbar{background:var(--wh-bg)!important}.screenerWide .dropdownPanel{background:#151a19!important;border-color:var(--wh-line)!important}
+
+/* Graphs — keep Recharts data, scales, tooltips and interactions; replace visual palette */
+.chartbox,.td-chart-wrap,.td-chart-panel{background:#101415!important;border:1px solid var(--wh-line)!important;border-radius:2px!important}
+.charthead,.chartHead,.td-chart-toolbar,.td-selected-head,.td-chart-tools{border-color:var(--wh-line)!important}
+.charthead strong,.td-chart-panel h3,.td-chart-panel h4{color:var(--wh-white)!important}
+.charthead small,.chartNote,.td-chart-panel small{color:var(--wh-muted)!important}
+.recharts-wrapper,.recharts-surface{overflow:visible}
+.recharts-cartesian-grid line{stroke:#343b37!important;opacity:.78!important}
+.recharts-cartesian-axis-line,.recharts-cartesian-axis-tick-line{stroke:#555e58!important}
+.recharts-text,.recharts-cartesian-axis-tick-value{fill:#aeb5ae!important;font-family:var(--wh-mono)!important;font-size:10px!important}
+.recharts-tooltip-wrapper{outline:none!important}
+.recharts-default-tooltip,.td-chart-tooltip,.chartTooltip{background:#1b211e!important;border:1px solid #59625b!important;border-radius:2px!important;color:var(--wh-white)!important;box-shadow:0 12px 32px rgba(0,0,0,.45)!important}
+.recharts-tooltip-label,.recharts-tooltip-item,.td-chart-tooltip strong,.td-chart-tooltip b{color:var(--wh-white)!important}
+.td-chart-tooltip{padding:12px!important;min-width:210px}.td-chart-tooltip>div{border-color:var(--wh-line)!important}
+.td-chart-legend button{color:var(--wh-muted)!important}.td-chart-legend button.muted{opacity:.38}
+.td-mini-buy-line,.td-mini-sell-line{stroke-width:2.2!important}.td-mini-buy-line{stroke:#f4f1ea!important}.td-mini-sell-line{stroke:#ff6a24!important}
+.td-chart-empty{background:#111516!important;color:var(--wh-muted)!important;border:1px dashed var(--wh-line)!important}
+.chartbox .rangeButtons button.active{background:var(--wh-orange)!important;color:#101112!important}
+.chartbox .rangeButtons button{border-radius:0!important}.chartTouch{background:transparent!important}
+.chartTouch .recharts-area-area{opacity:.7}
+
+/* Trading terminal */
+.tradingTerminal{color:var(--wh-white)!important;background:transparent!important}
+.terminalDesk .td-topline{border-color:var(--wh-line)!important;color:var(--wh-muted)!important;font-family:var(--wh-mono);font-size:10px;letter-spacing:.1em}
+.terminalDesk .td-live-dot,.terminalDesk .td-market-status i{background:var(--wh-orange)!important;box-shadow:0 0 12px rgba(255,106,36,.4)}
+.terminalDesk .td-stat-grid article{border:1px solid var(--wh-line)!important;background:#141918!important;border-radius:2px!important}
+.terminalDesk .td-stat-icon,.terminalDesk .td-stat-icon.violet,.terminalDesk .td-stat-icon.cyan,.terminalDesk .td-stat-icon.green,.terminalDesk .td-spark,.terminalDesk .td-spark.violet,.terminalDesk .td-spark.cyan,.terminalDesk .td-spark.green{color:var(--wh-orange)!important}
+.terminalDesk .td-stat-grid strong{font-size:22px!important}
+.terminalDesk .td-left-tools{background:#111516!important;border-color:var(--wh-line)!important}
+.terminalDesk .td-left-tabs{border-color:var(--wh-line)!important}
+.terminalDesk .td-left-tabs button{border-radius:0!important;color:var(--wh-muted)!important}
+.terminalDesk .td-left-tabs button.active{background:var(--wh-orange)!important;color:#111!important}
+.terminalDesk .td-left-section{border-color:var(--wh-line)!important}
+.terminalDesk .td-left-section h4{color:var(--wh-orange)!important;font-family:var(--wh-mono);text-transform:uppercase;letter-spacing:.12em}
+.terminalDesk .td-recent-item,.terminalDesk .td-quick-tool{border-radius:0!important}
+.terminalDesk .td-recent-item{color:var(--wh-white)!important}
+.terminalDesk .td-recent-item:hover,.terminalDesk .td-recent-item.active{background:#242a27!important;border-color:var(--wh-orange)!important}
+.terminalDesk .td-selected-head{border-bottom:1px solid var(--wh-line)!important}
+.terminalDesk .td-current-price strong{color:var(--wh-white)!important;font-family:var(--wh-mono)}
+.terminalDesk .td-range-tabs button{border-radius:0!important}
+.terminalDesk .td-chart-tools{gap:5px!important;flex-wrap:wrap}
+.terminalDesk .td-chart-tools>button{min-height:31px!important;padding:0 9px!important}
+.terminalDesk .td-line-color{display:none!important}
+.terminalDesk .td-chart-legend button{color:var(--wh-white)!important}
+.terminalDesk .td-chart-legend button:first-child i{background:#f4f1ea!important}
+.terminalDesk .td-chart-legend button:nth-child(2) i{background:var(--wh-orange)!important}
+.terminalDesk .td-chart-legend i{width:8px;height:8px}
+.terminalDesk .td-star{border:1px solid var(--wh-line)!important;color:var(--wh-orange)!important;background:#151a19!important;border-radius:0!important}
+
+/* Combat Studio */
+.combat-studio,.combatStudio,.combat-studio-page,.combatStudioPage{color:var(--wh-white)!important}
+.combat-studio h1,.combat-studio h2,.combat-studio h3,.combatStudio h1,.combatStudio h2,.combatStudio h3{color:var(--wh-white)!important;font-family:var(--wh-display)!important;text-transform:uppercase;letter-spacing:-.04em}
+.combat-studio .eyebrow,.combatStudio .eyebrow{color:var(--wh-orange)!important}
+.combat-studio button,.combatStudio button{border-radius:0!important}
+.combat-studio .primary,.combatStudio .primary,.combat-studio button.primary,.combatStudio button.primary{background:var(--wh-orange)!important;color:#101112!important;border-color:var(--wh-orange)!important}
+.combat-studio .secondary,.combatStudio .secondary,.combat-studio button.secondary,.combatStudio button.secondary{background:#f4f1ea!important;color:#101112!important;border-color:#f4f1ea!important}
+.combat-studio [class*=card],.combatStudio [class*=card],.combat-studio [class*=Panel],.combatStudio [class*=Panel],.combat-studio [class*=panel],.combatStudio [class*=panel],.combat-studio [class*=workbench],.combatStudio [class*=workbench]{border-radius:2px!important;box-shadow:none!important}
+.combat-studio .liveCombatPanel,.combat-studio .loadoutWorkbench,.combatStudio .liveCombatPanel,.combatStudio .loadoutWorkbench{background:#111516!important;border:1px solid var(--wh-line)!important}
+.combat-studio .recharts-text,.combatStudio .recharts-text{fill:#aeb4ae!important}
+
+/* Finance, dashboards, intelligence, recipes, watchlists and overlays */
+.financeCard,.calcCard,.dashboardCard,.coolCard,.analysisCard,.spotlightCard,.screenerCard,.moneyCard,.recipeCard,.analysisGrid>div,.accountCard,.accountPanel,.profileCard{
+ background:var(--wh-panel)!important;border:1px solid var(--wh-line)!important;border-radius:2px!important;color:var(--wh-white)!important;box-shadow:none!important
+}
+.financeCard h2,.calcCard h2,.dashboardCard h2,.coolCard h2,.analysisCard h2,.spotlightCard h2,.accountCard h2,.accountPanel h2{color:var(--wh-white)!important}
+.financeTable,.moneyTable,.moneyTable>button,.recipeCard,.recipeFormula,.calcDisclaimer{background:#111516!important;color:var(--wh-white)!important;border-color:var(--wh-line)!important}
+.recipeCard small,.recipeLead,.moneyDisclaimer,.calcDisclaimer,.reqIcons em{color:var(--wh-muted)!important}
+.watchcard,.watchcard2{background:#141918!important;border:1px solid var(--wh-line)!important;border-radius:2px!important}
+.watchcard:hover,.watchcard2:hover{border-color:var(--wh-orange)!important;background:#1b211e!important}
+.moverFilters label,.spotlightControls label,.watchManager label{color:var(--wh-muted)!important}
+.modal,.drawer,.commandPalette,.notificationPanel,.toast{background:#151a19!important;color:var(--wh-white)!important;border:1px solid var(--wh-line)!important;border-radius:2px!important;box-shadow:0 18px 55px rgba(0,0,0,.4)!important}
+.drawerback,.modalBack,.commandBack{background:rgba(0,0,0,.78)!important;backdrop-filter:blur(8px)}
+.drawer .chartbox,.drawer .detailgrid>div{background:#101415!important;color:var(--wh-white)!important;border-color:var(--wh-line)!important}
+.drawer .rangeButtons button{background:#f4f1ea!important;color:#111!important;border-color:#f4f1ea!important}
+.drawer .rangeButtons button.active{background:var(--wh-orange)!important;color:#111!important;border-color:var(--wh-orange)!important}
+.close{background:#f4f1ea!important;color:#111!important;border:1px solid #f4f1ea!important;border-radius:0!important}
+.toast{border-left:3px solid var(--wh-orange)!important}
+
+/* Technical labels and utility elements */
+small,.muted,.subtle{color:var(--wh-muted)}
+kbd,.tag,.badge,.pill,.statusTag{border-radius:0!important;font-family:var(--wh-mono)!important}
+kbd{background:#252b28!important;border:1px solid var(--wh-line)!important;color:var(--wh-white)!important}
+.commandTop,.commandHint,.commandBottom{border-color:var(--wh-line)!important;color:var(--wh-muted)!important}
+.commandTop input{background:transparent!important;color:var(--wh-white)!important}
+.commandGlyph{background:#252b28!important;color:var(--wh-orange)!important;border-radius:0!important}
+.commandBottom button{display:none!important}
+.tickerTrack,.tickerTrack button{background:#101516!important;color:var(--wh-white)!important;border-color:var(--wh-line)!important}
+.flashTicker,.watchFlash{animation:none!important;box-shadow:inset 3px 0 0 var(--wh-orange)!important}
+.scrollTopBtn,.mobileQuickCalcFab{border-radius:0!important;background:var(--wh-orange)!important;color:#111!important;border:1px solid var(--wh-orange)!important;box-shadow:none!important}
+.mobileNav{background:rgba(12,14,15,.97)!important;border-top:1px solid var(--wh-line)!important;backdrop-filter:blur(18px)}
+.mobileNav>button{color:var(--wh-muted)!important;border-radius:0!important}
+.mobileNav>button.active,.mobileNav>button:focus-visible{color:var(--wh-orange)!important;background:transparent!important}
+.mobileMore{background:#151a19!important;border:1px solid var(--wh-line)!important}
+.mobileMore button{color:var(--wh-white)!important;background:transparent!important;border-radius:0!important}
+.siteFooter{border-color:var(--wh-line)!important;color:var(--wh-muted)!important}
+.topClock{color:var(--wh-muted)!important;font-family:var(--wh-mono);font-size:10px}
+button:disabled{opacity:.42!important;cursor:not-allowed!important;transform:none!important}
+
+/* Responsive behaviour */
+@media(max-width:900px){main{padding:34px 22px 90px!important}.nav{padding:0 20px!important;gap:16px!important}.hero{margin-bottom:34px!important}}
+@media(max-width:700px){
+ body{padding-bottom:66px!important}main{padding:24px 14px 88px!important}
+ .nav{min-height:58px!important;height:58px!important;padding:0 12px!important;gap:10px!important}
+ .brand{font-size:19px!important}.globalSearch{min-width:90px!important;height:35px!important}.globalSearch input{font-size:11px!important}
+ .loginButton{min-width:36px!important;height:34px!important;padding:0 9px!important}
+ .hero{margin-bottom:28px!important}.hero h1{font-size:clamp(42px,12vw,62px)!important;letter-spacing:-.055em!important}.hero p{font-size:12px!important}
+ .sectionhead{gap:9px!important}.sectionhead h2{font-size:28px!important}.pageIntro h1{font-size:30px!important}
+ .stats{gap:1px!important}.stats .stat{padding:12px 10px!important}.stats .stat strong{font-size:14px!important}
+ .filterPanel{padding:12px!important}.tablewrap,.screenerTableShell{border-left:0!important;border-right:0!important}
+ .mobileNav{height:66px!important;padding-bottom:env(safe-area-inset-bottom)!important}
+ .mobileQuickCalcFab,.scrollTopBtn{bottom:82px!important}
+ .td-stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}.td-main-grid{grid-template-columns:1fr!important}
+ .td-left-tools{order:2}.td-chart-panel{order:1;min-width:0}.td-chart-wrap{min-width:0}
+ .td-chart-tools{flex-wrap:wrap!important}.td-chart-tools>button{min-height:34px!important}
+ .td-chart-wrap .recharts-wrapper{max-width:100%!important}.drawer,.fullDetail{border-radius:0!important}
+}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+/* Combat Studio component-specific surfaces */
+.combat-studio{background:transparent!important}
+.combat-studio .cs-hero{background:transparent!important;border-bottom:1px solid var(--wh-line)!important}
+.combat-studio .cs-intro,.combat-studio .cs-workspace-controls{color:var(--wh-muted)!important}
+.combat-studio .cs-panel{background:var(--wh-panel)!important;border:1px solid var(--wh-line)!important;border-radius:2px!important;box-shadow:none!important;color:var(--wh-white)!important}
+.combat-studio .cs-panel header{border-color:var(--wh-line)!important}
+.combat-studio .cs-panel h2,.combat-studio .cs-panel h3{color:var(--wh-white)!important;font-family:var(--wh-display)!important;text-transform:uppercase!important;letter-spacing:-.035em}
+.combat-studio .cs-panel p,.combat-studio .cs-note,.combat-studio .cs-calculation-note,.combat-studio .cs-quest-description{color:var(--wh-muted)!important}
+.combat-studio .cs-primary{background:var(--wh-orange)!important;color:#111!important;border:1px solid var(--wh-orange)!important;border-radius:0!important;font-weight:800!important;text-transform:uppercase;letter-spacing:.04em}
+.combat-studio .cs-secondary,.combat-studio .cs-remove-exclusion,.combat-studio .cs-remove-slot{background:#f4f1ea!important;color:#111!important;border:1px solid #f4f1ea!important;border-radius:0!important}
+.combat-studio .cs-tabs button,.combat-studio .cs-alt-tabs button{background:#111516!important;color:var(--wh-muted)!important;border:1px solid var(--wh-line)!important;border-radius:0!important}
+.combat-studio .cs-tabs button.active,.combat-studio .cs-alt-tabs button.active{background:var(--wh-orange)!important;color:#111!important;border-color:var(--wh-orange)!important}
+.combat-studio .cs-metrics>span,.combat-studio .cs-stats>div,.combat-studio .cs-target-profile{background:#101415!important;border:1px solid var(--wh-line)!important;border-radius:0!important}
+.combat-studio .cs-metrics small,.combat-studio .cs-stats small,.combat-studio .cs-target-profile span{color:var(--wh-muted)!important;font-family:var(--wh-mono);text-transform:uppercase;letter-spacing:.06em}
+.combat-studio .cs-metrics b,.combat-studio .cs-stats b,.combat-studio .cs-target-profile b{color:var(--wh-white)!important;font-family:var(--wh-mono)}
+.combat-studio .cs-paperdoll{background:#0f1312!important;border:1px solid var(--wh-line)!important;border-radius:0!important}
+.combat-studio .cs-avatar{background:radial-gradient(circle at 50% 35%,rgba(255,106,36,.12),transparent 65%)!important;color:var(--wh-orange)!important}
+.combat-studio .cs-slot{background:#141918!important;border:1px solid var(--wh-line)!important;border-radius:0!important;color:var(--wh-white)!important}
+.combat-studio .cs-slot:hover{border-color:var(--wh-orange)!important;background:#202623!important}
+.combat-studio .cs-slot small{color:var(--wh-muted)!important;font-family:var(--wh-mono);letter-spacing:.08em}
+.combat-studio .cs-slot-name{color:var(--wh-white)!important}
+.combat-studio .cs-table{background:#101415!important;border:1px solid var(--wh-line)!important}
+.combat-studio .cs-table-head{background:#1b201e!important;color:var(--wh-muted)!important;border-color:var(--wh-line)!important;font-family:var(--wh-mono);text-transform:uppercase;letter-spacing:.08em}
+.combat-studio .cs-gear-row{border-color:var(--wh-line-soft)!important;color:var(--wh-white)!important}
+.combat-studio .cs-gear-row>span,.combat-studio .cs-gear-row>small{color:var(--wh-muted)!important}
+.combat-studio .cs-item-name{background:transparent!important;color:var(--wh-white)!important;border:0!important;text-align:left}
+.combat-studio .cs-item-name:hover{color:var(--wh-orange)!important}
+.combat-studio .cs-performance hr{border-color:var(--wh-line)!important}
+.combat-studio .cs-quest-panel,.combat-studio .cs-quest-row,.combat-studio .cs-excluded,.combat-studio .cs-saved-list article{background:#111516!important;border-color:var(--wh-line)!important;color:var(--wh-white)!important}
+.combat-studio .cs-quest-row select,.combat-studio .cs-quest-search,.combat-studio .cs-exclude-picker input{background:#0e1112!important;color:var(--wh-white)!important;border:1px solid var(--wh-line)!important;border-radius:0!important}
+.combat-studio .cs-quest-row small,.combat-studio .cs-excluded small,.combat-studio .cs-excluded em{color:var(--wh-muted)!important}
+.combat-studio .cs-item-overlay{background:rgba(0,0,0,.82)!important;backdrop-filter:blur(8px)}
+.combat-studio .cs-item-detail{background:#151a19!important;color:var(--wh-white)!important;border:1px solid var(--wh-line)!important;border-radius:2px!important}
+.combat-studio .cs-item-detail-grid>div{background:#101415!important;border:1px solid var(--wh-line)!important}
+.combat-studio .cs-item-detail-grid small,.combat-studio .cs-item-detail-head small{color:var(--wh-orange)!important;font-family:var(--wh-mono);text-transform:uppercase}
+.combat-studio .cs-item-detail-grid b,.combat-studio .cs-item-detail h2{color:var(--wh-white)!important}
+
+
+/* WATCHED REDESIGN — SECOND PASS: remove inherited light-theme variables and residual decoration.
+   This is deliberately appended last in the single-theme stylesheet. */
+html[data-theme="watched"]{
+  color-scheme:dark!important;
+  --oh-bg:#090a0b!important;
+  --oh-surface:#141819!important;
+  --oh-surface2:#1c2120!important;
+  --oh-text:#f4f1ea!important;
+  --oh-muted:#a6aaa6!important;
+  --oh-line:#353c38!important;
+  --oh-accent:#ff6a24!important;
+  --oh-accent2:#ff8a4d!important;
+  --oh-positive:#9bc9a6!important;
+  --oh-negative:#ff9887!important;
+  --oh-shadow:none!important;
+  --oh-glow:transparent!important;
+  /* Legacy theme variables used by earlier components */
+  --bg:#090a0b!important;
+  --surface:#141819!important;
+  --surface2:#1c2120!important;
+  --text:#f4f1ea!important;
+  --muted:#a6aaa6!important;
+  --border:#353c38!important;
+  --purple:#ff6a24!important;
+  --cyan:#f4f1ea!important;
+  --green:#9bc9a6!important;
+  --gold:#ff8a4d!important;
+  background:#090a0b!important;
+  color:#f4f1ea!important;
+}
+html[data-theme="watched"],html[data-theme="watched"] body,html[data-theme="watched"] #root,
+html[data-theme="watched"] .app,html[data-theme="watched"] main{
+  background:#090a0b!important;color:#f4f1ea!important;
+}
+html[data-theme="watched"] body{
+  background:#090a0b!important;
+  background-image:none!important;
+}
+html[data-theme="watched"] body:before,
+html[data-theme="watched"] body:after,
+html[data-theme="watched"] .pulseGlow,
+html[data-theme="watched"] .marketEvents:after,
+html[data-theme="watched"] .constCanvas:before,
+html[data-theme="watched"] .brand:after{
+  display:none!important;content:none!important;opacity:0!important;background:none!important;filter:none!important;
+}
+html[data-theme="watched"] .brand,
+html[data-theme="watched"] .brand span{color:#f4f1ea!important}
+html[data-theme="watched"] .brand b{
+  color:#ff6a24!important;background:none!important;background-image:none!important;
+  -webkit-text-fill-color:#ff6a24!important;text-shadow:none!important;
+}
+html[data-theme="watched"] .desktopHubSidebar,
+html[data-theme="watched"] .desktopHubSidebar *,
+html[data-theme="watched"] .nav,
+html[data-theme="watched"] .nav *,
+html[data-theme="watched"] .mobileNav,
+html[data-theme="watched"] .mobileNav *{
+  box-shadow:none!important;
+}
+html[data-theme="watched"] .desktopHubSidebar{
+  background:#0c0f0e!important;border-right:1px solid #353c38!important;
+}
+html[data-theme="watched"] .hubSidebarLabel,
+html[data-theme="watched"] .hubSidebarFooter small{
+  color:#858c86!important;font:10px/1.4 var(--wh-mono)!important;letter-spacing:.14em!important;text-transform:uppercase!important;
+}
+html[data-theme="watched"] .desktopHubSidebar button{
+  border:0!important;border-radius:0!important;background:transparent!important;color:#a6aaa6!important;
+  font-size:11px!important;font-weight:650!important;letter-spacing:.035em!important;
+}
+html[data-theme="watched"] .desktopHubSidebar button.active{
+  color:#f4f1ea!important;background:#1a201d!important;box-shadow:inset 2px 0 #ff6a24!important;
+}
+html[data-theme="watched"] .hubSidebarGlyph{color:#ff6a24!important}
+html[data-theme="watched"] .hubSidebarStatus i{background:#ff6a24!important;box-shadow:none!important}
+
+/* The watch ticker is a data strip, not a white banner. */
+html[data-theme="watched"] .ticker,
+html[data-theme="watched"] .tickerInner,
+html[data-theme="watched"] .tickerTrack{
+  background:#0e1210!important;background-image:none!important;border-color:#353c38!important;
+  color:#f4f1ea!important;box-shadow:none!important;
+}
+html[data-theme="watched"] .ticker{
+  height:30px!important;border-top:1px solid #252b28!important;border-bottom:1px solid #353c38!important;
+  backdrop-filter:none!important;
+}
+html[data-theme="watched"] .tickerTrack button{
+  border:0!important;border-right:1px solid #353c38!important;border-radius:0!important;
+  background:transparent!important;color:#f4f1ea!important;box-shadow:none!important;
+}
+html[data-theme="watched"] .tickerTrack button:hover{background:#1a201d!important;transform:none!important}
+html[data-theme="watched"] .tickerEmpty{color:#a6aaa6!important}
+
+/* Fix the first-screen market overview cards that exposed the old white palette. */
+html[data-theme="watched"] .marketPulse,
+html[data-theme="watched"] .marketEvents,
+html[data-theme="watched"] .constellation,
+html[data-theme="watched"] .constCanvas,
+html[data-theme="watched"] .marketPulse .pulseMain,
+html[data-theme="watched"] .marketPulse .pulseMetric,
+html[data-theme="watched"] .marketPulse .pulseMeter,
+html[data-theme="watched"] .marketEvents .eventRows button{
+  background:#141819!important;background-image:none!important;color:#f4f1ea!important;
+  border:1px solid #353c38!important;border-radius:2px!important;box-shadow:none!important;
+}
+html[data-theme="watched"] .marketPulse{
+  display:grid!important;padding:12px!important;gap:8px!important;overflow:hidden!important;
+}
+html[data-theme="watched"] .marketPulse .pulseMain,
+html[data-theme="watched"] .marketPulse .pulseMetric,
+html[data-theme="watched"] .marketPulse .pulseMeter{
+  background:#101413!important;border:1px solid #303733!important;border-radius:2px!important;padding:14px!important;
+}
+html[data-theme="watched"] .pulseMain .eyebrow,
+html[data-theme="watched"] .marketEvents .eyebrow,
+html[data-theme="watched"] .constHead .eyebrow{
+  color:#ff6a24!important;font:700 10px/1.4 var(--wh-mono)!important;letter-spacing:.16em!important;text-transform:uppercase!important;
+}
+html[data-theme="watched"] .pulseMain strong{
+  color:#f4f1ea!important;font:900 clamp(25px,4vw,38px)/.95 var(--wh-display)!important;
+  letter-spacing:-.04em!important;text-transform:uppercase!important;
+}
+html[data-theme="watched"] .pulseMain>span,
+html[data-theme="watched"] .pulseMetric small,
+html[data-theme="watched"] .pulseMeter small{
+  color:#a6aaa6!important;font-size:11px!important;line-height:1.35!important;
+}
+html[data-theme="watched"] .pulseMetric svg{color:#ff6a24!important}
+html[data-theme="watched"] .pulseMetric b{
+  color:#f4f1ea!important;font:700 19px/1.1 var(--wh-mono)!important;
+}
+html[data-theme="watched"] .pulseMeter b{
+  color:#f4f1ea!important;font:700 11px/1.3 var(--wh-mono)!important;
+}
+html[data-theme="watched"] .pulseMeter i{
+  height:5px!important;border-radius:0!important;background:#353c38!important;
+}
+html[data-theme="watched"] .pulseMeter em{
+  border-radius:0!important;background:#ff6a24!important;box-shadow:none!important;
+}
+html[data-theme="watched"] .marketEvents{
+  padding:0!important;margin:12px 0 18px!important;overflow:hidden!important;
+}
+html[data-theme="watched"] .eventsToggle{
+  min-height:76px!important;padding:16px 18px!important;border:0!important;border-radius:0!important;
+  background:#141819!important;color:#f4f1ea!important;box-shadow:none!important;
+}
+html[data-theme="watched"] .eventsToggle strong{
+  color:#f4f1ea!important;font:800 20px/1.05 var(--wh-display)!important;
+  letter-spacing:-.02em!important;text-transform:uppercase!important;
+}
+html[data-theme="watched"] .eventsToggle small{
+  color:#a6aaa6!important;font-size:11px!important;line-height:1.45!important;
+}
+html[data-theme="watched"] .eventsToggleRight{gap:10px!important}
+html[data-theme="watched"] .eventsToggleRight .liveBadge{
+  border:1px solid #ff6a24!important;border-radius:0!important;background:#ff6a24!important;
+  color:#111!important;font:800 9px/1 var(--wh-mono)!important;letter-spacing:.12em!important;padding:8px 10px!important;
+}
+html[data-theme="watched"] .eventsToggleRight .liveBadge i{
+  width:5px!important;height:5px!important;background:#111!important;animation:none!important;box-shadow:none!important;
+}
+html[data-theme="watched"] .eventsToggleRight>svg{color:#a6aaa6!important}
+html[data-theme="watched"] .marketEvents .eventRows{padding:10px!important;gap:6px!important}
+html[data-theme="watched"] .marketEvents .eventRows button{
+  background:#101413!important;padding:11px!important;border-radius:0!important;text-align:left!important;
+}
+html[data-theme="watched"] .marketEvents .eventRows button:hover{
+  transform:none!important;background:#1c2220!important;border-color:#ff6a24!important;box-shadow:none!important;
+}
+html[data-theme="watched"] .eventRows strong{color:#f4f1ea!important;font-size:12px!important}
+html[data-theme="watched"] .eventRows small{color:#a6aaa6!important;font-size:10px!important}
+html[data-theme="watched"] .eventRank{color:#ff6a24!important;font:10px var(--wh-mono)!important}
+html[data-theme="watched"] .eventRows>b{color:#ff6a24!important;font-family:var(--wh-mono)!important}
+
+/* Editorial type: make the whole hierarchy visible, not just the page title. */
+html[data-theme="watched"] h1,
+html[data-theme="watched"] h2,
+html[data-theme="watched"] h3,
+html[data-theme="watched"] h4,
+html[data-theme="watched"] .hero h1,
+html[data-theme="watched"] .pageIntro h1,
+html[data-theme="watched"] .sectionhead h1,
+html[data-theme="watched"] .sectionhead h2{
+  color:#f4f1ea!important;font-family:var(--wh-display)!important;font-weight:900!important;
+  letter-spacing:-.045em!important;text-transform:uppercase!important;
+}
+html[data-theme="watched"] h1 em,
+html[data-theme="watched"] h2 em,
+html[data-theme="watched"] h3 em,
+html[data-theme="watched"] .hero h1 em,
+html[data-theme="watched"] .pageIntro h1 em{
+  color:#ff6a24!important;font-family:Georgia,"Times New Roman",serif!important;
+  font-style:italic!important;font-weight:400!important;text-transform:none!important;
+}
+html[data-theme="watched"] .eyebrow,
+html[data-theme="watched"] .sectionLabel,
+html[data-theme="watched"] .td-eyebrow,
+html[data-theme="watched"] .cs-eyebrow{
+  color:#ff6a24!important;font:700 10px/1.4 var(--wh-mono)!important;letter-spacing:.15em!important;text-transform:uppercase!important;
+}
+html[data-theme="watched"] .sectionhead p,
+html[data-theme="watched"] .pageIntro p,
+html[data-theme="watched"] .hero p,
+html[data-theme="watched"] .cs-panel p,
+html[data-theme="watched"] .td-chart-panel small{
+  color:#a6aaa6!important;line-height:1.55!important;
+}
+html[data-theme="watched"] small,
+html[data-theme="watched"] .muted,
+html[data-theme="watched"] .subtle,
+html[data-theme="watched"] td .sub{color:#a6aaa6!important}
+html[data-theme="watched"] strong,
+html[data-theme="watched"] b{color:inherit}
+html[data-theme="watched"] .stat strong,
+html[data-theme="watched"] .td-stat-grid strong,
+html[data-theme="watched"] .cs-metrics b,
+html[data-theme="watched"] .cs-stats b{
+  color:#f4f1ea!important;font-family:var(--wh-mono)!important;font-weight:700!important;
+}
+html[data-theme="watched"] .stat small,
+html[data-theme="watched"] .td-stat-grid small,
+html[data-theme="watched"] .cs-metrics small,
+html[data-theme="watched"] .cs-stats small{
+  color:#a6aaa6!important;font:10px/1.35 var(--wh-mono)!important;letter-spacing:.04em!important;text-transform:uppercase!important;
+}
+
+/* Remove residual purple, cyan and blue treatments throughout the application. */
+html[data-theme="watched"] .purple,
+html[data-theme="watched"] .violet,
+html[data-theme="watched"] .cyan,
+html[data-theme="watched"] .blue,
+html[data-theme="watched"] .td-stat-icon,
+html[data-theme="watched"] .td-spark{
+  color:#ff6a24!important;
+}
+html[data-theme="watched"] .brand b,
+html[data-theme="watched"] .hubSidebarGlyph,
+html[data-theme="watched"] .marketPulse svg,
+html[data-theme="watched"] .marketEvents svg{color:#ff6a24!important}
+html[data-theme="watched"] .pulseMeter em,
+html[data-theme="watched"] .progressBar em,
+html[data-theme="watched"] .activityMeter em{background:#ff6a24!important}
+html[data-theme="watched"] .positive,
+html[data-theme="watched"] .green,
+html[data-theme="watched"] .greenText{color:#9bc9a6!important}
+html[data-theme="watched"] .negative,
+html[data-theme="watched"] .redtxt{color:#ff9887!important}
+
+/* Buttons retain the requested warm-white face and sharp edges. */
+html[data-theme="watched"] button,
+html[data-theme="watched"] .button,
+html[data-theme="watched"] .mobileToolBtn,
+html[data-theme="watched"] .filterButton,
+html[data-theme="watched"] .secondary,
+html[data-theme="watched"] .rangeButtons button,
+html[data-theme="watched"] .td-range-tabs button,
+html[data-theme="watched"] .td-chart-tools>button{
+  border-radius:0!important;box-shadow:none!important;
+}
+html[data-theme="watched"] .secondary,
+html[data-theme="watched"] .filterButton,
+html[data-theme="watched"] .mobileToolBtn,
+html[data-theme="watched"] .loadMore,
+html[data-theme="watched"] .rangeButtons button,
+html[data-theme="watched"] .td-range-tabs button,
+html[data-theme="watched"] .td-chart-tools>button:not(.selected){
+  border:1px solid #f4f1ea!important;background:#f4f1ea!important;color:#111415!important;
+}
+html[data-theme="watched"] .primary,
+html[data-theme="watched"] .primary.small,
+html[data-theme="watched"] .cs-primary,
+html[data-theme="watched"] .filterButton.hasFilters,
+html[data-theme="watched"] .rangeButtons button.active,
+html[data-theme="watched"] .td-range-tabs button.active,
+html[data-theme="watched"] .td-chart-tools>button.selected{
+  border:1px solid #ff6a24!important;background:#ff6a24!important;color:#111415!important;
+}
+html[data-theme="watched"] .secondary:hover,
+html[data-theme="watched"] .filterButton:hover,
+html[data-theme="watched"] .mobileToolBtn:hover,
+html[data-theme="watched"] .rangeButtons button:hover,
+html[data-theme="watched"] .td-range-tabs button:hover{
+  border-color:#ff6a24!important;transform:none!important;box-shadow:none!important;
+}
+html[data-theme="watched"] .filterButton.hasFilters,
+html[data-theme="watched"] .mobileToolBtn.active{color:#111415!important}
+
+/* Search, filter and list tools: no white panels or pill-shaped utility badges. */
+html[data-theme="watched"] .toolbar,
+html[data-theme="watched"] .filterbar,
+html[data-theme="watched"] .chips,
+html[data-theme="watched"] .mobileQuickTools,
+html[data-theme="watched"] .mobileColumnsPanel,
+html[data-theme="watched"] .mobileProfilePanel{
+  background:transparent!important;background-image:none!important;color:#f4f1ea!important;
+}
+html[data-theme="watched"] .search,
+html[data-theme="watched"] .globalSearch,
+html[data-theme="watched"] .td-left-search,
+html[data-theme="watched"] .profileSave input,
+html[data-theme="watched"] .condition select,
+html[data-theme="watched"] .condition input,
+html[data-theme="watched"] .filterPanel input,
+html[data-theme="watched"] .filterPanel select,
+html[data-theme="watched"] input:not([type=checkbox]):not([type=radio]):not([type=color]),
+html[data-theme="watched"] select,
+html[data-theme="watched"] textarea{
+  background:#0e1210!important;color:#f4f1ea!important;border:1px solid #353c38!important;
+  border-radius:0!important;box-shadow:none!important;
+}
+html[data-theme="watched"] .chips span,
+html[data-theme="watched"] .tag,
+html[data-theme="watched"] .badge,
+html[data-theme="watched"] .pill,
+html[data-theme="watched"] .statusTag{
+  background:#141819!important;color:#a6aaa6!important;border:1px solid #353c38!important;border-radius:0!important;
+}
+html[data-theme="watched"] .filterPanel,
+html[data-theme="watched"] .profileMenu,
+html[data-theme="watched"] .mobileColumnsPanel,
+html[data-theme="watched"] .mobileProfilePanel,
+html[data-theme="watched"] .globalResults,
+html[data-theme="watched"] .dropdownPanel{
+  background:#141819!important;color:#f4f1ea!important;border:1px solid #353c38!important;border-radius:2px!important;box-shadow:none!important;
+}
+html[data-theme="watched"] .filterPanel label,
+html[data-theme="watched"] .profileMenu label{color:#a6aaa6!important}
+
+/* Trading Terminal and every chart: graphite canvas, clean axes, orange/white series. */
+html[data-theme="watched"] .chartbox,
+html[data-theme="watched"] .chartTouch,
+html[data-theme="watched"] .td-chart-wrap,
+html[data-theme="watched"] .td-chart-panel,
+html[data-theme="watched"] .td-left-tools,
+html[data-theme="watched"] .td-current-price,
+html[data-theme="watched"] .td-stat-grid article,
+html[data-theme="watched"] .td-stat-grid>div{
+  background:#111514!important;background-image:none!important;color:#f4f1ea!important;
+  border:1px solid #353c38!important;border-radius:2px!important;box-shadow:none!important;
+}
+html[data-theme="watched"] .recharts-cartesian-grid line{stroke:#353c38!important;opacity:.9!important}
+html[data-theme="watched"] .recharts-cartesian-axis-line,
+html[data-theme="watched"] .recharts-cartesian-axis-tick-line{stroke:#626963!important}
+html[data-theme="watched"] .recharts-text,
+html[data-theme="watched"] .recharts-cartesian-axis-tick-value{
+  fill:#a6aaa6!important;font:10px var(--wh-mono)!important;
+}
+html[data-theme="watched"] .recharts-default-tooltip,
+html[data-theme="watched"] .td-chart-tooltip,
+html[data-theme="watched"] .chartTooltip{
+  background:#1a201d!important;border:1px solid #59615b!important;border-radius:2px!important;
+  color:#f4f1ea!important;box-shadow:none!important;
+}
+html[data-theme="watched"] .recharts-tooltip-label,
+html[data-theme="watched"] .recharts-tooltip-item,
+html[data-theme="watched"] .td-chart-tooltip strong,
+html[data-theme="watched"] .td-chart-tooltip b{color:#f4f1ea!important}
+html[data-theme="watched"] .td-mini-buy-line{stroke:#f4f1ea!important}
+html[data-theme="watched"] .td-mini-sell-line{stroke:#ff6a24!important}
+html[data-theme="watched"] .td-chart-legend button{color:#f4f1ea!important}
+html[data-theme="watched"] .td-chart-legend i:first-child{background:#f4f1ea!important}
+html[data-theme="watched"] .td-chart-legend i:nth-child(2){background:#ff6a24!important}
+html[data-theme="watched"] .td-chart-empty{background:#111514!important;color:#a6aaa6!important;border:1px dashed #353c38!important}
+html[data-theme="watched"] .terminalDesk .td-chart-tools .td-line-color{display:none!important}
+html[data-theme="watched"] .terminalDesk .td-topline,
+html[data-theme="watched"] .terminalDesk .td-chart-toolbar,
+html[data-theme="watched"] .terminalDesk .td-selected-head{border-color:#353c38!important}
+html[data-theme="watched"] .terminalDesk .td-left-tabs button.active{background:#ff6a24!important;color:#111!important}
+html[data-theme="watched"] .terminalDesk .td-live-dot{background:#ff6a24!important;box-shadow:none!important}
+
+/* Other page modules inherit the dark surface and never fall back to paper-white. */
+html[data-theme="watched"] .analysisCard,
+html[data-theme="watched"] .financeCard,
+html[data-theme="watched"] .calcCard,
+html[data-theme="watched"] .dashboardCard,
+html[data-theme="watched"] .coolCard,
+html[data-theme="watched"] .spotlightCard,
+html[data-theme="watched"] .screenerCard,
+html[data-theme="watched"] .watchcard,
+html[data-theme="watched"] .watchcard2,
+html[data-theme="watched"] .moneyCard,
+html[data-theme="watched"] .recipeCard,
+html[data-theme="watched"] .analysisGrid>div,
+html[data-theme="watched"] .accountCard,
+html[data-theme="watched"] .accountPanel,
+html[data-theme="watched"] .profileCard,
+html[data-theme="watched"] .moveCard{
+  background:#141819!important;background-image:none!important;color:#f4f1ea!important;
+  border:1px solid #353c38!important;border-radius:2px!important;box-shadow:none!important;
+}
+html[data-theme="watched"] .siteFooter,
+html[data-theme="watched"] .mobileNav{
+  background:#0c0f0e!important;background-image:none!important;color:#f4f1ea!important;
+  border-color:#353c38!important;box-shadow:none!important;backdrop-filter:none!important;
+}
+html[data-theme="watched"] .mobileNav>button{color:#a6aaa6!important;background:transparent!important}
+html[data-theme="watched"] .mobileNav>button.active{color:#ff6a24!important}
+html[data-theme="watched"] .mobileMore{background:#141819!important;border:1px solid #353c38!important;border-radius:2px!important}
+html[data-theme="watched"] .mobileMore button{background:transparent!important;color:#f4f1ea!important}
+html[data-theme="watched"] .mobileQuickCalcFab,
+html[data-theme="watched"] .scrollTopBtn{background:#ff6a24!important;color:#111!important;border:1px solid #ff6a24!important;border-radius:0!important;box-shadow:none!important}
+html[data-theme="watched"] .commandPalette,
+html[data-theme="watched"] .notificationPanel,
+html[data-theme="watched"] .notificationPopover,
+html[data-theme="watched"] .modal,
+html[data-theme="watched"] .drawer,
+html[data-theme="watched"] .toast{
+  background:#141819!important;background-image:none!important;color:#f4f1ea!important;
+  border:1px solid #353c38!important;border-radius:2px!important;box-shadow:none!important;
+}
+
+/* Combat Studio: the gear board and each slot are technical panels, not floating pastel tiles. */
+html[data-theme="watched"] .combat-studio .cs-panel,
+html[data-theme="watched"] .combat-studio .cs-paperdoll,
+html[data-theme="watched"] .combat-studio .cs-table,
+html[data-theme="watched"] .combat-studio .cs-slot,
+html[data-theme="watched"] .combat-studio .cs-metrics>span,
+html[data-theme="watched"] .combat-studio .cs-stats>div,
+html[data-theme="watched"] .combat-studio .cs-target-profile,
+html[data-theme="watched"] .combat-studio .cs-quest-row,
+html[data-theme="watched"] .combat-studio .cs-workbench-item-row,
+html[data-theme="watched"] .combat-studio .cs-workbench-slots button,
+html[data-theme="watched"] .combat-studio .cs-item-detail{
+  background:#141819!important;background-image:none!important;color:#f4f1ea!important;
+  border:1px solid #353c38!important;border-radius:2px!important;box-shadow:none!important;
+}
+html[data-theme="watched"] .combat-studio .cs-slot:hover,
+html[data-theme="watched"] .combat-studio .cs-workbench-slots button:hover{
+  background:#1c2220!important;border-color:#ff6a24!important;
+}
+html[data-theme="watched"] .combat-studio .cs-table-head{background:#1c2120!important;color:#a6aaa6!important}
+html[data-theme="watched"] .combat-studio .cs-gear-row{border-color:#353c38!important}
+html[data-theme="watched"] .combat-studio .cs-gear-row small,
+html[data-theme="watched"] .combat-studio .cs-slot small{color:#a6aaa6!important}
+html[data-theme="watched"] .combat-studio .cs-slot-name,
+html[data-theme="watched"] .combat-studio .cs-panel h2,
+html[data-theme="watched"] .combat-studio .cs-panel h3{color:#f4f1ea!important}
+html[data-theme="watched"] .combat-studio .cs-avatar{background:#101413!important;color:#ff6a24!important}
+html[data-theme="watched"] .combat-studio .cs-paperdoll .cs-slot{min-height:112px!important}
+html[data-theme="watched"] .combat-studio .cs-primary{background:#ff6a24!important;color:#111!important;border-color:#ff6a24!important}
+
+/* Remove ornamental glows and gradients from remaining data cards without flattening chart content. */
+html[data-theme="watched"] .constellation,
+html[data-theme="watched"] .constCanvas,
+html[data-theme="watched"] .dashboardHero,
+html[data-theme="watched"] .spotlightHero,
+html[data-theme="watched"] .marketPulse,
+html[data-theme="watched"] .marketEvents{
+  background-image:none!important;box-shadow:none!important;
+}
+html[data-theme="watched"] .constCanvas{
+  background-color:#0e1210!important;
+  background-image:linear-gradient(#242b27 1px,transparent 1px),linear-gradient(90deg,#242b27 1px,transparent 1px)!important;
+}
+html[data-theme="watched"] .status,
+html[data-theme="watched"] .liveBadge,
+html[data-theme="watched"] .tag,
+html[data-theme="watched"] .badge,
+html[data-theme="watched"] .pill{border-radius:0!important}
+html[data-theme="watched"] .status{background:#141819!important;color:#f4f1ea!important;border:1px solid #353c38!important}
+html[data-theme="watched"] .status .dot{background:#ff6a24!important}
+@media(max-width:700px){
+ html[data-theme="watched"] .marketPulse{grid-template-columns:1fr 1fr!important}
+ html[data-theme="watched"] .pulseMain{grid-column:1/-1!important}
+ html[data-theme="watched"] .pulseMeter{grid-column:1/-1!important}
+ html[data-theme="watched"] .marketEvents{margin-bottom:16px!important}
+ html[data-theme="watched"] .eventsToggle{min-height:78px!important;padding:13px!important}
+ html[data-theme="watched"] .eventsToggle strong{font-size:18px!important}
+ html[data-theme="watched"] .eventRows{grid-template-columns:1fr!important}
+ html[data-theme="watched"] .eventRows button{grid-template-columns:24px 28px minmax(0,1fr) auto!important}
+}
+
+
+/* R41 — consistent Watched dark surfaces, outlined controls and editorial item typography.
+   Presentation-only overrides; all existing page logic and interactions are preserved. */
+html[data-theme="watched"]{
+  --wh-bg:#090a0b;--wh-panel:#141819;--wh-panel2:#1a1f20;
+  --wh-line:#353c38;--wh-muted:#a6aaa6;--wh-white:#f4f1ea;
+}
+html[data-theme="watched"] .mobileFlipCard,
+html[data-theme="watched"] .mobileMeta span,
+html[data-theme="watched"] .mobileQuickCalcPanel,
+html[data-theme="watched"] .quickCalcPopover,
+html[data-theme="watched"] .quickCalcResult>div,
+html[data-theme="watched"] .quickCalcResultWide,
+html[data-theme="watched"] .td-left-tools,
+html[data-theme="watched"] .td-left-section,
+html[data-theme="watched"] .td-quick-filter-grid,
+html[data-theme="watched"] .td-quick-tool,
+html[data-theme="watched"] .td-inline-calculator,
+html[data-theme="watched"] .td-inline-calculator .quickCalcResult>div,
+html[data-theme="watched"] .td-calc-results>div,
+html[data-theme="watched"] .screenerAbsolutePanel,
+html[data-theme="watched"] .mobileColumnsPanel,
+html[data-theme="watched"] .filterPanel,
+html[data-theme="watched"] .screenerCard,
+html[data-theme="watched"] .tablewrap,
+html[data-theme="watched"] .screenerTableShell,
+html[data-theme="watched"] .financeCard,
+html[data-theme="watched"] .calcCard{
+  background:#141819!important;background-image:none!important;color:#f4f1ea!important;
+  border:1px solid #353c38!important;border-radius:2px!important;box-shadow:none!important;
+}
+html[data-theme="watched"] .mobileFlipCard{padding:12px!important}
+html[data-theme="watched"] .mobileFlipCard:hover,
+html[data-theme="watched"] .watchcard:hover,
+html[data-theme="watched"] .td-quick-filter-grid button:hover,
+html[data-theme="watched"] .td-quick-tool:hover{
+  background:#1c2220!important;border-color:#ff6a24!important;transform:none!important;
+}
+html[data-theme="watched"] .mobileItem strong,
+html[data-theme="watched"] .td-recent-item strong,
+html[data-theme="watched"] .td-left-search-suggestions strong,
+html[data-theme="watched"] .item strong,
+html[data-theme="watched"] .itemName,
+html[data-theme="watched"] .marketPage .itemTitle,
+html[data-theme="watched"] .marketPage .mobileFlipCard .mobileItem strong{
+  color:#f4f1ea!important;font-family:var(--wh-display)!important;font-weight:900!important;
+  font-stretch:condensed;letter-spacing:-.035em!important;text-transform:uppercase!important;
+}
+html[data-theme="watched"] .mobileItem strong{font-size:15px!important;line-height:1.05!important}
+html[data-theme="watched"] .mobileItem small,
+html[data-theme="watched"] .mobilePriceRow small,
+html[data-theme="watched"] .mobileMeta,
+html[data-theme="watched"] .mobileCardHint{color:#a6aaa6!important}
+html[data-theme="watched"] .mobilePriceRow{border-top:1px solid #353c38!important}
+html[data-theme="watched"] .mobileMeta span{
+  border-left:1px solid #353c38!important;border-radius:0!important;
+  background:#101413!important;padding:7px 5px!important;
+}
+html[data-theme="watched"] .mobileMeta b{color:#f4f1ea!important;font-family:var(--wh-mono)!important}
+html[data-theme="watched"] .mobileCardHint{border-top:1px solid #353c38!important;padding-top:8px!important}
+html[data-theme="watched"] .score{border:1px solid #6b573f!important;border-radius:0!important;background:#292219!important;color:#ffb16d!important}
+html[data-theme="watched"] .mobilePriceRow .green,
+html[data-theme="watched"] .td-calc-results .green{color:#91c9a2!important}
+html[data-theme="watched"] .mobilePriceRow .redtxt,
+html[data-theme="watched"] .td-calc-results .redtxt{color:#ff9180!important}
+
+/* Calculator sheet and embedded calculators: no pale result tiles or white inputs. */
+html[data-theme="watched"] .mobileQuickCalcPanel{
+  background:#101413!important;border:1px solid #353c38!important;border-bottom:0!important;
+  color:#f4f1ea!important;border-radius:2px 2px 0 0!important;
+}
+html[data-theme="watched"] .mobileQuickCalcHead{border-bottom:1px solid #353c38!important}
+html[data-theme="watched"] .mobileQuickCalcHead strong,
+html[data-theme="watched"] .quickCalcHead strong{color:#f4f1ea!important;font-family:var(--wh-display)!important;font-weight:900!important;text-transform:uppercase!important;letter-spacing:-.025em!important}
+html[data-theme="watched"] .quickCalcPopover{
+  width:100%;background:#101413!important;border-color:#353c38!important;color:#f4f1ea!important;
+}
+html[data-theme="watched"] .quickCalcHead{border-color:#353c38!important}
+html[data-theme="watched"] .quickCalcHead small,
+html[data-theme="watched"] .quickCalcFields label,
+html[data-theme="watched"] .quickCalcResult span,
+html[data-theme="watched"] .quickCalcNote{color:#a6aaa6!important}
+html[data-theme="watched"] .quickCalcFields input,
+html[data-theme="watched"] .td-calc-fields input,
+html[data-theme="watched"] .td-inline-calculator input,
+html[data-theme="watched"] .financeForm input,
+html[data-theme="watched"] .financeCard input,
+html[data-theme="watched"] .calcCard input{
+  background:#0e1210!important;color:#f4f1ea!important;border:1px solid #353c38!important;
+  border-radius:2px!important;box-shadow:none!important;
+}
+html[data-theme="watched"] .quickCalcFields input::placeholder{color:#747b76!important}
+html[data-theme="watched"] .quickCalcFields input:focus,
+html[data-theme="watched"] .td-calc-fields input:focus{border-color:#ff6a24!important;box-shadow:0 0 0 1px #ff6a24!important}
+html[data-theme="watched"] .quickCalcResult>div,
+html[data-theme="watched"] .quickCalcResultWide,
+html[data-theme="watched"] .td-calc-results>div{
+  background:#171c1a!important;border:1px solid #353c38!important;color:#f4f1ea!important;border-radius:2px!important;
+}
+html[data-theme="watched"] .quickCalcResultWide{grid-column:1/-1!important}
+html[data-theme="watched"] .quickCalcResultWide small{color:#a6aaa6!important}
+html[data-theme="watched"] .mobileQuickCalcHead>button{
+  background:#141819!important;color:#f4f1ea!important;border:1px solid #353c38!important;border-radius:2px!important;
+}
+
+/* Trading terminal quick filters, tools and screener controls use the same outlined treatment. */
+html[data-theme="watched"] .td-left-section h4{color:#ff6a24!important;font-family:var(--wh-mono)!important;letter-spacing:.12em!important;text-transform:uppercase!important}
+html[data-theme="watched"] .td-quick-filter-grid button,
+html[data-theme="watched"] .td-quick-tool,
+html[data-theme="watched"] .td-left-search-suggestions button,
+html[data-theme="watched"] .td-recent-item,
+html[data-theme="watched"] .mobileToolBtn,
+html[data-theme="watched"] .mobileColumnsPanel button,
+html[data-theme="watched"] .filterbar button,
+html[data-theme="watched"] .screenerToolsRow button,
+html[data-theme="watched"] .screenerAbsolutePanel button{
+  background:#141819!important;color:#f4f1ea!important;border:1px solid #353c38!important;
+  border-radius:2px!important;box-shadow:none!important;
+}
+html[data-theme="watched"] .td-quick-filter-grid button.active,
+html[data-theme="watched"] .td-quick-tool.active,
+html[data-theme="watched"] .filterbar button.active,
+html[data-theme="watched"] .screenerToolsRow button.active{
+  background:#1c2220!important;color:#ff6a24!important;border-color:#ff6a24!important;
+}
+html[data-theme="watched"] .td-quick-filter-grid button,
+html[data-theme="watched"] .td-quick-tool{min-height:42px!important;text-align:left!important}
+html[data-theme="watched"] .td-quick-filter-grid button{font-family:var(--wh-display)!important;font-weight:900!important;letter-spacing:.04em!important;text-transform:uppercase!important}
+html[data-theme="watched"] .td-quick-tool{display:flex!important;align-items:center!important;gap:10px!important;padding:10px 12px!important}
+html[data-theme="watched"] .td-quick-tool svg{color:#ff6a24!important}
+html[data-theme="watched"] .td-left-search-suggestions button:hover,
+html[data-theme="watched"] .td-recent-item:hover{background:#1c2220!important;border-color:#ff6a24!important}
+html[data-theme="watched"] .mobileColumnsPanel>div:first-child button,
+html[data-theme="watched"] .mobileColumnRow button{background:#141819!important;color:#f4f1ea!important;border:1px solid #353c38!important}
+
+/* Small editorial rules make panels feel deliberate without adding visual clutter. */
+html[data-theme="watched"] .marketPage .sectionhead,
+html[data-theme="watched"] .screenerMain .sectionhead,
+html[data-theme="watched"] .td-left-section,
+html[data-theme="watched"] .quickCalcHead,
+html[data-theme="watched"] .mobilePriceRow,
+html[data-theme="watched"] .mobileCardHint{border-color:#353c38!important}
+html[data-theme="watched"] .marketPage .sectionhead:after,
+html[data-theme="watched"] .screenerMain .sectionhead:after{
+  content:"";display:block;width:34px;height:2px;background:#ff6a24;position:absolute;bottom:-1px;left:0;
+}
+html[data-theme="watched"] .marketPage .sectionhead,
+html[data-theme="watched"] .screenerMain .sectionhead{position:relative!important}
+html[data-theme="watched"] .marketPage .tablewrap,
+html[data-theme="watched"] .marketPage .screenerTableShell,
+html[data-theme="watched"] .screenerMain .screenerTableShell{border-color:#353c38!important}
+html[data-theme="watched"] .marketPage th,
+html[data-theme="watched"] .screenerMain th{background:#101413!important;color:#a6aaa6!important;border-bottom:1px solid #353c38!important}
+html[data-theme="watched"] .marketPage td,
+html[data-theme="watched"] .screenerMain td{border-bottom:1px solid #252b28!important}
+html[data-theme="watched"] .marketPage tbody tr:hover,
+html[data-theme="watched"] .screenerMain tbody tr:hover{background:#171c1a!important}
+html[data-theme="watched"] .td-table-head,
+html[data-theme="watched"] .td-chart-toolbar,
+html[data-theme="watched"] .td-topline{border-color:#353c38!important}
+html[data-theme="watched"] .td-quick-filter-grid,
+html[data-theme="watched"] .td-left-section{padding:12px!important}
+html[data-theme="watched"] .td-quick-filter-grid{gap:7px!important}
+html[data-theme="watched"] .td-left-tools input,
+html[data-theme="watched"] .td-left-tools select{background:#0e1210!important;color:#f4f1ea!important;border-color:#353c38!important;border-radius:2px!important}
+@media(max-width:700px){
+ html[data-theme="watched"] .quickCalcPopover{padding:0!important;border:0!important}
+ html[data-theme="watched"] .mobileQuickCalcPanel .quickCalcFields{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ html[data-theme="watched"] .mobileQuickCalcPanel .quickCalcResult{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ html[data-theme="watched"] .mobileFlipCard{padding:10px!important}
+ html[data-theme="watched"] .mobileItem strong{font-size:14px!important}
+}
+
+
+/* R42 — replace the legacy cream button palette with outlined dark controls across every page. */
+html[data-theme="watched"] .primary,
+html[data-theme="watched"] .primary.small,
+html[data-theme="watched"] .cs-primary,
+html[data-theme="watched"] .loginButton{background:#ff6a24!important;color:#101112!important;border:1px solid #ff6a24!important}
+html[data-theme="watched"] .secondary,
+html[data-theme="watched"] .filterButton,
+html[data-theme="watched"] .loadMore,
+html[data-theme="watched"] .rangeButtons button,
+html[data-theme="watched"] .moverRangeBar button,
+html[data-theme="watched"] .td-chart-tools>button,
+html[data-theme="watched"] .td-range-tabs button,
+html[data-theme="watched"] .td-quick-filter-grid button,
+html[data-theme="watched"] .td-quick-tool,
+html[data-theme="watched"] .backDetail,
+html[data-theme="watched"] .itemAnalyticsTopBtn,
+html[data-theme="watched"] .openItemPageBtn,
+html[data-theme="watched"] .mobileAnalyticsActions button,
+html[data-theme="watched"] .watchManagerActions button,
+html[data-theme="watched"] .commandBottom button,
+html[data-theme="watched"] .combatButton,
+html[data-theme="watched"] .combat-action-button,
+html[data-theme="watched"] .workbenchButton,
+html[data-theme="watched"] .combat-studio .secondary,
+html[data-theme="watched"] .combatStudio .secondary,
+html[data-theme="watched"] .combat-studio .cs-secondary,
+html[data-theme="watched"] .combat-studio .cs-remove-exclusion,
+html[data-theme="watched"] .combat-studio .cs-remove-slot,
+html[data-theme="watched"] .cs-tabs button,
+html[data-theme="watched"] .cs-alt-tabs button{
+  background:#141819!important;background-image:none!important;color:#f4f1ea!important;
+  border:1px solid #353c38!important;border-radius:2px!important;box-shadow:none!important;
+}
+html[data-theme="watched"] .secondary:hover,
+html[data-theme="watched"] .filterButton:hover,
+html[data-theme="watched"] .loadMore:hover,
+html[data-theme="watched"] .rangeButtons button:hover,
+html[data-theme="watched"] .moverRangeBar button:hover,
+html[data-theme="watched"] .td-chart-tools>button:hover,
+html[data-theme="watched"] .td-range-tabs button:hover,
+html[data-theme="watched"] .backDetail:hover,
+html[data-theme="watched"] .itemAnalyticsTopBtn:hover,
+html[data-theme="watched"] .openItemPageBtn:hover,
+html[data-theme="watched"] .combat-studio .secondary:hover,
+html[data-theme="watched"] .combat-studio .cs-secondary:hover,
+html[data-theme="watched"] .cs-tabs button:hover,
+html[data-theme="watched"] .cs-alt-tabs button:hover{
+  background:#1c2220!important;color:#ff8a4d!important;border-color:#ff6a24!important;
+}
+html[data-theme="watched"] .filterButton.hasFilters,
+html[data-theme="watched"] .rangeButtons button.active,
+html[data-theme="watched"] .moverRangeBar button.active,
+html[data-theme="watched"] .td-range-tabs button.active,
+html[data-theme="watched"] .td-quick-filter-grid button.active,
+html[data-theme="watched"] .td-chart-tools>button.selected,
+html[data-theme="watched"] .cs-tabs button.active,
+html[data-theme="watched"] .cs-alt-tabs button.active{
+  background:#ff6a24!important;color:#101112!important;border-color:#ff6a24!important;
+}
+
+
+/* R43 — close the remaining light-theme cascade leaks on item analytics, graphs and every route.
+   The legacy selector html:not([data-theme="dark"]) also matches the Watched theme;
+   these intentionally more-specific rules win without changing any component behaviour. */
+html[data-theme="watched"] .drawer,
+html[data-theme="watched"] .fullDetail,
+html[data-theme="watched"] .routeItemPage .fullDetail,
+html[data-theme="watched"] .drawerback,
+html[data-theme="watched"] .fullDetailBack{
+  background:#090a0b!important;background-image:none!important;color:#f4f1ea!important;
+  border-color:#353c38!important;box-shadow:none!important;
+}
+html[data-theme="watched"] .drawer .itemtitle,
+html[data-theme="watched"] .drawer .detailTileControls,
+html[data-theme="watched"] .drawer .chartbox,
+html[data-theme="watched"] .drawer .itemDNA,
+html[data-theme="watched"] .drawer .scoreExplain,
+html[data-theme="watched"] .drawer .chartNote,
+html[data-theme="watched"] .drawer .historicalPin,
+html[data-theme="watched"] .drawer .detailgrid>div,
+html[data-theme="watched"] .drawer .panelstats .stat,
+html[data-theme="watched"] .routeItemPage .itemtitle,
+html[data-theme="watched"] .routeItemPage .chartbox,
+html[data-theme="watched"] .routeItemPage .itemDNA,
+html[data-theme="watched"] .routeItemPage .detailTileControls,
+html[data-theme="watched"] .routeItemPage .panelstats .stat{
+  background:#141819!important;background-image:none!important;color:#f4f1ea!important;
+  border:1px solid #353c38!important;border-radius:2px!important;box-shadow:none!important;
+}
+html[data-theme="watched"] .drawer .chartTouch,
+html[data-theme="watched"] .drawer .chartloading,
+html[data-theme="watched"] .routeItemPage .chartTouch{
+  background:#101413!important;background-image:none!important;color:#a6aaa6!important;
+}
+html[data-theme="watched"] .drawer .charthead,
+html[data-theme="watched"] .drawer .rangeButtons,
+html[data-theme="watched"] .drawer .chartNote,
+html[data-theme="watched"] .drawer .chartOptionsMenu,
+html[data-theme="watched"] .drawer .chartTimeReadout,
+html[data-theme="watched"] .drawer .chartTooltip,
+html[data-theme="watched"] .drawer .chartModeButtons button,
+html[data-theme="watched"] .drawer .chartLineControls select{
+  background:#101413!important;color:#f4f1ea!important;border-color:#353c38!important;
+}
+html[data-theme="watched"] .drawer .chartOptionsMenu,
+html[data-theme="watched"] .drawer .chartTooltip{
+  border:1px solid #59625b!important;box-shadow:0 12px 32px rgba(0,0,0,.45)!important;
+}
+html[data-theme="watched"] .drawer .charthead strong,
+html[data-theme="watched"] .drawer .detailTileControls strong,
+html[data-theme="watched"] .drawer .itemtitle h2,
+html[data-theme="watched"] .drawer .panelstats .stat strong,
+html[data-theme="watched"] .drawer .detailgrid strong,
+html[data-theme="watched"] .drawer .historicalPin strong{
+  color:#f4f1ea!important;
+}
+html[data-theme="watched"] .drawer .charthead small,
+html[data-theme="watched"] .drawer .chartNote,
+html[data-theme="watched"] .drawer .itemtitle p,
+html[data-theme="watched"] .drawer .panelstats .stat small,
+html[data-theme="watched"] .drawer .detailgrid span,
+html[data-theme="watched"] .drawer .historicalPin small,
+html[data-theme="watched"] .drawer .eyebrow{
+  color:#a6aaa6!important;
+}
+html[data-theme="watched"] .drawer .detailTileControls>div button,
+html[data-theme="watched"] .drawer .rangeButtons button,
+html[data-theme="watched"] .drawer .backDetail,
+html[data-theme="watched"] .drawer .itemAnalyticsTopBtn,
+html[data-theme="watched"] .drawer .openItemPageBtn,
+html[data-theme="watched"] .drawer .chartHeadActions .secondary,
+html[data-theme="watched"] .drawer .close,
+html[data-theme="watched"] .routeItemPage .backDetail{
+  background:#141819!important;color:#f4f1ea!important;border:1px solid #353c38!important;
+  border-radius:2px!important;box-shadow:none!important;
+}
+html[data-theme="watched"] .drawer .detailTileControls>div button.on,
+html[data-theme="watched"] .drawer .rangeButtons button.active,
+html[data-theme="watched"] .drawer .chartModeButtons button.active{
+  background:#ff6a24!important;color:#101112!important;border-color:#ff6a24!important;
+}
+html[data-theme="watched"] .drawer .detailTileControls>div button:hover,
+html[data-theme="watched"] .drawer .rangeButtons button:hover,
+html[data-theme="watched"] .drawer .chartHeadActions .secondary:hover,
+html[data-theme="watched"] .drawer .close:hover{
+  background:#1c2220!important;color:#ff8a4d!important;border-color:#ff6a24!important;
+}
+html[data-theme="watched"] .drawer .close{position:absolute!important}
+html[data-theme="watched"] .drawer .chartOptionsMenu label:hover{background:#1c2220!important}
+html[data-theme="watched"] .drawer .chartTooltip>strong,
+html[data-theme="watched"] .drawer .chartTooltip div{color:#f4f1ea!important}
+html[data-theme="watched"] .drawer .legendDot.buy{background:#f4f1ea!important}
+html[data-theme="watched"] .drawer .legendDot.sell{background:#ff6a24!important}
+
+/* Reusable graph surfaces and controls used by item history, market analytics and terminal. */
+html[data-theme="watched"] .chartbox,
+html[data-theme="watched"] .chartTouch,
+html[data-theme="watched"] .chartloading,
+html[data-theme="watched"] .chartTooltip,
+html[data-theme="watched"] .chartOptionsMenu,
+html[data-theme="watched"] .chartTimeReadout,
+html[data-theme="watched"] .chartModeButtons,
+html[data-theme="watched"] .chartLineControls,
+html[data-theme="watched"] .multiGraphComparison,
+html[data-theme="watched"] .multiGraphCard,
+html[data-theme="watched"] .graphCard,
+html[data-theme="watched"] .graphPanel,
+html[data-theme="watched"] .priceHistory,
+html[data-theme="watched"] .priceHistoryPanel{
+  background:#141819!important;color:#f4f1ea!important;border-color:#353c38!important;
+  box-shadow:none!important;
+}
+html[data-theme="watched"] .chartbox .chartTouch,
+html[data-theme="watched"] .chartbox .recharts-wrapper,
+html[data-theme="watched"] .chartbox .recharts-surface,
+html[data-theme="watched"] .graphCard .recharts-wrapper,
+html[data-theme="watched"] .graphPanel .recharts-wrapper{background:transparent!important}
+html[data-theme="watched"] .charthead,
+html[data-theme="watched"] .chartHead,
+html[data-theme="watched"] .chartNote,
+html[data-theme="watched"] .chartOptionsMenu,
+html[data-theme="watched"] .chartTimeReadout{color:#f4f1ea!important;border-color:#353c38!important}
+html[data-theme="watched"] .charthead strong,
+html[data-theme="watched"] .chartOptionsMenu strong,
+html[data-theme="watched"] .chartTimeReadout strong{color:#f4f1ea!important}
+html[data-theme="watched"] .charthead small,
+html[data-theme="watched"] .chartNote,
+html[data-theme="watched"] .chartOptionsMenu label{color:#a6aaa6!important}
+html[data-theme="watched"] .rangeButtons button,
+html[data-theme="watched"] .chartHeadActions button,
+html[data-theme="watched"] .chartModeButtons button,
+html[data-theme="watched"] .chartLineControls select{
+  background:#141819!important;color:#f4f1ea!important;border:1px solid #353c38!important;
+  border-radius:2px!important;
+}
+html[data-theme="watched"] .rangeButtons button.active,
+html[data-theme="watched"] .chartModeButtons button.active{background:#ff6a24!important;color:#101112!important;border-color:#ff6a24!important}
+
+/* Shared page surfaces that previously inherited hard-coded white from legacy components. */
+html[data-theme="watched"] .drawer,
+html[data-theme="watched"] .modal,
+html[data-theme="watched"] .notificationPopover,
+html[data-theme="watched"] .popoverHead,
+html[data-theme="watched"] .popoverList,
+html[data-theme="watched"] .popoverList button,
+html[data-theme="watched"] .clearPopover,
+html[data-theme="watched"] .alertintro,
+html[data-theme="watched"] .notification,
+html[data-theme="watched"] .spotlightCard,
+html[data-theme="watched"] .loadoutCard,
+html[data-theme="watched"] .loadoutMockupPage .lm-card,
+html[data-theme="watched"] .loadoutMockupPage .lm-saved-view,
+html[data-theme="watched"] .loadoutMockupPage .lm-compare-view,
+html[data-theme="watched"] .loadoutMockupPage .lm-compare-grid>div,
+html[data-theme="watched"] .loadoutMockupPage .lm-boss-option,
+html[data-theme="watched"] .brainSuite,
+html[data-theme="watched"] .brainCard,
+html[data-theme="watched"] .recommendLarge,
+html[data-theme="watched"] .brainExpandedHead,
+html[data-theme="watched"] .recipeCard,
+html[data-theme="watched"] .dashboardCard,
+html[data-theme="watched"] .analysisCard,
+html[data-theme="watched"] .financeCard,
+html[data-theme="watched"] .calcLabCard,
+html[data-theme="watched"] .coolCard,
+html[data-theme="watched"] .moveCard,
+html[data-theme="watched"] .movecol,
+html[data-theme="watched"] .rule,
+html[data-theme="watched"] .ruleicon,
+html[data-theme="watched"] .watchcard,
+html[data-theme="watched"] .screenerCard,
+html[data-theme="watched"] .screenerTableShell,
+html[data-theme="watched"] .tablewrap{
+  background:#141819!important;background-image:none!important;color:#f4f1ea!important;
+  border-color:#353c38!important;box-shadow:none!important;
+}
+html[data-theme="watched"] .popoverList button:hover,
+html[data-theme="watched"] .notification:hover,
+html[data-theme="watched"] .watchcard:hover,
+html[data-theme="watched"] .spotlightRows button:hover,
+html[data-theme="watched"] .loadoutSuggestions button:hover{background:#1c2220!important}
+html[data-theme="watched"] .popoverHead,
+html[data-theme="watched"] .popoverList button,
+html[data-theme="watched"] .clearPopover,
+html[data-theme="watched"] .spotlightRows button,
+html[data-theme="watched"] .loadoutSuggestions button{
+  color:#f4f1ea!important;border-color:#353c38!important;
+}
+html[data-theme="watched"] .modal input,
+html[data-theme="watched"] .modal select,
+html[data-theme="watched"] .notificationPopover input,
+html[data-theme="watched"] .loadoutMockupPage input,
+html[data-theme="watched"] .loadoutMockupPage select{
+  background:#0e1210!important;color:#f4f1ea!important;border-color:#353c38!important;
+}
+html[data-theme="watched"] .modal label,
+html[data-theme="watched"] .notificationPopover small,
+html[data-theme="watched"] .spotlightRows small,
+html[data-theme="watched"] .loadoutSuggestions small,
+html[data-theme="watched"] .loadoutMockupPage small,
+html[data-theme="watched"] .loadoutMockupPage p{color:#a6aaa6!important}
+
+/* Final type pass: readable body copy, consistent labels, mono numeric data and compact mobile controls. */
+html[data-theme="watched"] body,
+html[data-theme="watched"] button,
+html[data-theme="watched"] input,
+html[data-theme="watched"] select,
+html[data-theme="watched"] textarea{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important}
+html[data-theme="watched"] h1,
+html[data-theme="watched"] h2,
+html[data-theme="watched"] h3,
+html[data-theme="watched"] h4,
+html[data-theme="watched"] .charthead strong,
+html[data-theme="watched"] .detailTileControls strong,
+html[data-theme="watched"] .itemtitle h2{
+  font-family:var(--wh-display)!important;font-weight:900!important;letter-spacing:-.035em!important;
+}
+html[data-theme="watched"] .panelstats .stat strong,
+html[data-theme="watched"] .td-stat-grid strong,
+html[data-theme="watched"] .mobileMeta b,
+html[data-theme="watched"] .chartTimeReadout strong,
+html[data-theme="watched"] .detailgrid strong{font-family:var(--wh-mono)!important;font-variant-numeric:tabular-nums!important}
+html[data-theme="watched"] .mobileNav,
+html[data-theme="watched"] .mobileNav button,
+html[data-theme="watched"] .mobileMore{background:#0c0f0e!important;color:#a6aaa6!important;border-color:#353c38!important}
+html[data-theme="watched"] .mobileNav button.active{color:#ff6a24!important;background:#141819!important}
+html[data-theme="watched"] .mobileNav button span{font-size:10px!important;letter-spacing:.02em!important}
+html[data-theme="watched"] .mobileNav svg{stroke-width:1.8!important}
+html[data-theme="watched"] .filterButton,
+html[data-theme="watched"] .mobileNav .filterButton,
+html[data-theme="watched"] .terminalDesk .filterButton{
+  background:#141819!important;color:#f4f1ea!important;border:1px solid #353c38!important;
+}
+html[data-theme="watched"] .filterButton.hasFilters{background:#ff6a24!important;color:#101112!important;border-color:#ff6a24!important}
+@media(max-width:700px){
+ html[data-theme="watched"] .drawer{padding:14px 12px 88px!important}
+ html[data-theme="watched"] .drawer .chartbox{padding:10px!important;margin-top:12px!important}
+ html[data-theme="watched"] .drawer .charthead{display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:9px!important}
+ html[data-theme="watched"] .drawer .chartHeadActions{display:flex!important;flex-wrap:wrap!important;gap:6px!important}
+ html[data-theme="watched"] .drawer .chartHeadActions button{min-height:34px!important;font-size:10px!important;padding:0 9px!important}
+ html[data-theme="watched"] .drawer .charthead strong{font-size:16px!important}
+ html[data-theme="watched"] .drawer .charthead small{font-size:10px!important;line-height:1.45!important;max-width:none!important}
+ html[data-theme="watched"] .drawer .rangeButtons{display:flex!important;flex-wrap:nowrap!important;overflow-x:auto!important;padding-bottom:4px!important}
+ html[data-theme="watched"] .drawer .rangeButtons button{flex:0 0 auto!important;min-height:34px!important;font-size:10px!important}
+ html[data-theme="watched"] .drawer .chartTouch{min-height:230px!important}
+ html[data-theme="watched"] .drawer .chartNote{font-size:10px!important;line-height:1.5!important}
+ html[data-theme="watched"] .drawer .detailTileControls>div{display:flex!important;gap:6px!important;overflow-x:auto!important}
+ html[data-theme="watched"] .drawer .detailTileControls>div button{flex:0 0 auto!important;min-height:36px!important}
+}
+
+
+/* R44 — final cross-page component coverage: secondary graphs, loadout, levelling, OSRS Brain and tools. */
+html[data-theme="watched"] .multiGraphCompare,
+html[data-theme="watched"] .miniGraphCard,
+html[data-theme="watched"] .miniGraphTitle,
+html[data-theme="watched"] .multiGraphHeading,
+html[data-theme="watched"] .terminalChart,
+html[data-theme="watched"] .terminalWatch,
+html[data-theme="watched"] .terminalBottomGrid>section,
+html[data-theme="watched"] .terminalHero,
+html[data-theme="watched"] .terminalSearchWrap,
+html[data-theme="watched"] .terminalPinBar,
+html[data-theme="watched"] .terminalOverviewStrip article,
+html[data-theme="watched"] .terminalOverviewStrip em,
+html[data-theme="watched"] .td-bottom-cards article,
+html[data-theme="watched"] .td-compare-cards button,
+html[data-theme="watched"] .td-inline-calculator,
+html[data-theme="watched"] .td-mini-history,
+html[data-theme="watched"] .jhaHero,
+html[data-theme="watched"] .jhaRuneCard,
+html[data-theme="watched"] .jhaStatGrid article,
+html[data-theme="watched"] .jhaChartCard,
+html[data-theme="watched"] .jhaFilters,
+html[data-theme="watched"] .jhaTableCard,
+html[data-theme="watched"] .dashboardWorkspaceTabs,
+html[data-theme="watched"] .quickToolsPopover,
+html[data-theme="watched"] .quickAlchResult,
+html[data-theme="watched"] .loadoutPage .loadoutHero,
+html[data-theme="watched"] .loadoutPage .loadoutStatsInput,
+html[data-theme="watched"] .loadoutPage .loadoutPlannerPanel,
+html[data-theme="watched"] .loadoutPage .loadoutCard,
+html[data-theme="watched"] .loadoutPage .loadoutSlot,
+html[data-theme="watched"] .loadoutPage .loadoutPicker,
+html[data-theme="watched"] .loadoutPage .loadoutAccountLookup,
+html[data-theme="watched"] .loadoutMockupPage .lm-card,
+html[data-theme="watched"] .loadoutMockupPage .lm-recommend-card,
+html[data-theme="watched"] .loadoutMockupPage .lm-gear-preview,
+html[data-theme="watched"] .loadoutMockupPage .lm-chart-track,
+html[data-theme="watched"] .loadoutMockupPage .lm-right-summary>div,
+html[data-theme="watched"] .loadoutMockupPage .lm-tool-grid button,
+html[data-theme="watched"] .loadoutMockupPage .lm-saved-view,
+html[data-theme="watched"] .loadoutMockupPage .lm-compare-view,
+html[data-theme="watched"] .lv-hero,
+html[data-theme="watched"] .lv-hero-stat,
+html[data-theme="watched"] .lv-guide,
+html[data-theme="watched"] .lv-card,
+html[data-theme="watched"] .lv-mode,
+html[data-theme="watched"] .questProgressCard,
+html[data-theme="watched"] .questMainCard,
+html[data-theme="watched"] .questSideCard,
+html[data-theme="watched"] .questSideStack>section,
+html[data-theme="watched"] .questProgressRing,
+html[data-theme="watched"] .questTrainingPlanner,
+html[data-theme="watched"] .questRouteStep,
+html[data-theme="watched"] .questTrainingMethodList article,
+html[data-theme="watched"] .commandCentreHero,
+html[data-theme="watched"] .commandQuickGrid button,
+html[data-theme="watched"] .commandStatusGrid>div,
+html[data-theme="watched"] .commandSection,
+html[data-theme="watched"] .knowledgeSavedBar,
+html[data-theme="watched"] .loadoutLockPanel,
+html[data-theme="watched"] .overnightControls,
+html[data-theme="watched"] .overnightSummary>button,
+html[data-theme="watched"] .contextHead,
+html[data-theme="watched"] .labTabs button{
+  background:#141819!important;background-image:none!important;color:#f4f1ea!important;
+  border-color:#353c38!important;box-shadow:none!important;
+}
+html[data-theme="watched"] .miniGraphCard .recharts-wrapper,
+html[data-theme="watched"] .miniGraphCard .recharts-surface,
+html[data-theme="watched"] .lm-chart-track{background-color:#101413!important}
+html[data-theme="watched"] .miniGraphTitle strong,
+html[data-theme="watched"] .miniGraphTitle b,
+html[data-theme="watched"] .multiGraphHeading,
+html[data-theme="watched"] .terminalOverviewStrip strong,
+html[data-theme="watched"] .jhaStatGrid strong,
+html[data-theme="watched"] .jhaChartStats strong,
+html[data-theme="watched"] .lv-hero strong,
+html[data-theme="watched"] .lv-hero-stat strong,
+html[data-theme="watched"] .questProgressCard strong,
+html[data-theme="watched"] .commandStatusGrid strong,
+html[data-theme="watched"] .commandPvmHero>b{color:#f4f1ea!important}
+html[data-theme="watched"] .miniGraphTitle small,
+html[data-theme="watched"] .multiGraphHeading>span,
+html[data-theme="watched"] .terminalOverviewStrip small,
+html[data-theme="watched"] .jhaStatGrid small,
+html[data-theme="watched"] .jhaChartStats small,
+html[data-theme="watched"] .lv-hero p,
+html[data-theme="watched"] .lv-card p,
+html[data-theme="watched"] .questProgressCard small,
+html[data-theme="watched"] .commandQuickGrid small,
+html[data-theme="watched"] .commandStatusGrid small{color:#a6aaa6!important}
+html[data-theme="watched"] .multiGraphCompare,
+html[data-theme="watched"] .miniGraphCard,
+html[data-theme="watched"] .terminalChart,
+html[data-theme="watched"] .jhaChartCard{border:1px solid #353c38!important;border-radius:2px!important}
+html[data-theme="watched"] .terminalRangeSwitch button,
+html[data-theme="watched"] .terminalPinBar button,
+html[data-theme="watched"] .dashboardWorkspaceTabs button,
+html[data-theme="watched"] .questTabs button,
+html[data-theme="watched"] .questTrainingModes button,
+html[data-theme="watched"] .lv-hero-actions button,
+html[data-theme="watched"] .lv-mode-options button,
+html[data-theme="watched"] .lv-modes button,
+html[data-theme="watched"] .loadoutPage button.secondary,
+html[data-theme="watched"] .loadoutPage .loadoutImportLabel,
+html[data-theme="watched"] .loadoutStyleTabs button,
+html[data-theme="watched"] .lm-tabs button,
+html[data-theme="watched"] .lm-mode-tabs button,
+html[data-theme="watched"] .lm-head-actions button{
+  background:#141819!important;color:#f4f1ea!important;border:1px solid #353c38!important;border-radius:2px!important;
+}
+html[data-theme="watched"] .terminalRangeSwitch button.active,
+html[data-theme="watched"] .dashboardWorkspaceTabs button.active,
+html[data-theme="watched"] .questTabs button.active,
+html[data-theme="watched"] .questTrainingModes button.active,
+html[data-theme="watched"] .lv-mode-options button.active,
+html[data-theme="watched"] .lv-modes button.active,
+html[data-theme="watched"] .loadoutStyleTabs button.active,
+html[data-theme="watched"] .lm-tabs button.active,
+html[data-theme="watched"] .lm-mode-tabs button.active{
+  background:#ff6a24!important;color:#101112!important;border-color:#ff6a24!important;
+}
+html[data-theme="watched"] .questRouteStep.isDone,
+html[data-theme="watched"] .questRouteStep.isGoal,
+html[data-theme="watched"] .questCheck,
+html[data-theme="watched"] .questPrereqList>div,
+html[data-theme="watched"] .questPrereqList .done,
+html[data-theme="watched"] .questPrereqList .missing,
+html[data-theme="watched"] .questReady{background:#171d1a!important;color:#f4f1ea!important;border-color:#353c38!important}
+html[data-theme="watched"] .questProgressRing,
+html[data-theme="watched"] .lv-method-icon{color:#ff6a24!important}
+html[data-theme="watched"] .loadoutPage input,
+html[data-theme="watched"] .loadoutPage select,
+html[data-theme="watched"] .loadoutMockupPage input,
+html[data-theme="watched"] .loadoutMockupPage select,
+html[data-theme="watched"] .lv-hero input,
+html[data-theme="watched"] .lv-hero select,
+html[data-theme="watched"] .questTrainingPlanner input,
+html[data-theme="watched"] .questTrainingPlanner select,
+html[data-theme="watched"] .overnightControls input{
+  background:#0e1210!important;color:#f4f1ea!important;border-color:#353c38!important;border-radius:2px!important;
+}
+html[data-theme="watched"] .lm-chart-track{
+  background:repeating-linear-gradient(to top,#101413 0,#101413 29px,#353c38 30px,#101413 31px)!important;
+  border-color:#353c38!important;
+}
+html[data-theme="watched"] .loadoutMockupPage .lm-detail-line,
+html[data-theme="watched"] .loadoutMockupPage .lm-breakdown-footer,
+html[data-theme="watched"] .loadoutMockupPage .lm-saved-row,
+html[data-theme="watched"] .loadoutMockupPage .lm-combat-grid>div{border-color:#353c38!important}
+html[data-theme="watched"] .loadoutMockupPage .lm-detail-line span,
+html[data-theme="watched"] .loadoutMockupPage .lm-calculation-note,
+html[data-theme="watched"] .loadoutMockupPage .lm-combat-grid small{color:#a6aaa6!important}
+html[data-theme="watched"] .loadoutMockupPage .lm-detail-line b,
+html[data-theme="watched"] .loadoutMockupPage .lm-breakdown-footer strong,
+html[data-theme="watched"] .loadoutMockupPage .lm-combat-grid b{color:#f4f1ea!important}
+
+/* Guard against browser-default white surfaces in any page-local form, list or table wrapper. */
+html[data-theme="watched"] .app main section[class],
+html[data-theme="watched"] .app main article[class]{
+  color:#f4f1ea;
+}
+html[data-theme="watched"] .app main input:not([type=checkbox]):not([type=radio]):not([type=color]),
+html[data-theme="watched"] .app main select,
+html[data-theme="watched"] .app main textarea{
+  color-scheme:dark;background-color:#0e1210!important;color:#f4f1ea!important;border-color:#353c38!important;
+}
+html[data-theme="watched"] .app main input::placeholder,
+html[data-theme="watched"] .app main textarea::placeholder{color:#858c86!important}

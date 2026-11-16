@@ -83,6 +83,16 @@ export function buildLiveCalculationRequest({
   if (!target || !Number.isInteger(Number(target.id)) || Number(target.id) <= 0) {
     issues.push("Target must have a positive canonical engine monster ID.");
   }
+  const monsterIndex = target?.recordIndex ?? target?.monsterIndex;
+  if (monsterIndex !== undefined && (!Number.isInteger(Number(monsterIndex)) || Number(monsterIndex) < 0)) {
+    issues.push("Target recordIndex must be a non-negative canonical engine catalogue index.");
+  }
+  if (target?.name !== undefined && (typeof target.name !== "string" || !target.name.trim())) {
+    issues.push("Target name must be a non-empty canonical NPC name when supplied.");
+  }
+  if (target?.version !== undefined && typeof target.version !== "string") {
+    issues.push("Target version must be a string when supplied.");
+  }
 
   const equipment = Object.fromEntries(Object.values(SLOT_MAP).map(slot => [slot, null]));
   if (!Array.isArray(slots)) {
@@ -165,6 +175,9 @@ export function buildLiveCalculationRequest({
     request: {
       player,
       monsterId: Number(target.id),
+      ...(monsterIndex === undefined ? {} : { monsterIndex: Number(monsterIndex) }),
+      ...(target?.name === undefined ? {} : { monsterName: target.name }),
+      ...(target?.version === undefined ? {} : { monsterVersion: target.version }),
       ...(monsterInputs === undefined ? {} : { monsterInputs: { ...monsterInputs } }),
     },
   };
