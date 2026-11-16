@@ -434,7 +434,7 @@ function TradingTerminal({items,onSelect,siteTheme="aurora",watchlists=[],active
  const changeSort=k=>{if(sortKey===k)setSortDir(v=>v==="desc"?"asc":"desc");else{setSortKey(k);setSortDir("desc")}};
  const series=history.map(p=>({...p,margin:p.buy>0&&p.sell>0?p.sell-p.buy-taxFor(p.sell):null}));
  const defaultChartColors={buy:"#F4F1EA",sell:"#FF6A24",grid:"#343638"};
- const chartColors={...defaultChartColors,buy:chartBuyColor||defaultChartColors.buy,sell:chartSellColor||defaultChartColors.sell};
+ const chartColors=defaultChartColors;
  useEffect(()=>{try{localStorage.setItem("osrshub-terminal-buy-color",chartBuyColor)}catch{}},[chartBuyColor]);
  useEffect(()=>{try{localStorage.setItem("osrshub-terminal-sell-color",chartSellColor)}catch{}},[chartSellColor]);
  return <section className={`tradingTerminal terminalDesk terminalTheme-${theme}`}>
