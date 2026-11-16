@@ -219,3 +219,40 @@ button:disabled{opacity:.42!important;cursor:not-allowed!important;transform:non
  .td-chart-wrap .recharts-wrapper{max-width:100%!important}.drawer,.fullDetail{border-radius:0!important}
 }
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+/* Combat Studio component-specific surfaces */
+.combat-studio{background:transparent!important}
+.combat-studio .cs-hero{background:transparent!important;border-bottom:1px solid var(--wh-line)!important}
+.combat-studio .cs-intro,.combat-studio .cs-workspace-controls{color:var(--wh-muted)!important}
+.combat-studio .cs-panel{background:var(--wh-panel)!important;border:1px solid var(--wh-line)!important;border-radius:2px!important;box-shadow:none!important;color:var(--wh-white)!important}
+.combat-studio .cs-panel header{border-color:var(--wh-line)!important}
+.combat-studio .cs-panel h2,.combat-studio .cs-panel h3{color:var(--wh-white)!important;font-family:var(--wh-display)!important;text-transform:uppercase!important;letter-spacing:-.035em}
+.combat-studio .cs-panel p,.combat-studio .cs-note,.combat-studio .cs-calculation-note,.combat-studio .cs-quest-description{color:var(--wh-muted)!important}
+.combat-studio .cs-primary{background:var(--wh-orange)!important;color:#111!important;border:1px solid var(--wh-orange)!important;border-radius:0!important;font-weight:800!important;text-transform:uppercase;letter-spacing:.04em}
+.combat-studio .cs-secondary,.combat-studio .cs-remove-exclusion,.combat-studio .cs-remove-slot{background:#f4f1ea!important;color:#111!important;border:1px solid #f4f1ea!important;border-radius:0!important}
+.combat-studio .cs-tabs button,.combat-studio .cs-alt-tabs button{background:#111516!important;color:var(--wh-muted)!important;border:1px solid var(--wh-line)!important;border-radius:0!important}
+.combat-studio .cs-tabs button.active,.combat-studio .cs-alt-tabs button.active{background:var(--wh-orange)!important;color:#111!important;border-color:var(--wh-orange)!important}
+.combat-studio .cs-metrics>span,.combat-studio .cs-stats>div,.combat-studio .cs-target-profile{background:#101415!important;border:1px solid var(--wh-line)!important;border-radius:0!important}
+.combat-studio .cs-metrics small,.combat-studio .cs-stats small,.combat-studio .cs-target-profile span{color:var(--wh-muted)!important;font-family:var(--wh-mono);text-transform:uppercase;letter-spacing:.06em}
+.combat-studio .cs-metrics b,.combat-studio .cs-stats b,.combat-studio .cs-target-profile b{color:var(--wh-white)!important;font-family:var(--wh-mono)}
+.combat-studio .cs-paperdoll{background:#0f1312!important;border:1px solid var(--wh-line)!important;border-radius:0!important}
+.combat-studio .cs-avatar{background:radial-gradient(circle at 50% 35%,rgba(255,106,36,.12),transparent 65%)!important;color:var(--wh-orange)!important}
+.combat-studio .cs-slot{background:#141918!important;border:1px solid var(--wh-line)!important;border-radius:0!important;color:var(--wh-white)!important}
+.combat-studio .cs-slot:hover{border-color:var(--wh-orange)!important;background:#202623!important}
+.combat-studio .cs-slot small{color:var(--wh-muted)!important;font-family:var(--wh-mono);letter-spacing:.08em}
+.combat-studio .cs-slot-name{color:var(--wh-white)!important}
+.combat-studio .cs-table{background:#101415!important;border:1px solid var(--wh-line)!important}
+.combat-studio .cs-table-head{background:#1b201e!important;color:var(--wh-muted)!important;border-color:var(--wh-line)!important;font-family:var(--wh-mono);text-transform:uppercase;letter-spacing:.08em}
+.combat-studio .cs-gear-row{border-color:var(--wh-line-soft)!important;color:var(--wh-white)!important}
+.combat-studio .cs-gear-row>span,.combat-studio .cs-gear-row>small{color:var(--wh-muted)!important}
+.combat-studio .cs-item-name{background:transparent!important;color:var(--wh-white)!important;border:0!important;text-align:left}
+.combat-studio .cs-item-name:hover{color:var(--wh-orange)!important}
+.combat-studio .cs-performance hr{border-color:var(--wh-line)!important}
+.combat-studio .cs-quest-panel,.combat-studio .cs-quest-row,.combat-studio .cs-excluded,.combat-studio .cs-saved-list article{background:#111516!important;border-color:var(--wh-line)!important;color:var(--wh-white)!important}
+.combat-studio .cs-quest-row select,.combat-studio .cs-quest-search,.combat-studio .cs-exclude-picker input{background:#0e1112!important;color:var(--wh-white)!important;border:1px solid var(--wh-line)!important;border-radius:0!important}
+.combat-studio .cs-quest-row small,.combat-studio .cs-excluded small,.combat-studio .cs-excluded em{color:var(--wh-muted)!important}
+.combat-studio .cs-item-overlay{background:rgba(0,0,0,.82)!important;backdrop-filter:blur(8px)}
+.combat-studio .cs-item-detail{background:#151a19!important;color:var(--wh-white)!important;border:1px solid var(--wh-line)!important;border-radius:2px!important}
+.combat-studio .cs-item-detail-grid>div{background:#101415!important;border:1px solid var(--wh-line)!important}
+.combat-studio .cs-item-detail-grid small,.combat-studio .cs-item-detail-head small{color:var(--wh-orange)!important;font-family:var(--wh-mono);text-transform:uppercase}
+.combat-studio .cs-item-detail-grid b,.combat-studio .cs-item-detail h2{color:var(--wh-white)!important}
