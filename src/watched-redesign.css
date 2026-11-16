@@ -256,3 +256,479 @@ button:disabled{opacity:.42!important;cursor:not-allowed!important;transform:non
 .combat-studio .cs-item-detail-grid>div{background:#101415!important;border:1px solid var(--wh-line)!important}
 .combat-studio .cs-item-detail-grid small,.combat-studio .cs-item-detail-head small{color:var(--wh-orange)!important;font-family:var(--wh-mono);text-transform:uppercase}
 .combat-studio .cs-item-detail-grid b,.combat-studio .cs-item-detail h2{color:var(--wh-white)!important}
+
+
+/* WATCHED REDESIGN — SECOND PASS: remove inherited light-theme variables and residual decoration.
+   This is deliberately appended last in the single-theme stylesheet. */
+html[data-theme="watched"]{
+  color-scheme:dark!important;
+  --oh-bg:#090a0b!important;
+  --oh-surface:#141819!important;
+  --oh-surface2:#1c2120!important;
+  --oh-text:#f4f1ea!important;
+  --oh-muted:#a6aaa6!important;
+  --oh-line:#353c38!important;
+  --oh-accent:#ff6a24!important;
+  --oh-accent2:#ff8a4d!important;
+  --oh-positive:#9bc9a6!important;
+  --oh-negative:#ff9887!important;
+  --oh-shadow:none!important;
+  --oh-glow:transparent!important;
+  /* Legacy theme variables used by earlier components */
+  --bg:#090a0b!important;
+  --surface:#141819!important;
+  --surface2:#1c2120!important;
+  --text:#f4f1ea!important;
+  --muted:#a6aaa6!important;
+  --border:#353c38!important;
+  --purple:#ff6a24!important;
+  --cyan:#f4f1ea!important;
+  --green:#9bc9a6!important;
+  --gold:#ff8a4d!important;
+  background:#090a0b!important;
+  color:#f4f1ea!important;
+}
+html[data-theme="watched"],html[data-theme="watched"] body,html[data-theme="watched"] #root,
+html[data-theme="watched"] .app,html[data-theme="watched"] main{
+  background:#090a0b!important;color:#f4f1ea!important;
+}
+html[data-theme="watched"] body{
+  background:#090a0b!important;
+  background-image:none!important;
+}
+html[data-theme="watched"] body:before,
+html[data-theme="watched"] body:after,
+html[data-theme="watched"] .pulseGlow,
+html[data-theme="watched"] .marketEvents:after,
+html[data-theme="watched"] .constCanvas:before,
+html[data-theme="watched"] .brand:after{
+  display:none!important;content:none!important;opacity:0!important;background:none!important;filter:none!important;
+}
+html[data-theme="watched"] .brand,
+html[data-theme="watched"] .brand span{color:#f4f1ea!important}
+html[data-theme="watched"] .brand b{
+  color:#ff6a24!important;background:none!important;background-image:none!important;
+  -webkit-text-fill-color:#ff6a24!important;text-shadow:none!important;
+}
+html[data-theme="watched"] .desktopHubSidebar,
+html[data-theme="watched"] .desktopHubSidebar *,
+html[data-theme="watched"] .nav,
+html[data-theme="watched"] .nav *,
+html[data-theme="watched"] .mobileNav,
+html[data-theme="watched"] .mobileNav *{
+  box-shadow:none!important;
+}
+html[data-theme="watched"] .desktopHubSidebar{
+  background:#0c0f0e!important;border-right:1px solid #353c38!important;
+}
+html[data-theme="watched"] .hubSidebarLabel,
+html[data-theme="watched"] .hubSidebarFooter small{
+  color:#858c86!important;font:10px/1.4 var(--wh-mono)!important;letter-spacing:.14em!important;text-transform:uppercase!important;
+}
+html[data-theme="watched"] .desktopHubSidebar button{
+  border:0!important;border-radius:0!important;background:transparent!important;color:#a6aaa6!important;
+  font-size:11px!important;font-weight:650!important;letter-spacing:.035em!important;
+}
+html[data-theme="watched"] .desktopHubSidebar button.active{
+  color:#f4f1ea!important;background:#1a201d!important;box-shadow:inset 2px 0 #ff6a24!important;
+}
+html[data-theme="watched"] .hubSidebarGlyph{color:#ff6a24!important}
+html[data-theme="watched"] .hubSidebarStatus i{background:#ff6a24!important;box-shadow:none!important}
+
+/* The watch ticker is a data strip, not a white banner. */
+html[data-theme="watched"] .ticker,
+html[data-theme="watched"] .tickerInner,
+html[data-theme="watched"] .tickerTrack{
+  background:#0e1210!important;background-image:none!important;border-color:#353c38!important;
+  color:#f4f1ea!important;box-shadow:none!important;
+}
+html[data-theme="watched"] .ticker{
+  height:30px!important;border-top:1px solid #252b28!important;border-bottom:1px solid #353c38!important;
+  backdrop-filter:none!important;
+}
+html[data-theme="watched"] .tickerTrack button{
+  border:0!important;border-right:1px solid #353c38!important;border-radius:0!important;
+  background:transparent!important;color:#f4f1ea!important;box-shadow:none!important;
+}
+html[data-theme="watched"] .tickerTrack button:hover{background:#1a201d!important;transform:none!important}
+html[data-theme="watched"] .tickerEmpty{color:#a6aaa6!important}
+
+/* Fix the first-screen market overview cards that exposed the old white palette. */
+html[data-theme="watched"] .marketPulse,
+html[data-theme="watched"] .marketEvents,
+html[data-theme="watched"] .constellation,
+html[data-theme="watched"] .constCanvas,
+html[data-theme="watched"] .marketPulse .pulseMain,
+html[data-theme="watched"] .marketPulse .pulseMetric,
+html[data-theme="watched"] .marketPulse .pulseMeter,
+html[data-theme="watched"] .marketEvents .eventRows button{
+  background:#141819!important;background-image:none!important;color:#f4f1ea!important;
+  border:1px solid #353c38!important;border-radius:2px!important;box-shadow:none!important;
+}
+html[data-theme="watched"] .marketPulse{
+  display:grid!important;padding:12px!important;gap:8px!important;overflow:hidden!important;
+}
+html[data-theme="watched"] .marketPulse .pulseMain,
+html[data-theme="watched"] .marketPulse .pulseMetric,
+html[data-theme="watched"] .marketPulse .pulseMeter{
+  background:#101413!important;border:1px solid #303733!important;border-radius:2px!important;padding:14px!important;
+}
+html[data-theme="watched"] .pulseMain .eyebrow,
+html[data-theme="watched"] .marketEvents .eyebrow,
+html[data-theme="watched"] .constHead .eyebrow{
+  color:#ff6a24!important;font:700 10px/1.4 var(--wh-mono)!important;letter-spacing:.16em!important;text-transform:uppercase!important;
+}
+html[data-theme="watched"] .pulseMain strong{
+  color:#f4f1ea!important;font:900 clamp(25px,4vw,38px)/.95 var(--wh-display)!important;
+  letter-spacing:-.04em!important;text-transform:uppercase!important;
+}
+html[data-theme="watched"] .pulseMain>span,
+html[data-theme="watched"] .pulseMetric small,
+html[data-theme="watched"] .pulseMeter small{
+  color:#a6aaa6!important;font-size:11px!important;line-height:1.35!important;
+}
+html[data-theme="watched"] .pulseMetric svg{color:#ff6a24!important}
+html[data-theme="watched"] .pulseMetric b{
+  color:#f4f1ea!important;font:700 19px/1.1 var(--wh-mono)!important;
+}
+html[data-theme="watched"] .pulseMeter b{
+  color:#f4f1ea!important;font:700 11px/1.3 var(--wh-mono)!important;
+}
+html[data-theme="watched"] .pulseMeter i{
+  height:5px!important;border-radius:0!important;background:#353c38!important;
+}
+html[data-theme="watched"] .pulseMeter em{
+  border-radius:0!important;background:#ff6a24!important;box-shadow:none!important;
+}
+html[data-theme="watched"] .marketEvents{
+  padding:0!important;margin:12px 0 18px!important;overflow:hidden!important;
+}
+html[data-theme="watched"] .eventsToggle{
+  min-height:76px!important;padding:16px 18px!important;border:0!important;border-radius:0!important;
+  background:#141819!important;color:#f4f1ea!important;box-shadow:none!important;
+}
+html[data-theme="watched"] .eventsToggle strong{
+  color:#f4f1ea!important;font:800 20px/1.05 var(--wh-display)!important;
+  letter-spacing:-.02em!important;text-transform:uppercase!important;
+}
+html[data-theme="watched"] .eventsToggle small{
+  color:#a6aaa6!important;font-size:11px!important;line-height:1.45!important;
+}
+html[data-theme="watched"] .eventsToggleRight{gap:10px!important}
+html[data-theme="watched"] .eventsToggleRight .liveBadge{
+  border:1px solid #ff6a24!important;border-radius:0!important;background:#ff6a24!important;
+  color:#111!important;font:800 9px/1 var(--wh-mono)!important;letter-spacing:.12em!important;padding:8px 10px!important;
+}
+html[data-theme="watched"] .eventsToggleRight .liveBadge i{
+  width:5px!important;height:5px!important;background:#111!important;animation:none!important;box-shadow:none!important;
+}
+html[data-theme="watched"] .eventsToggleRight>svg{color:#a6aaa6!important}
+html[data-theme="watched"] .marketEvents .eventRows{padding:10px!important;gap:6px!important}
+html[data-theme="watched"] .marketEvents .eventRows button{
+  background:#101413!important;padding:11px!important;border-radius:0!important;text-align:left!important;
+}
+html[data-theme="watched"] .marketEvents .eventRows button:hover{
+  transform:none!important;background:#1c2220!important;border-color:#ff6a24!important;box-shadow:none!important;
+}
+html[data-theme="watched"] .eventRows strong{color:#f4f1ea!important;font-size:12px!important}
+html[data-theme="watched"] .eventRows small{color:#a6aaa6!important;font-size:10px!important}
+html[data-theme="watched"] .eventRank{color:#ff6a24!important;font:10px var(--wh-mono)!important}
+html[data-theme="watched"] .eventRows>b{color:#ff6a24!important;font-family:var(--wh-mono)!important}
+
+/* Editorial type: make the whole hierarchy visible, not just the page title. */
+html[data-theme="watched"] h1,
+html[data-theme="watched"] h2,
+html[data-theme="watched"] h3,
+html[data-theme="watched"] h4,
+html[data-theme="watched"] .hero h1,
+html[data-theme="watched"] .pageIntro h1,
+html[data-theme="watched"] .sectionhead h1,
+html[data-theme="watched"] .sectionhead h2{
+  color:#f4f1ea!important;font-family:var(--wh-display)!important;font-weight:900!important;
+  letter-spacing:-.045em!important;text-transform:uppercase!important;
+}
+html[data-theme="watched"] h1 em,
+html[data-theme="watched"] h2 em,
+html[data-theme="watched"] h3 em,
+html[data-theme="watched"] .hero h1 em,
+html[data-theme="watched"] .pageIntro h1 em{
+  color:#ff6a24!important;font-family:Georgia,"Times New Roman",serif!important;
+  font-style:italic!important;font-weight:400!important;text-transform:none!important;
+}
+html[data-theme="watched"] .eyebrow,
+html[data-theme="watched"] .sectionLabel,
+html[data-theme="watched"] .td-eyebrow,
+html[data-theme="watched"] .cs-eyebrow{
+  color:#ff6a24!important;font:700 10px/1.4 var(--wh-mono)!important;letter-spacing:.15em!important;text-transform:uppercase!important;
+}
+html[data-theme="watched"] .sectionhead p,
+html[data-theme="watched"] .pageIntro p,
+html[data-theme="watched"] .hero p,
+html[data-theme="watched"] .cs-panel p,
+html[data-theme="watched"] .td-chart-panel small{
+  color:#a6aaa6!important;line-height:1.55!important;
+}
+html[data-theme="watched"] small,
+html[data-theme="watched"] .muted,
+html[data-theme="watched"] .subtle,
+html[data-theme="watched"] td .sub{color:#a6aaa6!important}
+html[data-theme="watched"] strong,
+html[data-theme="watched"] b{color:inherit}
+html[data-theme="watched"] .stat strong,
+html[data-theme="watched"] .td-stat-grid strong,
+html[data-theme="watched"] .cs-metrics b,
+html[data-theme="watched"] .cs-stats b{
+  color:#f4f1ea!important;font-family:var(--wh-mono)!important;font-weight:700!important;
+}
+html[data-theme="watched"] .stat small,
+html[data-theme="watched"] .td-stat-grid small,
+html[data-theme="watched"] .cs-metrics small,
+html[data-theme="watched"] .cs-stats small{
+  color:#a6aaa6!important;font:10px/1.35 var(--wh-mono)!important;letter-spacing:.04em!important;text-transform:uppercase!important;
+}
+
+/* Remove residual purple, cyan and blue treatments throughout the application. */
+html[data-theme="watched"] .purple,
+html[data-theme="watched"] .violet,
+html[data-theme="watched"] .cyan,
+html[data-theme="watched"] .blue,
+html[data-theme="watched"] .td-stat-icon,
+html[data-theme="watched"] .td-spark{
+  color:#ff6a24!important;
+}
+html[data-theme="watched"] .brand b,
+html[data-theme="watched"] .hubSidebarGlyph,
+html[data-theme="watched"] .marketPulse svg,
+html[data-theme="watched"] .marketEvents svg{color:#ff6a24!important}
+html[data-theme="watched"] .pulseMeter em,
+html[data-theme="watched"] .progressBar em,
+html[data-theme="watched"] .activityMeter em{background:#ff6a24!important}
+html[data-theme="watched"] .positive,
+html[data-theme="watched"] .green,
+html[data-theme="watched"] .greenText{color:#9bc9a6!important}
+html[data-theme="watched"] .negative,
+html[data-theme="watched"] .redtxt{color:#ff9887!important}
+
+/* Buttons retain the requested warm-white face and sharp edges. */
+html[data-theme="watched"] button,
+html[data-theme="watched"] .button,
+html[data-theme="watched"] .mobileToolBtn,
+html[data-theme="watched"] .filterButton,
+html[data-theme="watched"] .secondary,
+html[data-theme="watched"] .rangeButtons button,
+html[data-theme="watched"] .td-range-tabs button,
+html[data-theme="watched"] .td-chart-tools>button{
+  border-radius:0!important;box-shadow:none!important;
+}
+html[data-theme="watched"] .secondary,
+html[data-theme="watched"] .filterButton,
+html[data-theme="watched"] .mobileToolBtn,
+html[data-theme="watched"] .loadMore,
+html[data-theme="watched"] .rangeButtons button,
+html[data-theme="watched"] .td-range-tabs button,
+html[data-theme="watched"] .td-chart-tools>button:not(.selected){
+  border:1px solid #f4f1ea!important;background:#f4f1ea!important;color:#111415!important;
+}
+html[data-theme="watched"] .primary,
+html[data-theme="watched"] .primary.small,
+html[data-theme="watched"] .cs-primary,
+html[data-theme="watched"] .filterButton.hasFilters,
+html[data-theme="watched"] .rangeButtons button.active,
+html[data-theme="watched"] .td-range-tabs button.active,
+html[data-theme="watched"] .td-chart-tools>button.selected{
+  border:1px solid #ff6a24!important;background:#ff6a24!important;color:#111415!important;
+}
+html[data-theme="watched"] .secondary:hover,
+html[data-theme="watched"] .filterButton:hover,
+html[data-theme="watched"] .mobileToolBtn:hover,
+html[data-theme="watched"] .rangeButtons button:hover,
+html[data-theme="watched"] .td-range-tabs button:hover{
+  border-color:#ff6a24!important;transform:none!important;box-shadow:none!important;
+}
+html[data-theme="watched"] .filterButton.hasFilters,
+html[data-theme="watched"] .mobileToolBtn.active{color:#111415!important}
+
+/* Search, filter and list tools: no white panels or pill-shaped utility badges. */
+html[data-theme="watched"] .toolbar,
+html[data-theme="watched"] .filterbar,
+html[data-theme="watched"] .chips,
+html[data-theme="watched"] .mobileQuickTools,
+html[data-theme="watched"] .mobileColumnsPanel,
+html[data-theme="watched"] .mobileProfilePanel{
+  background:transparent!important;background-image:none!important;color:#f4f1ea!important;
+}
+html[data-theme="watched"] .search,
+html[data-theme="watched"] .globalSearch,
+html[data-theme="watched"] .td-left-search,
+html[data-theme="watched"] .profileSave input,
+html[data-theme="watched"] .condition select,
+html[data-theme="watched"] .condition input,
+html[data-theme="watched"] .filterPanel input,
+html[data-theme="watched"] .filterPanel select,
+html[data-theme="watched"] input:not([type=checkbox]):not([type=radio]):not([type=color]),
+html[data-theme="watched"] select,
+html[data-theme="watched"] textarea{
+  background:#0e1210!important;color:#f4f1ea!important;border:1px solid #353c38!important;
+  border-radius:0!important;box-shadow:none!important;
+}
+html[data-theme="watched"] .chips span,
+html[data-theme="watched"] .tag,
+html[data-theme="watched"] .badge,
+html[data-theme="watched"] .pill,
+html[data-theme="watched"] .statusTag{
+  background:#141819!important;color:#a6aaa6!important;border:1px solid #353c38!important;border-radius:0!important;
+}
+html[data-theme="watched"] .filterPanel,
+html[data-theme="watched"] .profileMenu,
+html[data-theme="watched"] .mobileColumnsPanel,
+html[data-theme="watched"] .mobileProfilePanel,
+html[data-theme="watched"] .globalResults,
+html[data-theme="watched"] .dropdownPanel{
+  background:#141819!important;color:#f4f1ea!important;border:1px solid #353c38!important;border-radius:2px!important;box-shadow:none!important;
+}
+html[data-theme="watched"] .filterPanel label,
+html[data-theme="watched"] .profileMenu label{color:#a6aaa6!important}
+
+/* Trading Terminal and every chart: graphite canvas, clean axes, orange/white series. */
+html[data-theme="watched"] .chartbox,
+html[data-theme="watched"] .chartTouch,
+html[data-theme="watched"] .td-chart-wrap,
+html[data-theme="watched"] .td-chart-panel,
+html[data-theme="watched"] .td-left-tools,
+html[data-theme="watched"] .td-current-price,
+html[data-theme="watched"] .td-stat-grid article,
+html[data-theme="watched"] .td-stat-grid>div{
+  background:#111514!important;background-image:none!important;color:#f4f1ea!important;
+  border:1px solid #353c38!important;border-radius:2px!important;box-shadow:none!important;
+}
+html[data-theme="watched"] .recharts-cartesian-grid line{stroke:#353c38!important;opacity:.9!important}
+html[data-theme="watched"] .recharts-cartesian-axis-line,
+html[data-theme="watched"] .recharts-cartesian-axis-tick-line{stroke:#626963!important}
+html[data-theme="watched"] .recharts-text,
+html[data-theme="watched"] .recharts-cartesian-axis-tick-value{
+  fill:#a6aaa6!important;font:10px var(--wh-mono)!important;
+}
+html[data-theme="watched"] .recharts-default-tooltip,
+html[data-theme="watched"] .td-chart-tooltip,
+html[data-theme="watched"] .chartTooltip{
+  background:#1a201d!important;border:1px solid #59615b!important;border-radius:2px!important;
+  color:#f4f1ea!important;box-shadow:none!important;
+}
+html[data-theme="watched"] .recharts-tooltip-label,
+html[data-theme="watched"] .recharts-tooltip-item,
+html[data-theme="watched"] .td-chart-tooltip strong,
+html[data-theme="watched"] .td-chart-tooltip b{color:#f4f1ea!important}
+html[data-theme="watched"] .td-mini-buy-line{stroke:#f4f1ea!important}
+html[data-theme="watched"] .td-mini-sell-line{stroke:#ff6a24!important}
+html[data-theme="watched"] .td-chart-legend button{color:#f4f1ea!important}
+html[data-theme="watched"] .td-chart-legend i:first-child{background:#f4f1ea!important}
+html[data-theme="watched"] .td-chart-legend i:nth-child(2){background:#ff6a24!important}
+html[data-theme="watched"] .td-chart-empty{background:#111514!important;color:#a6aaa6!important;border:1px dashed #353c38!important}
+html[data-theme="watched"] .terminalDesk .td-chart-tools .td-line-color{display:none!important}
+html[data-theme="watched"] .terminalDesk .td-topline,
+html[data-theme="watched"] .terminalDesk .td-chart-toolbar,
+html[data-theme="watched"] .terminalDesk .td-selected-head{border-color:#353c38!important}
+html[data-theme="watched"] .terminalDesk .td-left-tabs button.active{background:#ff6a24!important;color:#111!important}
+html[data-theme="watched"] .terminalDesk .td-live-dot{background:#ff6a24!important;box-shadow:none!important}
+
+/* Other page modules inherit the dark surface and never fall back to paper-white. */
+html[data-theme="watched"] .analysisCard,
+html[data-theme="watched"] .financeCard,
+html[data-theme="watched"] .calcCard,
+html[data-theme="watched"] .dashboardCard,
+html[data-theme="watched"] .coolCard,
+html[data-theme="watched"] .spotlightCard,
+html[data-theme="watched"] .screenerCard,
+html[data-theme="watched"] .watchcard,
+html[data-theme="watched"] .watchcard2,
+html[data-theme="watched"] .moneyCard,
+html[data-theme="watched"] .recipeCard,
+html[data-theme="watched"] .analysisGrid>div,
+html[data-theme="watched"] .accountCard,
+html[data-theme="watched"] .accountPanel,
+html[data-theme="watched"] .profileCard,
+html[data-theme="watched"] .moveCard{
+  background:#141819!important;background-image:none!important;color:#f4f1ea!important;
+  border:1px solid #353c38!important;border-radius:2px!important;box-shadow:none!important;
+}
+html[data-theme="watched"] .siteFooter,
+html[data-theme="watched"] .mobileNav{
+  background:#0c0f0e!important;background-image:none!important;color:#f4f1ea!important;
+  border-color:#353c38!important;box-shadow:none!important;backdrop-filter:none!important;
+}
+html[data-theme="watched"] .mobileNav>button{color:#a6aaa6!important;background:transparent!important}
+html[data-theme="watched"] .mobileNav>button.active{color:#ff6a24!important}
+html[data-theme="watched"] .mobileMore{background:#141819!important;border:1px solid #353c38!important;border-radius:2px!important}
+html[data-theme="watched"] .mobileMore button{background:transparent!important;color:#f4f1ea!important}
+html[data-theme="watched"] .mobileQuickCalcFab,
+html[data-theme="watched"] .scrollTopBtn{background:#ff6a24!important;color:#111!important;border:1px solid #ff6a24!important;border-radius:0!important;box-shadow:none!important}
+html[data-theme="watched"] .commandPalette,
+html[data-theme="watched"] .notificationPanel,
+html[data-theme="watched"] .notificationPopover,
+html[data-theme="watched"] .modal,
+html[data-theme="watched"] .drawer,
+html[data-theme="watched"] .toast{
+  background:#141819!important;background-image:none!important;color:#f4f1ea!important;
+  border:1px solid #353c38!important;border-radius:2px!important;box-shadow:none!important;
+}
+
+/* Combat Studio: the gear board and each slot are technical panels, not floating pastel tiles. */
+html[data-theme="watched"] .combat-studio .cs-panel,
+html[data-theme="watched"] .combat-studio .cs-paperdoll,
+html[data-theme="watched"] .combat-studio .cs-table,
+html[data-theme="watched"] .combat-studio .cs-slot,
+html[data-theme="watched"] .combat-studio .cs-metrics>span,
+html[data-theme="watched"] .combat-studio .cs-stats>div,
+html[data-theme="watched"] .combat-studio .cs-target-profile,
+html[data-theme="watched"] .combat-studio .cs-quest-row,
+html[data-theme="watched"] .combat-studio .cs-workbench-item-row,
+html[data-theme="watched"] .combat-studio .cs-workbench-slots button,
+html[data-theme="watched"] .combat-studio .cs-item-detail{
+  background:#141819!important;background-image:none!important;color:#f4f1ea!important;
+  border:1px solid #353c38!important;border-radius:2px!important;box-shadow:none!important;
+}
+html[data-theme="watched"] .combat-studio .cs-slot:hover,
+html[data-theme="watched"] .combat-studio .cs-workbench-slots button:hover{
+  background:#1c2220!important;border-color:#ff6a24!important;
+}
+html[data-theme="watched"] .combat-studio .cs-table-head{background:#1c2120!important;color:#a6aaa6!important}
+html[data-theme="watched"] .combat-studio .cs-gear-row{border-color:#353c38!important}
+html[data-theme="watched"] .combat-studio .cs-gear-row small,
+html[data-theme="watched"] .combat-studio .cs-slot small{color:#a6aaa6!important}
+html[data-theme="watched"] .combat-studio .cs-slot-name,
+html[data-theme="watched"] .combat-studio .cs-panel h2,
+html[data-theme="watched"] .combat-studio .cs-panel h3{color:#f4f1ea!important}
+html[data-theme="watched"] .combat-studio .cs-avatar{background:#101413!important;color:#ff6a24!important}
+html[data-theme="watched"] .combat-studio .cs-paperdoll .cs-slot{min-height:112px!important}
+html[data-theme="watched"] .combat-studio .cs-primary{background:#ff6a24!important;color:#111!important;border-color:#ff6a24!important}
+
+/* Remove ornamental glows and gradients from remaining data cards without flattening chart content. */
+html[data-theme="watched"] .constellation,
+html[data-theme="watched"] .constCanvas,
+html[data-theme="watched"] .dashboardHero,
+html[data-theme="watched"] .spotlightHero,
+html[data-theme="watched"] .marketPulse,
+html[data-theme="watched"] .marketEvents{
+  background-image:none!important;box-shadow:none!important;
+}
+html[data-theme="watched"] .constCanvas{
+  background-color:#0e1210!important;
+  background-image:linear-gradient(#242b27 1px,transparent 1px),linear-gradient(90deg,#242b27 1px,transparent 1px)!important;
+}
+html[data-theme="watched"] .status,
+html[data-theme="watched"] .liveBadge,
+html[data-theme="watched"] .tag,
+html[data-theme="watched"] .badge,
+html[data-theme="watched"] .pill{border-radius:0!important}
+html[data-theme="watched"] .status{background:#141819!important;color:#f4f1ea!important;border:1px solid #353c38!important}
+html[data-theme="watched"] .status .dot{background:#ff6a24!important}
+@media(max-width:700px){
+ html[data-theme="watched"] .marketPulse{grid-template-columns:1fr 1fr!important}
+ html[data-theme="watched"] .pulseMain{grid-column:1/-1!important}
+ html[data-theme="watched"] .pulseMeter{grid-column:1/-1!important}
+ html[data-theme="watched"] .marketEvents{margin-bottom:16px!important}
+ html[data-theme="watched"] .eventsToggle{min-height:78px!important;padding:13px!important}
+ html[data-theme="watched"] .eventsToggle strong{font-size:18px!important}
+ html[data-theme="watched"] .eventRows{grid-template-columns:1fr!important}
+ html[data-theme="watched"] .eventRows button{grid-template-columns:24px 28px minmax(0,1fr) auto!important}
+}
