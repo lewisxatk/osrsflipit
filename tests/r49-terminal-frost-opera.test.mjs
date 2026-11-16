@@ -21,7 +21,7 @@ test("Trading Terminal has independent persistent Custom Scanner profiles", () =
 test("Watched redesign locks the test build to one black-and-orange theme", () => {
   const watched = readFileSync(new URL("../src/watched-redesign.css", import.meta.url), "utf8");
   const html = readFileSync(new URL("../index.html", import.meta.url), "utf8");
-  assert.ok(app.includes('setTheme]=useState("watched")'));
+  assert.ok(app.includes('[theme]=useState("watched")'));
   assert.ok(app.includes('document.documentElement.dataset.theme="watched"'));
   assert.ok(app.includes('import "./watched-redesign.css"'));
   assert.ok(!app.includes("ThemePicker"));
