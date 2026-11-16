@@ -1216,3 +1216,174 @@ html[data-theme="watched"] .filterButton.hasFilters{background:#ff6a24!important
  html[data-theme="watched"] .drawer .detailTileControls>div{display:flex!important;gap:6px!important;overflow-x:auto!important}
  html[data-theme="watched"] .drawer .detailTileControls>div button{flex:0 0 auto!important;min-height:36px!important}
 }
+
+
+/* R44 — final cross-page component coverage: secondary graphs, loadout, levelling, OSRS Brain and tools. */
+html[data-theme="watched"] .multiGraphCompare,
+html[data-theme="watched"] .miniGraphCard,
+html[data-theme="watched"] .miniGraphTitle,
+html[data-theme="watched"] .multiGraphHeading,
+html[data-theme="watched"] .terminalChart,
+html[data-theme="watched"] .terminalWatch,
+html[data-theme="watched"] .terminalBottomGrid>section,
+html[data-theme="watched"] .terminalHero,
+html[data-theme="watched"] .terminalSearchWrap,
+html[data-theme="watched"] .terminalPinBar,
+html[data-theme="watched"] .terminalOverviewStrip article,
+html[data-theme="watched"] .terminalOverviewStrip em,
+html[data-theme="watched"] .td-bottom-cards article,
+html[data-theme="watched"] .td-compare-cards button,
+html[data-theme="watched"] .td-inline-calculator,
+html[data-theme="watched"] .td-mini-history,
+html[data-theme="watched"] .jhaHero,
+html[data-theme="watched"] .jhaRuneCard,
+html[data-theme="watched"] .jhaStatGrid article,
+html[data-theme="watched"] .jhaChartCard,
+html[data-theme="watched"] .jhaFilters,
+html[data-theme="watched"] .jhaTableCard,
+html[data-theme="watched"] .dashboardWorkspaceTabs,
+html[data-theme="watched"] .quickToolsPopover,
+html[data-theme="watched"] .quickAlchResult,
+html[data-theme="watched"] .loadoutPage .loadoutHero,
+html[data-theme="watched"] .loadoutPage .loadoutStatsInput,
+html[data-theme="watched"] .loadoutPage .loadoutPlannerPanel,
+html[data-theme="watched"] .loadoutPage .loadoutCard,
+html[data-theme="watched"] .loadoutPage .loadoutSlot,
+html[data-theme="watched"] .loadoutPage .loadoutPicker,
+html[data-theme="watched"] .loadoutPage .loadoutAccountLookup,
+html[data-theme="watched"] .loadoutMockupPage .lm-card,
+html[data-theme="watched"] .loadoutMockupPage .lm-recommend-card,
+html[data-theme="watched"] .loadoutMockupPage .lm-gear-preview,
+html[data-theme="watched"] .loadoutMockupPage .lm-chart-track,
+html[data-theme="watched"] .loadoutMockupPage .lm-right-summary>div,
+html[data-theme="watched"] .loadoutMockupPage .lm-tool-grid button,
+html[data-theme="watched"] .loadoutMockupPage .lm-saved-view,
+html[data-theme="watched"] .loadoutMockupPage .lm-compare-view,
+html[data-theme="watched"] .lv-hero,
+html[data-theme="watched"] .lv-hero-stat,
+html[data-theme="watched"] .lv-guide,
+html[data-theme="watched"] .lv-card,
+html[data-theme="watched"] .lv-mode,
+html[data-theme="watched"] .questProgressCard,
+html[data-theme="watched"] .questMainCard,
+html[data-theme="watched"] .questSideCard,
+html[data-theme="watched"] .questSideStack>section,
+html[data-theme="watched"] .questProgressRing,
+html[data-theme="watched"] .questTrainingPlanner,
+html[data-theme="watched"] .questRouteStep,
+html[data-theme="watched"] .questTrainingMethodList article,
+html[data-theme="watched"] .commandCentreHero,
+html[data-theme="watched"] .commandQuickGrid button,
+html[data-theme="watched"] .commandStatusGrid>div,
+html[data-theme="watched"] .commandSection,
+html[data-theme="watched"] .knowledgeSavedBar,
+html[data-theme="watched"] .loadoutLockPanel,
+html[data-theme="watched"] .overnightControls,
+html[data-theme="watched"] .overnightSummary>button,
+html[data-theme="watched"] .contextHead,
+html[data-theme="watched"] .labTabs button{
+  background:#141819!important;background-image:none!important;color:#f4f1ea!important;
+  border-color:#353c38!important;box-shadow:none!important;
+}
+html[data-theme="watched"] .miniGraphCard .recharts-wrapper,
+html[data-theme="watched"] .miniGraphCard .recharts-surface,
+html[data-theme="watched"] .lm-chart-track{background-color:#101413!important}
+html[data-theme="watched"] .miniGraphTitle strong,
+html[data-theme="watched"] .miniGraphTitle b,
+html[data-theme="watched"] .multiGraphHeading,
+html[data-theme="watched"] .terminalOverviewStrip strong,
+html[data-theme="watched"] .jhaStatGrid strong,
+html[data-theme="watched"] .jhaChartStats strong,
+html[data-theme="watched"] .lv-hero strong,
+html[data-theme="watched"] .lv-hero-stat strong,
+html[data-theme="watched"] .questProgressCard strong,
+html[data-theme="watched"] .commandStatusGrid strong,
+html[data-theme="watched"] .commandPvmHero>b{color:#f4f1ea!important}
+html[data-theme="watched"] .miniGraphTitle small,
+html[data-theme="watched"] .multiGraphHeading>span,
+html[data-theme="watched"] .terminalOverviewStrip small,
+html[data-theme="watched"] .jhaStatGrid small,
+html[data-theme="watched"] .jhaChartStats small,
+html[data-theme="watched"] .lv-hero p,
+html[data-theme="watched"] .lv-card p,
+html[data-theme="watched"] .questProgressCard small,
+html[data-theme="watched"] .commandQuickGrid small,
+html[data-theme="watched"] .commandStatusGrid small{color:#a6aaa6!important}
+html[data-theme="watched"] .multiGraphCompare,
+html[data-theme="watched"] .miniGraphCard,
+html[data-theme="watched"] .terminalChart,
+html[data-theme="watched"] .jhaChartCard{border:1px solid #353c38!important;border-radius:2px!important}
+html[data-theme="watched"] .terminalRangeSwitch button,
+html[data-theme="watched"] .terminalPinBar button,
+html[data-theme="watched"] .dashboardWorkspaceTabs button,
+html[data-theme="watched"] .questTabs button,
+html[data-theme="watched"] .questTrainingModes button,
+html[data-theme="watched"] .lv-hero-actions button,
+html[data-theme="watched"] .lv-mode-options button,
+html[data-theme="watched"] .lv-modes button,
+html[data-theme="watched"] .loadoutPage button.secondary,
+html[data-theme="watched"] .loadoutPage .loadoutImportLabel,
+html[data-theme="watched"] .loadoutStyleTabs button,
+html[data-theme="watched"] .lm-tabs button,
+html[data-theme="watched"] .lm-mode-tabs button,
+html[data-theme="watched"] .lm-head-actions button{
+  background:#141819!important;color:#f4f1ea!important;border:1px solid #353c38!important;border-radius:2px!important;
+}
+html[data-theme="watched"] .terminalRangeSwitch button.active,
+html[data-theme="watched"] .dashboardWorkspaceTabs button.active,
+html[data-theme="watched"] .questTabs button.active,
+html[data-theme="watched"] .questTrainingModes button.active,
+html[data-theme="watched"] .lv-mode-options button.active,
+html[data-theme="watched"] .lv-modes button.active,
+html[data-theme="watched"] .loadoutStyleTabs button.active,
+html[data-theme="watched"] .lm-tabs button.active,
+html[data-theme="watched"] .lm-mode-tabs button.active{
+  background:#ff6a24!important;color:#101112!important;border-color:#ff6a24!important;
+}
+html[data-theme="watched"] .questRouteStep.isDone,
+html[data-theme="watched"] .questRouteStep.isGoal,
+html[data-theme="watched"] .questCheck,
+html[data-theme="watched"] .questPrereqList>div,
+html[data-theme="watched"] .questPrereqList .done,
+html[data-theme="watched"] .questPrereqList .missing,
+html[data-theme="watched"] .questReady{background:#171d1a!important;color:#f4f1ea!important;border-color:#353c38!important}
+html[data-theme="watched"] .questProgressRing,
+html[data-theme="watched"] .lv-method-icon{color:#ff6a24!important}
+html[data-theme="watched"] .loadoutPage input,
+html[data-theme="watched"] .loadoutPage select,
+html[data-theme="watched"] .loadoutMockupPage input,
+html[data-theme="watched"] .loadoutMockupPage select,
+html[data-theme="watched"] .lv-hero input,
+html[data-theme="watched"] .lv-hero select,
+html[data-theme="watched"] .questTrainingPlanner input,
+html[data-theme="watched"] .questTrainingPlanner select,
+html[data-theme="watched"] .overnightControls input{
+  background:#0e1210!important;color:#f4f1ea!important;border-color:#353c38!important;border-radius:2px!important;
+}
+html[data-theme="watched"] .lm-chart-track{
+  background:repeating-linear-gradient(to top,#101413 0,#101413 29px,#353c38 30px,#101413 31px)!important;
+  border-color:#353c38!important;
+}
+html[data-theme="watched"] .loadoutMockupPage .lm-detail-line,
+html[data-theme="watched"] .loadoutMockupPage .lm-breakdown-footer,
+html[data-theme="watched"] .loadoutMockupPage .lm-saved-row,
+html[data-theme="watched"] .loadoutMockupPage .lm-combat-grid>div{border-color:#353c38!important}
+html[data-theme="watched"] .loadoutMockupPage .lm-detail-line span,
+html[data-theme="watched"] .loadoutMockupPage .lm-calculation-note,
+html[data-theme="watched"] .loadoutMockupPage .lm-combat-grid small{color:#a6aaa6!important}
+html[data-theme="watched"] .loadoutMockupPage .lm-detail-line b,
+html[data-theme="watched"] .loadoutMockupPage .lm-breakdown-footer strong,
+html[data-theme="watched"] .loadoutMockupPage .lm-combat-grid b{color:#f4f1ea!important}
+
+/* Guard against browser-default white surfaces in any page-local form, list or table wrapper. */
+html[data-theme="watched"] .app main section[class],
+html[data-theme="watched"] .app main article[class]{
+  color:#f4f1ea;
+}
+html[data-theme="watched"] .app main input:not([type=checkbox]):not([type=radio]):not([type=color]),
+html[data-theme="watched"] .app main select,
+html[data-theme="watched"] .app main textarea{
+  color-scheme:dark;background-color:#0e1210!important;color:#f4f1ea!important;border-color:#353c38!important;
+}
+html[data-theme="watched"] .app main input::placeholder,
+html[data-theme="watched"] .app main textarea::placeholder{color:#858c86!important}
