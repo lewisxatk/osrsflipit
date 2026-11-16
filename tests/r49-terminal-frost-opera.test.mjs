@@ -24,7 +24,8 @@ test("Watched redesign locks the test build to one black-and-orange theme", () =
   assert.ok(app.includes('setTheme]=useState("watched")'));
   assert.ok(app.includes('document.documentElement.dataset.theme="watched"'));
   assert.ok(app.includes('import "./watched-redesign.css"'));
-  assert.ok(watched.includes(".themePicker{display:none!important}"));
+  assert.ok(!app.includes("ThemePicker"));
+  assert.ok(!app.includes("Cycle visual theme"));
   assert.ok(watched.includes("--wh-orange:#ff6a24"));
   assert.ok(watched.includes("--wh-bg:#090a0b"));
   assert.ok(watched.includes(".recharts-cartesian-grid line"));
