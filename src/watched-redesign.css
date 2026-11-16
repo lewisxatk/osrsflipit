@@ -966,3 +966,253 @@ html[data-theme="watched"] .cs-tabs button.active,
 html[data-theme="watched"] .cs-alt-tabs button.active{
   background:#ff6a24!important;color:#101112!important;border-color:#ff6a24!important;
 }
+
+
+/* R43 — close the remaining light-theme cascade leaks on item analytics, graphs and every route.
+   The legacy selector html:not([data-theme="dark"]) also matches the Watched theme;
+   these intentionally more-specific rules win without changing any component behaviour. */
+html[data-theme="watched"] .drawer,
+html[data-theme="watched"] .fullDetail,
+html[data-theme="watched"] .routeItemPage .fullDetail,
+html[data-theme="watched"] .drawerback,
+html[data-theme="watched"] .fullDetailBack{
+  background:#090a0b!important;background-image:none!important;color:#f4f1ea!important;
+  border-color:#353c38!important;box-shadow:none!important;
+}
+html[data-theme="watched"] .drawer .itemtitle,
+html[data-theme="watched"] .drawer .detailTileControls,
+html[data-theme="watched"] .drawer .chartbox,
+html[data-theme="watched"] .drawer .itemDNA,
+html[data-theme="watched"] .drawer .scoreExplain,
+html[data-theme="watched"] .drawer .chartNote,
+html[data-theme="watched"] .drawer .historicalPin,
+html[data-theme="watched"] .drawer .detailgrid>div,
+html[data-theme="watched"] .drawer .panelstats .stat,
+html[data-theme="watched"] .routeItemPage .itemtitle,
+html[data-theme="watched"] .routeItemPage .chartbox,
+html[data-theme="watched"] .routeItemPage .itemDNA,
+html[data-theme="watched"] .routeItemPage .detailTileControls,
+html[data-theme="watched"] .routeItemPage .panelstats .stat{
+  background:#141819!important;background-image:none!important;color:#f4f1ea!important;
+  border:1px solid #353c38!important;border-radius:2px!important;box-shadow:none!important;
+}
+html[data-theme="watched"] .drawer .chartTouch,
+html[data-theme="watched"] .drawer .chartloading,
+html[data-theme="watched"] .routeItemPage .chartTouch{
+  background:#101413!important;background-image:none!important;color:#a6aaa6!important;
+}
+html[data-theme="watched"] .drawer .charthead,
+html[data-theme="watched"] .drawer .rangeButtons,
+html[data-theme="watched"] .drawer .chartNote,
+html[data-theme="watched"] .drawer .chartOptionsMenu,
+html[data-theme="watched"] .drawer .chartTimeReadout,
+html[data-theme="watched"] .drawer .chartTooltip,
+html[data-theme="watched"] .drawer .chartModeButtons button,
+html[data-theme="watched"] .drawer .chartLineControls select{
+  background:#101413!important;color:#f4f1ea!important;border-color:#353c38!important;
+}
+html[data-theme="watched"] .drawer .chartOptionsMenu,
+html[data-theme="watched"] .drawer .chartTooltip{
+  border:1px solid #59625b!important;box-shadow:0 12px 32px rgba(0,0,0,.45)!important;
+}
+html[data-theme="watched"] .drawer .charthead strong,
+html[data-theme="watched"] .drawer .detailTileControls strong,
+html[data-theme="watched"] .drawer .itemtitle h2,
+html[data-theme="watched"] .drawer .panelstats .stat strong,
+html[data-theme="watched"] .drawer .detailgrid strong,
+html[data-theme="watched"] .drawer .historicalPin strong{
+  color:#f4f1ea!important;
+}
+html[data-theme="watched"] .drawer .charthead small,
+html[data-theme="watched"] .drawer .chartNote,
+html[data-theme="watched"] .drawer .itemtitle p,
+html[data-theme="watched"] .drawer .panelstats .stat small,
+html[data-theme="watched"] .drawer .detailgrid span,
+html[data-theme="watched"] .drawer .historicalPin small,
+html[data-theme="watched"] .drawer .eyebrow{
+  color:#a6aaa6!important;
+}
+html[data-theme="watched"] .drawer .detailTileControls>div button,
+html[data-theme="watched"] .drawer .rangeButtons button,
+html[data-theme="watched"] .drawer .backDetail,
+html[data-theme="watched"] .drawer .itemAnalyticsTopBtn,
+html[data-theme="watched"] .drawer .openItemPageBtn,
+html[data-theme="watched"] .drawer .chartHeadActions .secondary,
+html[data-theme="watched"] .drawer .close,
+html[data-theme="watched"] .routeItemPage .backDetail{
+  background:#141819!important;color:#f4f1ea!important;border:1px solid #353c38!important;
+  border-radius:2px!important;box-shadow:none!important;
+}
+html[data-theme="watched"] .drawer .detailTileControls>div button.on,
+html[data-theme="watched"] .drawer .rangeButtons button.active,
+html[data-theme="watched"] .drawer .chartModeButtons button.active{
+  background:#ff6a24!important;color:#101112!important;border-color:#ff6a24!important;
+}
+html[data-theme="watched"] .drawer .detailTileControls>div button:hover,
+html[data-theme="watched"] .drawer .rangeButtons button:hover,
+html[data-theme="watched"] .drawer .chartHeadActions .secondary:hover,
+html[data-theme="watched"] .drawer .close:hover{
+  background:#1c2220!important;color:#ff8a4d!important;border-color:#ff6a24!important;
+}
+html[data-theme="watched"] .drawer .close{position:absolute!important}
+html[data-theme="watched"] .drawer .chartOptionsMenu label:hover{background:#1c2220!important}
+html[data-theme="watched"] .drawer .chartTooltip>strong,
+html[data-theme="watched"] .drawer .chartTooltip div{color:#f4f1ea!important}
+html[data-theme="watched"] .drawer .legendDot.buy{background:#f4f1ea!important}
+html[data-theme="watched"] .drawer .legendDot.sell{background:#ff6a24!important}
+
+/* Reusable graph surfaces and controls used by item history, market analytics and terminal. */
+html[data-theme="watched"] .chartbox,
+html[data-theme="watched"] .chartTouch,
+html[data-theme="watched"] .chartloading,
+html[data-theme="watched"] .chartTooltip,
+html[data-theme="watched"] .chartOptionsMenu,
+html[data-theme="watched"] .chartTimeReadout,
+html[data-theme="watched"] .chartModeButtons,
+html[data-theme="watched"] .chartLineControls,
+html[data-theme="watched"] .multiGraphComparison,
+html[data-theme="watched"] .multiGraphCard,
+html[data-theme="watched"] .graphCard,
+html[data-theme="watched"] .graphPanel,
+html[data-theme="watched"] .priceHistory,
+html[data-theme="watched"] .priceHistoryPanel{
+  background:#141819!important;color:#f4f1ea!important;border-color:#353c38!important;
+  box-shadow:none!important;
+}
+html[data-theme="watched"] .chartbox .chartTouch,
+html[data-theme="watched"] .chartbox .recharts-wrapper,
+html[data-theme="watched"] .chartbox .recharts-surface,
+html[data-theme="watched"] .graphCard .recharts-wrapper,
+html[data-theme="watched"] .graphPanel .recharts-wrapper{background:transparent!important}
+html[data-theme="watched"] .charthead,
+html[data-theme="watched"] .chartHead,
+html[data-theme="watched"] .chartNote,
+html[data-theme="watched"] .chartOptionsMenu,
+html[data-theme="watched"] .chartTimeReadout{color:#f4f1ea!important;border-color:#353c38!important}
+html[data-theme="watched"] .charthead strong,
+html[data-theme="watched"] .chartOptionsMenu strong,
+html[data-theme="watched"] .chartTimeReadout strong{color:#f4f1ea!important}
+html[data-theme="watched"] .charthead small,
+html[data-theme="watched"] .chartNote,
+html[data-theme="watched"] .chartOptionsMenu label{color:#a6aaa6!important}
+html[data-theme="watched"] .rangeButtons button,
+html[data-theme="watched"] .chartHeadActions button,
+html[data-theme="watched"] .chartModeButtons button,
+html[data-theme="watched"] .chartLineControls select{
+  background:#141819!important;color:#f4f1ea!important;border:1px solid #353c38!important;
+  border-radius:2px!important;
+}
+html[data-theme="watched"] .rangeButtons button.active,
+html[data-theme="watched"] .chartModeButtons button.active{background:#ff6a24!important;color:#101112!important;border-color:#ff6a24!important}
+
+/* Shared page surfaces that previously inherited hard-coded white from legacy components. */
+html[data-theme="watched"] .drawer,
+html[data-theme="watched"] .modal,
+html[data-theme="watched"] .notificationPopover,
+html[data-theme="watched"] .popoverHead,
+html[data-theme="watched"] .popoverList,
+html[data-theme="watched"] .popoverList button,
+html[data-theme="watched"] .clearPopover,
+html[data-theme="watched"] .alertintro,
+html[data-theme="watched"] .notification,
+html[data-theme="watched"] .spotlightCard,
+html[data-theme="watched"] .loadoutCard,
+html[data-theme="watched"] .loadoutMockupPage .lm-card,
+html[data-theme="watched"] .loadoutMockupPage .lm-saved-view,
+html[data-theme="watched"] .loadoutMockupPage .lm-compare-view,
+html[data-theme="watched"] .loadoutMockupPage .lm-compare-grid>div,
+html[data-theme="watched"] .loadoutMockupPage .lm-boss-option,
+html[data-theme="watched"] .brainSuite,
+html[data-theme="watched"] .brainCard,
+html[data-theme="watched"] .recommendLarge,
+html[data-theme="watched"] .brainExpandedHead,
+html[data-theme="watched"] .recipeCard,
+html[data-theme="watched"] .dashboardCard,
+html[data-theme="watched"] .analysisCard,
+html[data-theme="watched"] .financeCard,
+html[data-theme="watched"] .calcLabCard,
+html[data-theme="watched"] .coolCard,
+html[data-theme="watched"] .moveCard,
+html[data-theme="watched"] .movecol,
+html[data-theme="watched"] .rule,
+html[data-theme="watched"] .ruleicon,
+html[data-theme="watched"] .watchcard,
+html[data-theme="watched"] .screenerCard,
+html[data-theme="watched"] .screenerTableShell,
+html[data-theme="watched"] .tablewrap{
+  background:#141819!important;background-image:none!important;color:#f4f1ea!important;
+  border-color:#353c38!important;box-shadow:none!important;
+}
+html[data-theme="watched"] .popoverList button:hover,
+html[data-theme="watched"] .notification:hover,
+html[data-theme="watched"] .watchcard:hover,
+html[data-theme="watched"] .spotlightRows button:hover,
+html[data-theme="watched"] .loadoutSuggestions button:hover{background:#1c2220!important}
+html[data-theme="watched"] .popoverHead,
+html[data-theme="watched"] .popoverList button,
+html[data-theme="watched"] .clearPopover,
+html[data-theme="watched"] .spotlightRows button,
+html[data-theme="watched"] .loadoutSuggestions button{
+  color:#f4f1ea!important;border-color:#353c38!important;
+}
+html[data-theme="watched"] .modal input,
+html[data-theme="watched"] .modal select,
+html[data-theme="watched"] .notificationPopover input,
+html[data-theme="watched"] .loadoutMockupPage input,
+html[data-theme="watched"] .loadoutMockupPage select{
+  background:#0e1210!important;color:#f4f1ea!important;border-color:#353c38!important;
+}
+html[data-theme="watched"] .modal label,
+html[data-theme="watched"] .notificationPopover small,
+html[data-theme="watched"] .spotlightRows small,
+html[data-theme="watched"] .loadoutSuggestions small,
+html[data-theme="watched"] .loadoutMockupPage small,
+html[data-theme="watched"] .loadoutMockupPage p{color:#a6aaa6!important}
+
+/* Final type pass: readable body copy, consistent labels, mono numeric data and compact mobile controls. */
+html[data-theme="watched"] body,
+html[data-theme="watched"] button,
+html[data-theme="watched"] input,
+html[data-theme="watched"] select,
+html[data-theme="watched"] textarea{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important}
+html[data-theme="watched"] h1,
+html[data-theme="watched"] h2,
+html[data-theme="watched"] h3,
+html[data-theme="watched"] h4,
+html[data-theme="watched"] .charthead strong,
+html[data-theme="watched"] .detailTileControls strong,
+html[data-theme="watched"] .itemtitle h2{
+  font-family:var(--wh-display)!important;font-weight:900!important;letter-spacing:-.035em!important;
+}
+html[data-theme="watched"] .panelstats .stat strong,
+html[data-theme="watched"] .td-stat-grid strong,
+html[data-theme="watched"] .mobileMeta b,
+html[data-theme="watched"] .chartTimeReadout strong,
+html[data-theme="watched"] .detailgrid strong{font-family:var(--wh-mono)!important;font-variant-numeric:tabular-nums!important}
+html[data-theme="watched"] .mobileNav,
+html[data-theme="watched"] .mobileNav button,
+html[data-theme="watched"] .mobileMore{background:#0c0f0e!important;color:#a6aaa6!important;border-color:#353c38!important}
+html[data-theme="watched"] .mobileNav button.active{color:#ff6a24!important;background:#141819!important}
+html[data-theme="watched"] .mobileNav button span{font-size:10px!important;letter-spacing:.02em!important}
+html[data-theme="watched"] .mobileNav svg{stroke-width:1.8!important}
+html[data-theme="watched"] .filterButton,
+html[data-theme="watched"] .mobileNav .filterButton,
+html[data-theme="watched"] .terminalDesk .filterButton{
+  background:#141819!important;color:#f4f1ea!important;border:1px solid #353c38!important;
+}
+html[data-theme="watched"] .filterButton.hasFilters{background:#ff6a24!important;color:#101112!important;border-color:#ff6a24!important}
+@media(max-width:700px){
+ html[data-theme="watched"] .drawer{padding:14px 12px 88px!important}
+ html[data-theme="watched"] .drawer .chartbox{padding:10px!important;margin-top:12px!important}
+ html[data-theme="watched"] .drawer .charthead{display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:9px!important}
+ html[data-theme="watched"] .drawer .chartHeadActions{display:flex!important;flex-wrap:wrap!important;gap:6px!important}
+ html[data-theme="watched"] .drawer .chartHeadActions button{min-height:34px!important;font-size:10px!important;padding:0 9px!important}
+ html[data-theme="watched"] .drawer .charthead strong{font-size:16px!important}
+ html[data-theme="watched"] .drawer .charthead small{font-size:10px!important;line-height:1.45!important;max-width:none!important}
+ html[data-theme="watched"] .drawer .rangeButtons{display:flex!important;flex-wrap:nowrap!important;overflow-x:auto!important;padding-bottom:4px!important}
+ html[data-theme="watched"] .drawer .rangeButtons button{flex:0 0 auto!important;min-height:34px!important;font-size:10px!important}
+ html[data-theme="watched"] .drawer .chartTouch{min-height:230px!important}
+ html[data-theme="watched"] .drawer .chartNote{font-size:10px!important;line-height:1.5!important}
+ html[data-theme="watched"] .drawer .detailTileControls>div{display:flex!important;gap:6px!important;overflow-x:auto!important}
+ html[data-theme="watched"] .drawer .detailTileControls>div button{flex:0 0 auto!important;min-height:36px!important}
+}
