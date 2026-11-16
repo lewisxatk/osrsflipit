@@ -905,3 +905,64 @@ html[data-theme="watched"] .td-left-tools select{background:#0e1210!important;co
  html[data-theme="watched"] .mobileFlipCard{padding:10px!important}
  html[data-theme="watched"] .mobileItem strong{font-size:14px!important}
 }
+
+
+/* R42 — replace the legacy cream button palette with outlined dark controls across every page. */
+html[data-theme="watched"] .primary,
+html[data-theme="watched"] .primary.small,
+html[data-theme="watched"] .cs-primary,
+html[data-theme="watched"] .loginButton{background:#ff6a24!important;color:#101112!important;border:1px solid #ff6a24!important}
+html[data-theme="watched"] .secondary,
+html[data-theme="watched"] .filterButton,
+html[data-theme="watched"] .loadMore,
+html[data-theme="watched"] .rangeButtons button,
+html[data-theme="watched"] .moverRangeBar button,
+html[data-theme="watched"] .td-chart-tools>button,
+html[data-theme="watched"] .td-range-tabs button,
+html[data-theme="watched"] .td-quick-filter-grid button,
+html[data-theme="watched"] .td-quick-tool,
+html[data-theme="watched"] .backDetail,
+html[data-theme="watched"] .itemAnalyticsTopBtn,
+html[data-theme="watched"] .openItemPageBtn,
+html[data-theme="watched"] .mobileAnalyticsActions button,
+html[data-theme="watched"] .watchManagerActions button,
+html[data-theme="watched"] .commandBottom button,
+html[data-theme="watched"] .combatButton,
+html[data-theme="watched"] .combat-action-button,
+html[data-theme="watched"] .workbenchButton,
+html[data-theme="watched"] .combat-studio .secondary,
+html[data-theme="watched"] .combatStudio .secondary,
+html[data-theme="watched"] .combat-studio .cs-secondary,
+html[data-theme="watched"] .combat-studio .cs-remove-exclusion,
+html[data-theme="watched"] .combat-studio .cs-remove-slot,
+html[data-theme="watched"] .cs-tabs button,
+html[data-theme="watched"] .cs-alt-tabs button{
+  background:#141819!important;background-image:none!important;color:#f4f1ea!important;
+  border:1px solid #353c38!important;border-radius:2px!important;box-shadow:none!important;
+}
+html[data-theme="watched"] .secondary:hover,
+html[data-theme="watched"] .filterButton:hover,
+html[data-theme="watched"] .loadMore:hover,
+html[data-theme="watched"] .rangeButtons button:hover,
+html[data-theme="watched"] .moverRangeBar button:hover,
+html[data-theme="watched"] .td-chart-tools>button:hover,
+html[data-theme="watched"] .td-range-tabs button:hover,
+html[data-theme="watched"] .backDetail:hover,
+html[data-theme="watched"] .itemAnalyticsTopBtn:hover,
+html[data-theme="watched"] .openItemPageBtn:hover,
+html[data-theme="watched"] .combat-studio .secondary:hover,
+html[data-theme="watched"] .combat-studio .cs-secondary:hover,
+html[data-theme="watched"] .cs-tabs button:hover,
+html[data-theme="watched"] .cs-alt-tabs button:hover{
+  background:#1c2220!important;color:#ff8a4d!important;border-color:#ff6a24!important;
+}
+html[data-theme="watched"] .filterButton.hasFilters,
+html[data-theme="watched"] .rangeButtons button.active,
+html[data-theme="watched"] .moverRangeBar button.active,
+html[data-theme="watched"] .td-range-tabs button.active,
+html[data-theme="watched"] .td-quick-filter-grid button.active,
+html[data-theme="watched"] .td-chart-tools>button.selected,
+html[data-theme="watched"] .cs-tabs button.active,
+html[data-theme="watched"] .cs-alt-tabs button.active{
+  background:#ff6a24!important;color:#101112!important;border-color:#ff6a24!important;
+}
