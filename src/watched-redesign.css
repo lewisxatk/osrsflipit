@@ -732,3 +732,176 @@ html[data-theme="watched"] .status .dot{background:#ff6a24!important}
  html[data-theme="watched"] .eventRows{grid-template-columns:1fr!important}
  html[data-theme="watched"] .eventRows button{grid-template-columns:24px 28px minmax(0,1fr) auto!important}
 }
+
+
+/* R41 — consistent Watched dark surfaces, outlined controls and editorial item typography.
+   Presentation-only overrides; all existing page logic and interactions are preserved. */
+html[data-theme="watched"]{
+  --wh-bg:#090a0b;--wh-panel:#141819;--wh-panel2:#1a1f20;
+  --wh-line:#353c38;--wh-muted:#a6aaa6;--wh-white:#f4f1ea;
+}
+html[data-theme="watched"] .mobileFlipCard,
+html[data-theme="watched"] .mobileMeta span,
+html[data-theme="watched"] .mobileQuickCalcPanel,
+html[data-theme="watched"] .quickCalcPopover,
+html[data-theme="watched"] .quickCalcResult>div,
+html[data-theme="watched"] .quickCalcResultWide,
+html[data-theme="watched"] .td-left-tools,
+html[data-theme="watched"] .td-left-section,
+html[data-theme="watched"] .td-quick-filter-grid,
+html[data-theme="watched"] .td-quick-tool,
+html[data-theme="watched"] .td-inline-calculator,
+html[data-theme="watched"] .td-inline-calculator .quickCalcResult>div,
+html[data-theme="watched"] .td-calc-results>div,
+html[data-theme="watched"] .screenerAbsolutePanel,
+html[data-theme="watched"] .mobileColumnsPanel,
+html[data-theme="watched"] .filterPanel,
+html[data-theme="watched"] .screenerCard,
+html[data-theme="watched"] .tablewrap,
+html[data-theme="watched"] .screenerTableShell,
+html[data-theme="watched"] .financeCard,
+html[data-theme="watched"] .calcCard{
+  background:#141819!important;background-image:none!important;color:#f4f1ea!important;
+  border:1px solid #353c38!important;border-radius:2px!important;box-shadow:none!important;
+}
+html[data-theme="watched"] .mobileFlipCard{padding:12px!important}
+html[data-theme="watched"] .mobileFlipCard:hover,
+html[data-theme="watched"] .watchcard:hover,
+html[data-theme="watched"] .td-quick-filter-grid button:hover,
+html[data-theme="watched"] .td-quick-tool:hover{
+  background:#1c2220!important;border-color:#ff6a24!important;transform:none!important;
+}
+html[data-theme="watched"] .mobileItem strong,
+html[data-theme="watched"] .td-recent-item strong,
+html[data-theme="watched"] .td-left-search-suggestions strong,
+html[data-theme="watched"] .item strong,
+html[data-theme="watched"] .itemName,
+html[data-theme="watched"] .marketPage .itemTitle,
+html[data-theme="watched"] .marketPage .mobileFlipCard .mobileItem strong{
+  color:#f4f1ea!important;font-family:var(--wh-display)!important;font-weight:900!important;
+  font-stretch:condensed;letter-spacing:-.035em!important;text-transform:uppercase!important;
+}
+html[data-theme="watched"] .mobileItem strong{font-size:15px!important;line-height:1.05!important}
+html[data-theme="watched"] .mobileItem small,
+html[data-theme="watched"] .mobilePriceRow small,
+html[data-theme="watched"] .mobileMeta,
+html[data-theme="watched"] .mobileCardHint{color:#a6aaa6!important}
+html[data-theme="watched"] .mobilePriceRow{border-top:1px solid #353c38!important}
+html[data-theme="watched"] .mobileMeta span{
+  border-left:1px solid #353c38!important;border-radius:0!important;
+  background:#101413!important;padding:7px 5px!important;
+}
+html[data-theme="watched"] .mobileMeta b{color:#f4f1ea!important;font-family:var(--wh-mono)!important}
+html[data-theme="watched"] .mobileCardHint{border-top:1px solid #353c38!important;padding-top:8px!important}
+html[data-theme="watched"] .score{border:1px solid #6b573f!important;border-radius:0!important;background:#292219!important;color:#ffb16d!important}
+html[data-theme="watched"] .mobilePriceRow .green,
+html[data-theme="watched"] .td-calc-results .green{color:#91c9a2!important}
+html[data-theme="watched"] .mobilePriceRow .redtxt,
+html[data-theme="watched"] .td-calc-results .redtxt{color:#ff9180!important}
+
+/* Calculator sheet and embedded calculators: no pale result tiles or white inputs. */
+html[data-theme="watched"] .mobileQuickCalcPanel{
+  background:#101413!important;border:1px solid #353c38!important;border-bottom:0!important;
+  color:#f4f1ea!important;border-radius:2px 2px 0 0!important;
+}
+html[data-theme="watched"] .mobileQuickCalcHead{border-bottom:1px solid #353c38!important}
+html[data-theme="watched"] .mobileQuickCalcHead strong,
+html[data-theme="watched"] .quickCalcHead strong{color:#f4f1ea!important;font-family:var(--wh-display)!important;font-weight:900!important;text-transform:uppercase!important;letter-spacing:-.025em!important}
+html[data-theme="watched"] .quickCalcPopover{
+  width:100%;background:#101413!important;border-color:#353c38!important;color:#f4f1ea!important;
+}
+html[data-theme="watched"] .quickCalcHead{border-color:#353c38!important}
+html[data-theme="watched"] .quickCalcHead small,
+html[data-theme="watched"] .quickCalcFields label,
+html[data-theme="watched"] .quickCalcResult span,
+html[data-theme="watched"] .quickCalcNote{color:#a6aaa6!important}
+html[data-theme="watched"] .quickCalcFields input,
+html[data-theme="watched"] .td-calc-fields input,
+html[data-theme="watched"] .td-inline-calculator input,
+html[data-theme="watched"] .financeForm input,
+html[data-theme="watched"] .financeCard input,
+html[data-theme="watched"] .calcCard input{
+  background:#0e1210!important;color:#f4f1ea!important;border:1px solid #353c38!important;
+  border-radius:2px!important;box-shadow:none!important;
+}
+html[data-theme="watched"] .quickCalcFields input::placeholder{color:#747b76!important}
+html[data-theme="watched"] .quickCalcFields input:focus,
+html[data-theme="watched"] .td-calc-fields input:focus{border-color:#ff6a24!important;box-shadow:0 0 0 1px #ff6a24!important}
+html[data-theme="watched"] .quickCalcResult>div,
+html[data-theme="watched"] .quickCalcResultWide,
+html[data-theme="watched"] .td-calc-results>div{
+  background:#171c1a!important;border:1px solid #353c38!important;color:#f4f1ea!important;border-radius:2px!important;
+}
+html[data-theme="watched"] .quickCalcResultWide{grid-column:1/-1!important}
+html[data-theme="watched"] .quickCalcResultWide small{color:#a6aaa6!important}
+html[data-theme="watched"] .mobileQuickCalcHead>button{
+  background:#141819!important;color:#f4f1ea!important;border:1px solid #353c38!important;border-radius:2px!important;
+}
+
+/* Trading terminal quick filters, tools and screener controls use the same outlined treatment. */
+html[data-theme="watched"] .td-left-section h4{color:#ff6a24!important;font-family:var(--wh-mono)!important;letter-spacing:.12em!important;text-transform:uppercase!important}
+html[data-theme="watched"] .td-quick-filter-grid button,
+html[data-theme="watched"] .td-quick-tool,
+html[data-theme="watched"] .td-left-search-suggestions button,
+html[data-theme="watched"] .td-recent-item,
+html[data-theme="watched"] .mobileToolBtn,
+html[data-theme="watched"] .mobileColumnsPanel button,
+html[data-theme="watched"] .filterbar button,
+html[data-theme="watched"] .screenerToolsRow button,
+html[data-theme="watched"] .screenerAbsolutePanel button{
+  background:#141819!important;color:#f4f1ea!important;border:1px solid #353c38!important;
+  border-radius:2px!important;box-shadow:none!important;
+}
+html[data-theme="watched"] .td-quick-filter-grid button.active,
+html[data-theme="watched"] .td-quick-tool.active,
+html[data-theme="watched"] .filterbar button.active,
+html[data-theme="watched"] .screenerToolsRow button.active{
+  background:#1c2220!important;color:#ff6a24!important;border-color:#ff6a24!important;
+}
+html[data-theme="watched"] .td-quick-filter-grid button,
+html[data-theme="watched"] .td-quick-tool{min-height:42px!important;text-align:left!important}
+html[data-theme="watched"] .td-quick-filter-grid button{font-family:var(--wh-display)!important;font-weight:900!important;letter-spacing:.04em!important;text-transform:uppercase!important}
+html[data-theme="watched"] .td-quick-tool{display:flex!important;align-items:center!important;gap:10px!important;padding:10px 12px!important}
+html[data-theme="watched"] .td-quick-tool svg{color:#ff6a24!important}
+html[data-theme="watched"] .td-left-search-suggestions button:hover,
+html[data-theme="watched"] .td-recent-item:hover{background:#1c2220!important;border-color:#ff6a24!important}
+html[data-theme="watched"] .mobileColumnsPanel>div:first-child button,
+html[data-theme="watched"] .mobileColumnRow button{background:#141819!important;color:#f4f1ea!important;border:1px solid #353c38!important}
+
+/* Small editorial rules make panels feel deliberate without adding visual clutter. */
+html[data-theme="watched"] .marketPage .sectionhead,
+html[data-theme="watched"] .screenerMain .sectionhead,
+html[data-theme="watched"] .td-left-section,
+html[data-theme="watched"] .quickCalcHead,
+html[data-theme="watched"] .mobilePriceRow,
+html[data-theme="watched"] .mobileCardHint{border-color:#353c38!important}
+html[data-theme="watched"] .marketPage .sectionhead:after,
+html[data-theme="watched"] .screenerMain .sectionhead:after{
+  content:"";display:block;width:34px;height:2px;background:#ff6a24;position:absolute;bottom:-1px;left:0;
+}
+html[data-theme="watched"] .marketPage .sectionhead,
+html[data-theme="watched"] .screenerMain .sectionhead{position:relative!important}
+html[data-theme="watched"] .marketPage .tablewrap,
+html[data-theme="watched"] .marketPage .screenerTableShell,
+html[data-theme="watched"] .screenerMain .screenerTableShell{border-color:#353c38!important}
+html[data-theme="watched"] .marketPage th,
+html[data-theme="watched"] .screenerMain th{background:#101413!important;color:#a6aaa6!important;border-bottom:1px solid #353c38!important}
+html[data-theme="watched"] .marketPage td,
+html[data-theme="watched"] .screenerMain td{border-bottom:1px solid #252b28!important}
+html[data-theme="watched"] .marketPage tbody tr:hover,
+html[data-theme="watched"] .screenerMain tbody tr:hover{background:#171c1a!important}
+html[data-theme="watched"] .td-table-head,
+html[data-theme="watched"] .td-chart-toolbar,
+html[data-theme="watched"] .td-topline{border-color:#353c38!important}
+html[data-theme="watched"] .td-quick-filter-grid,
+html[data-theme="watched"] .td-left-section{padding:12px!important}
+html[data-theme="watched"] .td-quick-filter-grid{gap:7px!important}
+html[data-theme="watched"] .td-left-tools input,
+html[data-theme="watched"] .td-left-tools select{background:#0e1210!important;color:#f4f1ea!important;border-color:#353c38!important;border-radius:2px!important}
+@media(max-width:700px){
+ html[data-theme="watched"] .quickCalcPopover{padding:0!important;border:0!important}
+ html[data-theme="watched"] .mobileQuickCalcPanel .quickCalcFields{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ html[data-theme="watched"] .mobileQuickCalcPanel .quickCalcResult{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ html[data-theme="watched"] .mobileFlipCard{padding:10px!important}
+ html[data-theme="watched"] .mobileItem strong{font-size:14px!important}
+}
